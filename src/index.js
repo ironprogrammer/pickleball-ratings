@@ -143,7 +143,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 						) }
 					</div>
 
-										{ ( () => {
+					{ ( () => {
 						if ( ! duprId ) {
 							return (
 								<div className="dupr-rating-placeholder">
@@ -182,10 +182,15 @@ registerBlockType( 'dupr-rating/player-rating', {
 						}
 						
 						if ( playerData ) {
+							// Create title attribute for last updated info
+							const titleAttribute = playerData.last_updated 
+								? `Last updated: ${playerData.last_updated}` 
+								: '';
+
 							return (
 								<div className="dupr-rating-content">
 									{ playerData.name && (
-										<div className="dupr-rating-player-name">
+										<div className="dupr-rating-player-name" title={ titleAttribute }>
 											{ playerData.name }
 										</div>
 									) }
@@ -205,11 +210,6 @@ registerBlockType( 'dupr-rating/player-rating', {
 											{ playerData.singles_rating }
 										</span>
 									</div>
-									{ playerData.last_updated && (
-										<div className="dupr-rating-updated">
-											Last updated: { playerData.last_updated }
-										</div>
-									) }
 								</div>
 							);
 						}
@@ -220,8 +220,6 @@ registerBlockType( 'dupr-rating/player-rating', {
 							</div>
 						);
 					} )() }
-
-
 				</div>
 			</div>
 		);

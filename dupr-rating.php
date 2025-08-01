@@ -158,7 +158,12 @@ function dupr_rating_render_block( $attributes ) {
 	
 	// Add player name if available
 	if ( ! empty( $player_data['name'] ) ) {
-		$output .= '<div class="dupr-rating-player-name">' . esc_html( $player_data['name'] ) . '</div>';
+		// Create title attribute for last updated info
+		$title_attribute = ! empty( $player_data['last_updated'] ) 
+			? ' title="Last updated: ' . esc_attr( $player_data['last_updated'] ) . '"' 
+			: '';
+		
+		$output .= '<div class="dupr-rating-player-name"' . $title_attribute . '>' . esc_html( $player_data['name'] ) . '</div>';
 	}
 	
 	$output .= '<div class="dupr-rating-content">';
@@ -171,11 +176,6 @@ function dupr_rating_render_block( $attributes ) {
 	$output .= '<span class="dupr-rating-value">' . esc_html( $player_data['singles_rating'] ) . '</span>';
 	$output .= '</div>';
 	$output .= '</div>';
-	
-	// Add last updated info
-	if ( ! empty( $player_data['last_updated'] ) ) {
-		$output .= '<div class="dupr-rating-updated">Last updated: ' . esc_html( $player_data['last_updated'] ) . '</div>';
-	}
 	
 	$output .= '</div>';
 	
