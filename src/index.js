@@ -114,7 +114,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 		return (
 			<div { ...useBlockProps() }>
 				<InspectorControls>
-					<PanelBody title={ __( 'DUPR Settings', 'dupr-rating' ) }>
+					<PanelBody title={ __( 'Display Settings', 'dupr-rating' ) }>
 						<TextControl
 							label={ __( 'DUPR Player ID', 'dupr-rating' ) }
 							value={ duprId }
