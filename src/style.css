@@ -36,6 +36,14 @@
 	border-radius: 4px;
 }
 
+.dupr-rating-player-name {
+	font-size: 1.1em;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 10px;
+	text-align: center;
+}
+
 .dupr-rating-content {
 	margin-bottom: 15px;
 }
@@ -59,6 +67,8 @@
 	color: #0073aa;
 }
 
+
+
 .dupr-rating-placeholder {
 	text-align: center;
 	padding: 20px;
@@ -74,10 +84,25 @@
 	color: #d63638;
 }
 
+.dupr-rating-loading {
+	text-align: center;
+	padding: 20px;
+	color: #666;
+	font-style: italic;
+}
+
 .dupr-rating-note {
 	font-size: 0.8em;
 	color: #888;
 	font-style: italic;
+	text-align: center;
+	padding-top: 10px;
+	border-top: 1px solid #eee;
+}
+
+.dupr-rating-updated {
+	font-size: 0.8em;
+	color: #888;
 	text-align: center;
 	padding-top: 10px;
 	border-top: 1px solid #eee;

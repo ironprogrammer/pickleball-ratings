@@ -27,6 +27,9 @@ registerBlockType( 'dupr-rating/player-rating', {
 	edit: function Edit( { attributes, setAttributes } ) {
 		const { duprId } = attributes;
 		const [ validationError, setValidationError ] = useState( '' );
+		const [ isLoading, setIsLoading ] = useState( false );
+		const [ playerData, setPlayerData ] = useState( null );
+		const [ apiError, setApiError ] = useState( '' );
 
 		// Validate DUPR ID format
 		const validateDuprId = ( id ) => {
@@ -56,10 +59,57 @@ registerBlockType( 'dupr-rating/player-rating', {
 			validateDuprId( upperValue );
 		};
 
+		// Fetch player data when DUPR ID changes
+		const fetchPlayerData = async ( id ) => {
+			if ( ! id || validationError ) {
+				setPlayerData( null );
+				setApiError( '' );
+				return;
+			}
+
+			setIsLoading( true );
+			setApiError( '' );
+
+			try {
+				const response = await fetch( '/wp-admin/admin-ajax.php', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					body: new URLSearchParams( {
+						action: 'dupr_get_player_data',
+						dupr_id: id,
+						nonce: duprRatingAjax.nonce,
+					} ),
+				} );
+
+				const result = await response.json();
+
+				if ( result.success ) {
+					setPlayerData( result.data );
+				} else {
+					setApiError( result.data );
+					setPlayerData( null );
+				}
+			} catch ( error ) {
+				setApiError( 'Failed to fetch player data' );
+				setPlayerData( null );
+			} finally {
+				setIsLoading( false );
+			}
+		};
+
 		// Validate on mount and when duprId changes
 		useEffect( () => {
 			validateDuprId( duprId );
 		}, [ duprId ] );
+
+		// Fetch data when DUPR ID is valid
+		useEffect( () => {
+			if ( duprId && ! validationError ) {
+				fetchPlayerData( duprId );
+			}
+		}, [ duprId, validationError ] );
 
 		return (
 			<div { ...useBlockProps() }>
@@ -93,7 +143,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 						) }
 					</div>
 
-					{ ( () => {
+										{ ( () => {
 						if ( ! duprId ) {
 							return (
 								<div className="dupr-rating-placeholder">
@@ -106,7 +156,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 								</div>
 							);
 						}
-
+						
 						if ( validationError ) {
 							return (
 								<div className="dupr-rating-error">
@@ -114,34 +164,64 @@ registerBlockType( 'dupr-rating/player-rating', {
 								</div>
 							);
 						}
-
+						
+						if ( isLoading ) {
+							return (
+								<div className="dupr-rating-loading">
+									<p>{ __( 'Loading player data...', 'dupr-rating' ) }</p>
+								</div>
+							);
+						}
+						
+						if ( apiError ) {
+							return (
+								<div className="dupr-rating-error">
+									<p>{ apiError }</p>
+								</div>
+							);
+						}
+						
+						if ( playerData ) {
+							return (
+								<div className="dupr-rating-content">
+									{ playerData.name && (
+										<div className="dupr-rating-player-name">
+											{ playerData.name }
+										</div>
+									) }
+									<div className="dupr-rating-item">
+										<span className="dupr-rating-label">
+											Doubles Rating:
+										</span>
+										<span className="dupr-rating-value">
+											{ playerData.doubles_rating }
+										</span>
+									</div>
+									<div className="dupr-rating-item">
+										<span className="dupr-rating-label">
+											Singles Rating:
+										</span>
+										<span className="dupr-rating-value">
+											{ playerData.singles_rating }
+										</span>
+									</div>
+									{ playerData.last_updated && (
+										<div className="dupr-rating-updated">
+											Last updated: { playerData.last_updated }
+										</div>
+									) }
+								</div>
+							);
+						}
+						
 						return (
-							<div className="dupr-rating-content">
-								<div className="dupr-rating-item">
-									<span className="dupr-rating-label">
-										Doubles Rating:
-									</span>
-									<span className="dupr-rating-value">
-										4.25
-									</span>
-								</div>
-								<div className="dupr-rating-item">
-									<span className="dupr-rating-label">
-										Singles Rating:
-									</span>
-									<span className="dupr-rating-value">
-										4.50
-									</span>
-								</div>
+							<div className="dupr-rating-placeholder">
+								<p>{ __( 'Enter a valid DUPR ID to load player data.', 'dupr-rating' ) }</p>
 							</div>
 						);
 					} )() }
 
-					{ duprId && ! validationError && (
-						<div className="dupr-rating-note">
-							* Placeholder data for Phase 1
-						</div>
-					) }
+
 				</div>
 			</div>
 		);

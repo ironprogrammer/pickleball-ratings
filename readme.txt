@@ -5,7 +5,7 @@ Tags: pickleball, ratings, sports, gutenberg, blocks
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,15 +13,17 @@ Display DUPR ratings for pickleball players using a customizable block.
 
 == Description ==
 
-The DUPR Rating plugin provides a custom Gutenberg block that displays DUPR (Dynamic Universal Pickleball Rating) information for pickleball players. This plugin allows you to easily embed player ratings within your WordPress content using a customizable block, making it perfect for pickleball clubs, tournament sites, and player profile pages.
+The DUPR Rating plugin provides a custom Gutenberg block that displays DUPR (Dynamic Universal Pickleball Rating) information for pickleball players. This plugin connects to the real DUPR API to fetch live player data, including ratings, verification status, and player names. Perfect for pickleball clubs, tournament sites, and player profile pages.
 
 ## Features
 
 * **Custom Gutenberg Block**: Add DUPR ratings to any post or page using the block editor
 * **Input Validation**: Validates 6-character alphanumeric DUPR IDs
 * **Responsive Design**: Works seamlessly across all device sizes
-* **Placeholder Data**: Currently displays placeholder data (Phase 1)
-* **Error Handling**: Clear error messages for invalid inputs
+* **Real DUPR Data**: Connects to the actual DUPR API for live data
+* **Authentication**: Secure API token management
+* **Caching**: Configurable caching to improve performance
+* **Error Handling**: Clear error messages for invalid inputs and API issues
 
 ## How to Use
 
@@ -34,15 +36,18 @@ The DUPR Rating plugin provides a custom Gutenberg block that displays DUPR (Dyn
 * JW Johnson: `8WZ4ML`
 * Your ID: `PW24RQ`
 
-## Phase 1 Status
+## Phase 2 Status
 
-This is Phase 1 of the plugin development, which includes:
-- Basic plugin structure and Gutenberg block registration
-- Input field for 6-digit DUPR codes with validation
-- Static placeholder data display
-- Basic error handling for invalid codes
+This is Phase 2 of the plugin development, which includes:
+- Real DUPR API integration with authentication
+- Admin settings page for API configuration
+- Caching system to reduce API calls
+- Loading states and error handling
+- Display of real player data (name, ratings, verification status)
+- Cache management tools
+- API connection testing
 
-Future phases will include real DUPR API integration, advanced styling options, and additional features.
+Future phases will include advanced styling options, block editor enhancements, and additional features.
 
 A few notes about the sections above:
 
@@ -90,9 +95,9 @@ A DUPR ID is a unique 6-character alphanumeric identifier assigned to each playe
 
 Log into your DUPR account at mydupr.com and look for your ID on your profile page. It will be a 6-character code like "8WZ4ML".
 
-= Why is the block showing placeholder data? =
+= How do I configure the DUPR API? =
 
-This is Phase 1 of the plugin development. Real DUPR API integration will be added in Phase 2, which will display actual player ratings from the DUPR system.
+Go to Settings > DUPR Rating in your WordPress admin panel. You'll need to obtain an authentication token from the DUPR API documentation at https://backend.mydupr.com/swagger-ui/index.html and enter it in the settings.
 
 = What if I enter an invalid DUPR ID? =
 
@@ -108,6 +113,16 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 
 == Changelog ==
 
+= 0.2.0 =
+* Phase 2: DUPR API Integration
+* Real DUPR API integration with authentication
+* Admin settings page for API configuration
+* Caching system to reduce API calls
+* Loading states and error handling
+* Display of real player data (name, ratings, verification status)
+* Cache management tools
+* API connection testing
+
 = 0.1.0 =
 * Initial release (Phase 1)
 * Basic Gutenberg block with DUPR ID input
@@ -117,6 +132,9 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 * Responsive design
 
 == Upgrade Notice ==
+
+= 0.2.0 =
+Major update with real DUPR API integration! This version includes live data fetching, authentication, caching, and admin settings. Configure your API token in Settings > DUPR Rating.
 
 = 0.1.0 =
 Initial release of the DUPR Rating plugin. This version includes basic functionality with placeholder data. Real DUPR API integration will be available in future versions.
