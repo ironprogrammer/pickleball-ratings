@@ -149,11 +149,6 @@ registerBlockType( 'dupr-rating/player-rating', {
 				<div className="dupr-rating-block">
 					<div className="dupr-rating-header">
 						<h3 className="dupr-rating-title">DUPR Rating</h3>
-						{ duprId && (
-							<span className="dupr-rating-id">
-								ID: { duprId }
-							</span>
-						) }
 					</div>
 
 					{ ( () => {
@@ -214,6 +209,11 @@ registerBlockType( 'dupr-rating/player-rating', {
 												</>
 											) }
 											{ playerData.name }
+											{ duprId && (
+												<span className="dupr-rating-id">
+													{ duprId }
+												</span>
+											) }
 										</div>
 									) }
 									<div className="dupr-rating-item">

@@ -158,7 +158,6 @@ function dupr_rating_render_block( $attributes ) {
 	$output = '<div class="dupr-rating-block">';
 	$output .= '<div class="dupr-rating-header">';
 	$output .= '<h3 class="dupr-rating-title">DUPR Rating</h3>';
-	$output .= '<span class="dupr-rating-id">ID: ' . esc_html( $dupr_id ) . '</span>';
 	$output .= '</div>';
 	
 	// Add player name if available
@@ -180,6 +179,10 @@ function dupr_rating_render_block( $attributes ) {
 		}
 		
 		$output .= esc_html( $player_data['name'] );
+		
+		// Add DUPR ID after player name
+		$output .= '<span class="dupr-rating-id">' . esc_html( $dupr_id ) . '</span>';
+		
 		$output .= '</div>';
 	}
 	
