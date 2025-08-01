@@ -1,7 +1,7 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, Notice } from '@wordpress/components';
+import { PanelBody, TextControl, Notice, ToggleControl } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import './style.css';
 
@@ -23,9 +23,13 @@ registerBlockType( 'dupr-rating/player-rating', {
 			type: 'string',
 			default: '',
 		},
+		showProfilePic: {
+			type: 'boolean',
+			default: true,
+		},
 	},
 	edit: function Edit( { attributes, setAttributes } ) {
-		const { duprId } = attributes;
+		const { duprId, showProfilePic } = attributes;
 		const [ validationError, setValidationError ] = useState( '' );
 		const [ isLoading, setIsLoading ] = useState( false );
 		const [ playerData, setPlayerData ] = useState( null );
@@ -130,6 +134,15 @@ registerBlockType( 'dupr-rating/player-rating', {
 								{ validationError }
 							</Notice>
 						) }
+						<ToggleControl
+							label={ __( 'Show Profile Picture', 'dupr-rating' ) }
+							checked={ showProfilePic }
+							onChange={ ( value ) => setAttributes( { showProfilePic: value } ) }
+							help={ __(
+								'Display the player\'s profile picture if available.',
+								'dupr-rating'
+							) }
+						/>
 					</PanelBody>
 				</InspectorControls>
 
@@ -191,6 +204,15 @@ registerBlockType( 'dupr-rating/player-rating', {
 								<div className="dupr-rating-content">
 									{ playerData.name && (
 										<div className="dupr-rating-player-name" title={ titleAttribute }>
+											{ showProfilePic && (
+												<>
+													{ playerData.profile_image ? (
+														<img src={ playerData.profile_image } alt={ playerData.name } className="dupr-rating-profile-pic" />
+													) : (
+														<span className="dashicons dashicons-admin-users dupr-rating-profile-pic-fallback"></span>
+													) }
+												</>
+											) }
 											{ playerData.name }
 										</div>
 									) }

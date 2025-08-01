@@ -91,7 +91,7 @@ function dupr_rating_register_block() {
 	wp_register_style(
 		'dupr-rating-block-editor',
 		DUPR_RATING_PLUGIN_URL . 'build/style-index.css',
-		array( 'wp-edit-blocks' ),
+		array( 'wp-edit-blocks', 'dashicons' ),
 		$asset_file['version']
 	);
 
@@ -105,6 +105,10 @@ function dupr_rating_register_block() {
 			'duprId' => array(
 				'type' => 'string',
 				'default' => '',
+			),
+			'showProfilePic' => array(
+				'type' => 'boolean',
+				'default' => true,
 			),
 		),
 	) );
@@ -122,6 +126,7 @@ function dupr_rating_register_block() {
 // Render callback for the block
 function dupr_rating_render_block( $attributes ) {
 	$dupr_id = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
+	$show_profile_pic = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
 	
 	// Basic validation
 	if ( empty( $dupr_id ) ) {
@@ -163,7 +168,19 @@ function dupr_rating_render_block( $attributes ) {
 			? ' title="Last updated: ' . esc_attr( $player_data['last_updated'] ) . '"' 
 			: '';
 		
-		$output .= '<div class="dupr-rating-player-name"' . $title_attribute . '>' . esc_html( $player_data['name'] ) . '</div>';
+		$output .= '<div class="dupr-rating-player-name"' . $title_attribute . '>';
+		
+		// Add profile picture if enabled and available
+		if ( $show_profile_pic ) {
+			if ( ! empty( $player_data['profile_image'] ) ) {
+				$output .= '<img src="' . esc_url( $player_data['profile_image'] ) . '" alt="' . esc_attr( $player_data['name'] ) . '" class="dupr-rating-profile-pic" />';
+			} else {
+				$output .= '<span class="dashicons dashicons-admin-users dupr-rating-profile-pic-fallback"></span>';
+			}
+		}
+		
+		$output .= esc_html( $player_data['name'] );
+		$output .= '</div>';
 	}
 	
 	$output .= '<div class="dupr-rating-content">';
