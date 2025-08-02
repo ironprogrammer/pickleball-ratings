@@ -294,15 +294,13 @@ class DUPR_API {
 			
 			// Doubles rating
 			if ( isset( $ratings['doubles'] ) && $ratings['doubles'] !== 'NR' ) {
-				$player_data['doubles_rating'] = number_format( (float) $ratings['doubles'], 2 );
+				$player_data['doubles_rating'] = (string) $ratings['doubles'];
 			}
 			
 			// Singles rating
 			if ( isset( $ratings['singles'] ) && $ratings['singles'] !== 'NR' ) {
-				$player_data['singles_rating'] = number_format( (float) $ratings['singles'], 2 );
+				$player_data['singles_rating'] = (string) $ratings['singles'];
 			}
-			
-
 		}
 
 		return $player_data;
