@@ -1,6 +1,6 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, PanelColorSettings } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice, ToggleControl } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import './style.css';
@@ -136,7 +136,13 @@ registerBlockType( 'dupr-rating/player-rating', {
 		}, [ duprId, validationError ] );
 
 		return (
-			<div { ...useBlockProps() }>
+			<div { ...useBlockProps( {
+				className: `dupr-rating-block${ backgroundColor ? ' has-background has-' + backgroundColor + '-background-color' : '' }${ textColor ? ' has-text-color has-' + textColor + '-color' : '' }`,
+				style: {
+					...( customBackgroundColor && { backgroundColor: customBackgroundColor } ),
+					...( customTextColor && { color: customTextColor } ),
+				}
+			} ) }>
 				<InspectorControls>
 					<PanelBody title={ __( 'Display Settings', 'dupr-rating' ) }>
 						<TextControl
@@ -164,22 +170,6 @@ registerBlockType( 'dupr-rating/player-rating', {
 							) }
 						/>
 					</PanelBody>
-					<PanelColorSettings
-						title={ __( 'Color Settings', 'dupr-rating' ) }
-						initialOpen={ false }
-						colorSettings={ [
-							{
-								value: backgroundColor,
-								onChange: ( color ) => setAttributes( { backgroundColor: color } ),
-								label: __( 'Background Color', 'dupr-rating' ),
-							},
-							{
-								value: textColor,
-								onChange: ( color ) => setAttributes( { textColor: color } ),
-								label: __( 'Text Color', 'dupr-rating' ),
-							},
-						] }
-					/>
 				</InspectorControls>
 
 				<div className="dupr-rating-block">
