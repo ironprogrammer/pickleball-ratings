@@ -188,11 +188,18 @@ function dupr_rating_render_block( $attributes ) {
 	
 	$output .= '<div class="dupr-rating-content">';
 	$output .= '<div class="dupr-rating-item">';
-	$output .= '<span class="dupr-rating-label">Doubles Rating:</span>';
+	$output .= '<span class="dupr-rating-label">';
+	$output .= '<span class="dashicons dashicons-admin-users"></span>';
+	$output .= '<span class="dashicons dashicons-admin-users"></span>';
+	$output .= 'Doubles';
+	$output .= '</span>';
 	$output .= '<span class="dupr-rating-value">' . esc_html( $player_data['doubles_rating'] ) . '</span>';
 	$output .= '</div>';
 	$output .= '<div class="dupr-rating-item">';
-	$output .= '<span class="dupr-rating-label">Singles Rating:</span>';
+	$output .= '<span class="dupr-rating-label">';
+	$output .= '<span class="dashicons dashicons-admin-users"></span>';
+	$output .= 'Singles';
+	$output .= '</span>';
 	$output .= '<span class="dupr-rating-value">' . esc_html( $player_data['singles_rating'] ) . '</span>';
 	$output .= '</div>';
 	$output .= '</div>';

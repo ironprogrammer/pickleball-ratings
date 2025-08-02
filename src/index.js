@@ -218,7 +218,9 @@ registerBlockType( 'dupr-rating/player-rating', {
 									) }
 									<div className="dupr-rating-item">
 										<span className="dupr-rating-label">
-											Doubles Rating:
+											<span className="dashicons dashicons-admin-users"></span>
+											<span className="dashicons dashicons-admin-users"></span>
+											Doubles
 										</span>
 										<span className="dupr-rating-value">
 											{ playerData.doubles_rating }
@@ -226,7 +228,8 @@ registerBlockType( 'dupr-rating/player-rating', {
 									</div>
 									<div className="dupr-rating-item">
 										<span className="dupr-rating-label">
-											Singles Rating:
+											<span className="dashicons dashicons-admin-users"></span>
+											Singles
 										</span>
 										<span className="dupr-rating-value">
 											{ playerData.singles_rating }
