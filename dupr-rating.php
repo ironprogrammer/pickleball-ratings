@@ -110,6 +110,22 @@ function dupr_rating_register_block() {
 				'type' => 'boolean',
 				'default' => true,
 			),
+			'backgroundColor' => array(
+				'type' => 'string',
+				'default' => '',
+			),
+			'textColor' => array(
+				'type' => 'string',
+				'default' => '',
+			),
+			'customBackgroundColor' => array(
+				'type' => 'string',
+				'default' => '',
+			),
+			'customTextColor' => array(
+				'type' => 'string',
+				'default' => '',
+			),
 		),
 	) );
 
@@ -127,6 +143,10 @@ function dupr_rating_register_block() {
 function dupr_rating_render_block( $attributes ) {
 	$dupr_id = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
 	$show_profile_pic = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
+	$background_color = isset( $attributes['backgroundColor'] ) ? sanitize_text_field( $attributes['backgroundColor'] ) : '';
+	$text_color = isset( $attributes['textColor'] ) ? sanitize_text_field( $attributes['textColor'] ) : '';
+	$custom_background_color = isset( $attributes['customBackgroundColor'] ) ? sanitize_text_field( $attributes['customBackgroundColor'] ) : '';
+	$custom_text_color = isset( $attributes['customTextColor'] ) ? sanitize_text_field( $attributes['customTextColor'] ) : '';
 	
 	// Basic validation
 	if ( empty( $dupr_id ) ) {
@@ -154,8 +174,30 @@ function dupr_rating_render_block( $attributes ) {
 		return '<div class="dupr-rating-block dupr-rating-error">' . esc_html( $error_message ) . '</div>';
 	}
 	
+	// Build color classes and styles
+	$color_classes = array();
+	$color_styles = array();
+	
+	if ( ! empty( $background_color ) ) {
+		$color_classes[] = 'has-background';
+		$color_classes[] = 'has-' . $background_color . '-background-color';
+	}
+	if ( ! empty( $text_color ) ) {
+		$color_classes[] = 'has-text-color';
+		$color_classes[] = 'has-' . $text_color . '-color';
+	}
+	if ( ! empty( $custom_background_color ) ) {
+		$color_styles[] = 'background-color: ' . esc_attr( $custom_background_color );
+	}
+	if ( ! empty( $custom_text_color ) ) {
+		$color_styles[] = 'color: ' . esc_attr( $custom_text_color );
+	}
+	
+	$color_class_string = ! empty( $color_classes ) ? ' ' . implode( ' ', $color_classes ) : '';
+	$color_style_string = ! empty( $color_styles ) ? ' style="' . implode( '; ', $color_styles ) . '"' : '';
+	
 	// Build the output
-	$output = '<div class="dupr-rating-block">';
+	$output = '<div class="dupr-rating-block' . $color_class_string . '"' . $color_style_string . '>';
 	$output .= '<div class="dupr-rating-header">';
 	$output .= '<h3 class="dupr-rating-title">DUPR Rating</h3>';
 	$output .= '</div>';
