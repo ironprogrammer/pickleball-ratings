@@ -35,6 +35,15 @@ function dupr_rating_init() {
 	// Load text domain for internationalization
 	load_plugin_textdomain( 'dupr-rating', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	
+	// Add theme support for gradients
+	add_theme_support( 'editor-gradient-presets', array(
+		array(
+			'name'     => __( 'DUPR Blue Gradient', 'dupr-rating' ),
+			'gradient' => 'linear-gradient(135deg, #001762 0%, #0f4299 50%, #187ae8 100%)',
+			'slug'     => 'dupr-blue-gradient',
+		),
+	) );
+	
 	// Register the Gutenberg block
 	dupr_rating_register_block();
 }
@@ -101,6 +110,13 @@ function dupr_rating_register_block() {
 		'editor_style'  => 'dupr-rating-block-editor',
 		'style'         => 'dupr-rating-block-style',
 		'render_callback' => 'dupr_rating_render_block',
+		'supports'      => array(
+			'color' => array(
+				'background' => true,
+				'text'       => true,
+				'gradients'  => true,
+			),
+		),
 		'attributes'    => array(
 			'duprId' => array(
 				'type' => 'string',
@@ -126,6 +142,14 @@ function dupr_rating_register_block() {
 				'type' => 'string',
 				'default' => '',
 			),
+			'gradient' => array(
+				'type' => 'string',
+				'default' => '',
+			),
+			'customGradient' => array(
+				'type' => 'string',
+				'default' => '',
+			),
 		),
 	) );
 
@@ -147,6 +171,8 @@ function dupr_rating_render_block( $attributes ) {
 	$text_color = isset( $attributes['textColor'] ) ? sanitize_text_field( $attributes['textColor'] ) : '';
 	$custom_background_color = isset( $attributes['customBackgroundColor'] ) ? sanitize_text_field( $attributes['customBackgroundColor'] ) : '';
 	$custom_text_color = isset( $attributes['customTextColor'] ) ? sanitize_text_field( $attributes['customTextColor'] ) : '';
+	$gradient = isset( $attributes['gradient'] ) ? sanitize_text_field( $attributes['gradient'] ) : '';
+	$custom_gradient = isset( $attributes['customGradient'] ) ? sanitize_text_field( $attributes['customGradient'] ) : '';
 	
 	// Basic validation
 	if ( empty( $dupr_id ) ) {
@@ -185,6 +211,15 @@ function dupr_rating_render_block( $attributes ) {
 	}
 	if ( ! empty( $custom_background_color ) ) {
 		$color_styles[] = 'background-color: ' . esc_attr( $custom_background_color );
+	}
+	
+	// Handle gradient
+	if ( ! empty( $gradient ) ) {
+		$color_classes[] = 'has-background';
+		$color_classes[] = 'has-' . $gradient . '-gradient-background';
+	}
+	if ( ! empty( $custom_gradient ) ) {
+		$color_styles[] = 'background: ' . esc_attr( $custom_gradient );
 	}
 	
 	// Handle text color

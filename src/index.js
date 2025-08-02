@@ -20,6 +20,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 		color: {
 			background: true,
 			text: true,
+			gradients: true,
 		},
 	},
 	attributes: {
@@ -47,9 +48,17 @@ registerBlockType( 'dupr-rating/player-rating', {
 			type: 'string',
 			default: '',
 		},
+		gradient: {
+			type: 'string',
+			default: '',
+		},
+		customGradient: {
+			type: 'string',
+			default: '',
+		},
 	},
 	edit: function Edit( { attributes, setAttributes } ) {
-		const { duprId, showProfilePic, backgroundColor, textColor, customBackgroundColor, customTextColor } = attributes;
+		const { duprId, showProfilePic, backgroundColor, textColor, customBackgroundColor, customTextColor, gradient, customGradient } = attributes;
 		const [ validationError, setValidationError ] = useState( '' );
 		const [ isLoading, setIsLoading ] = useState( false );
 		const [ playerData, setPlayerData ] = useState( null );
@@ -137,9 +146,10 @@ registerBlockType( 'dupr-rating/player-rating', {
 
 		return (
 			<div { ...useBlockProps( {
-				className: `dupr-rating-block${ backgroundColor ? ' has-background has-' + backgroundColor + '-background-color' : '' }${ textColor ? ' has-text-color has-' + textColor + '-color' : '' }`,
+				className: `dupr-rating-block${ backgroundColor ? ' has-background has-' + backgroundColor + '-background-color' : '' }${ gradient ? ' has-background has-' + gradient + '-gradient-background' : '' }${ textColor ? ' has-text-color has-' + textColor + '-color' : '' }`,
 				style: {
 					...( customBackgroundColor && { backgroundColor: customBackgroundColor } ),
+					...( customGradient && { background: customGradient } ),
 					...( customTextColor && { color: customTextColor } ),
 				}
 			} ) }>
