@@ -174,20 +174,23 @@ function dupr_rating_render_block( $attributes ) {
 		return '<div class="dupr-rating-block dupr-rating-error">' . esc_html( $error_message ) . '</div>';
 	}
 	
-	// Build color classes and styles
+	// Build color classes and styles using WordPress functions
 	$color_classes = array();
 	$color_styles = array();
 	
+	// Handle background color
 	if ( ! empty( $background_color ) ) {
 		$color_classes[] = 'has-background';
 		$color_classes[] = 'has-' . $background_color . '-background-color';
 	}
+	if ( ! empty( $custom_background_color ) ) {
+		$color_styles[] = 'background-color: ' . esc_attr( $custom_background_color );
+	}
+	
+	// Handle text color
 	if ( ! empty( $text_color ) ) {
 		$color_classes[] = 'has-text-color';
 		$color_classes[] = 'has-' . $text_color . '-color';
-	}
-	if ( ! empty( $custom_background_color ) ) {
-		$color_styles[] = 'background-color: ' . esc_attr( $custom_background_color );
 	}
 	if ( ! empty( $custom_text_color ) ) {
 		$color_styles[] = 'color: ' . esc_attr( $custom_text_color );
