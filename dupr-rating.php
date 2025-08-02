@@ -126,6 +126,10 @@ function dupr_rating_register_block() {
 				'type' => 'boolean',
 				'default' => true,
 			),
+			'showDuprId' => array(
+				'type' => 'boolean',
+				'default' => false,
+			),
 			'backgroundColor' => array(
 				'type' => 'string',
 				'default' => '',
@@ -167,6 +171,7 @@ function dupr_rating_register_block() {
 function dupr_rating_render_block( $attributes ) {
 	$dupr_id = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
 	$show_profile_pic = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
+	$show_dupr_id = isset( $attributes['showDuprId'] ) ? (bool) $attributes['showDuprId'] : false;
 	$background_color = isset( $attributes['backgroundColor'] ) ? sanitize_text_field( $attributes['backgroundColor'] ) : '';
 	$text_color = isset( $attributes['textColor'] ) ? sanitize_text_field( $attributes['textColor'] ) : '';
 	$custom_background_color = isset( $attributes['customBackgroundColor'] ) ? sanitize_text_field( $attributes['customBackgroundColor'] ) : '';
@@ -260,8 +265,10 @@ function dupr_rating_render_block( $attributes ) {
 		
 		$output .= esc_html( $player_data['name'] );
 		
-		// Add DUPR ID after player name
-		$output .= '<span class="dupr-rating-id">' . esc_html( $dupr_id ) . '</span>';
+		// Add DUPR ID after player name if enabled
+		if ( $show_dupr_id ) {
+			$output .= '<span class="dupr-rating-id">' . esc_html( $dupr_id ) . '</span>';
+		}
 		
 		$output .= '</div>';
 	}

@@ -32,6 +32,10 @@ registerBlockType( 'dupr-rating/player-rating', {
 			type: 'boolean',
 			default: true,
 		},
+		showDuprId: {
+			type: 'boolean',
+			default: false,
+		},
 		backgroundColor: {
 			type: 'string',
 			default: '',
@@ -58,7 +62,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 		},
 	},
 	edit: function Edit( { attributes, setAttributes } ) {
-		const { duprId, showProfilePic, backgroundColor, textColor, customBackgroundColor, customTextColor, gradient, customGradient } = attributes;
+		const { duprId, showProfilePic, showDuprId, backgroundColor, textColor, customBackgroundColor, customTextColor, gradient, customGradient } = attributes;
 		const [ validationError, setValidationError ] = useState( '' );
 		const [ isLoading, setIsLoading ] = useState( false );
 		const [ playerData, setPlayerData ] = useState( null );
@@ -179,6 +183,15 @@ registerBlockType( 'dupr-rating/player-rating', {
 								'dupr-rating'
 							) }
 						/>
+						<ToggleControl
+							label={ __( 'Show DUPR ID', 'dupr-rating' ) }
+							checked={ showDuprId }
+							onChange={ ( value ) => setAttributes( { showDuprId: value } ) }
+							help={ __(
+								'Display the player\'s DUPR ID next to their name.',
+								'dupr-rating'
+							) }
+						/>
 					</PanelBody>
 				</InspectorControls>
 
@@ -244,7 +257,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 												</>
 											) }
 											{ playerData.name }
-											{ duprId && (
+											{ showDuprId && duprId && (
 												<span className="dupr-rating-id">
 													{ duprId }
 												</span>
