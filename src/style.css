@@ -53,12 +53,10 @@
 	margin: 0;
 	font-size: 1.2em;
 	font-weight: 600;
-	color: #333;
 }
 
 .dupr-rating-id {
 	font-size: 0.9em;
-	color: #666;
 	font-family: monospace;
 	background: #f5f5f5;
 	padding: 2px 6px;
@@ -68,7 +66,6 @@
 .dupr-rating-player-name {
 	font-size: 1.1em;
 	font-weight: 600;
-	color: #333;
 	margin-bottom: 10px;
 	text-align: center;
 	display: flex;
@@ -112,7 +109,6 @@
 
 .dupr-rating-label {
 	font-weight: 500;
-	color: #555;
 	display: flex;
 	align-items: center;
 	gap: 4px;
@@ -121,7 +117,6 @@
 .dupr-rating-value {
 	font-weight: 600;
 	font-size: 1.1em;
-	color: #0073aa;
 }
 
 .dupr-rating-placeholder {
