@@ -2,6 +2,36 @@
  * DUPR Rating Block Styles
  */
 
+/* CSS Variables for icon styling */
+:root {
+	--dupr-icon-size: 20px;
+	--dupr-icon-color: #0f4299;
+	--dupr-doubles-back-color: #187ae8;
+	--dupr-doubles-back-size: 15px;
+	--dupr-icon-stack-offset: -1rem;
+}
+
+/* Shared utility classes for icons */
+.dupr-icon {
+	font-size: var(--dupr-icon-size);
+	color: var(--dupr-icon-color);
+}
+
+.dupr-doubles-back {
+	color: var(--dupr-doubles-back-color);
+	font-size: var(--dupr-doubles-back-size);
+	position: relative;
+	z-index: 1;
+}
+
+.dupr-doubles-front {
+	color: var(--dupr-icon-color);
+	font-size: var(--dupr-icon-size);
+	position: relative;
+	z-index: 2;
+	margin-left: var(--dupr-icon-stack-offset);
+}
+
 .dupr-rating-block {
 	border: 1px solid #ddd;
 	border-radius: 8px;
@@ -87,27 +117,6 @@
 	display: flex;
 	align-items: center;
 	gap: 4px;
-}
-
-.dupr-rating-label .dashicons {
-	font-size: 20px;
-	color: #0f4299;
-}
-
-/* Special styling for doubles icons - use positioning instead of negative margins */
-.dupr-rating-item:first-child .dupr-rating-label .dashicons:nth-child(1) {
-	color: #187ae8;
-	font-size: 15px; /* 25% smaller than 20px */
-	position: relative;
-	z-index: 1;
-}
-
-.dupr-rating-item:first-child .dupr-rating-label .dashicons:nth-child(2) {
-	color: #0f4299;
-	font-size: 20px;
-	position: relative;
-	z-index: 2;
-	margin-left: -1rem; /* Stack the second icon over the first */
 }
 
 .dupr-rating-value {
