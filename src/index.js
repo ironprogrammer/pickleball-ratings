@@ -222,7 +222,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 											<span className="dashicons dashicons-admin-users"></span>
 											Doubles
 										</span>
-										<span className="dupr-rating-value">
+										<span className="dupr-rating-value" title={ playerData.doubles_rating === 'NR' ? 'Not Rated' : '' }>
 											{ playerData.doubles_rating }
 										</span>
 									</div>
@@ -231,7 +231,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 											<span className="dashicons dashicons-admin-users"></span>
 											Singles
 										</span>
-										<span className="dupr-rating-value">
+										<span className="dupr-rating-value" title={ playerData.singles_rating === 'NR' ? 'Not Rated' : '' }>
 											{ playerData.singles_rating }
 										</span>
 									</div>
