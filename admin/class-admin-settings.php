@@ -135,15 +135,26 @@ class DUPR_Admin_Settings {
 				$this->handle_form_submission();
 			}
 
-					// Handle authentication
-		if ( isset( $_POST['dupr_connect'] ) && wp_verify_nonce( $_POST['dupr_auth_nonce'], 'dupr_authenticate' ) ) {
-			$this->handle_authentication();
-		}
+			// Handle cache clearing
+			if ( isset( $_POST['clear_cache'] ) && wp_verify_nonce( $_POST['dupr_cache_nonce'], 'dupr_clear_cache' ) ) {
+				$this->api->clear_cache();
+				add_settings_error(
+					'dupr_rating_settings',
+					'cache_cleared',
+					__( 'Cache cleared successfully.', 'dupr-rating' ),
+					'success'
+				);
+			}
 
-		// Handle disconnect
-		if ( isset( $_POST['dupr_disconnect'] ) && wp_verify_nonce( $_POST['dupr_disconnect_nonce'], 'dupr_disconnect' ) ) {
-			$this->handle_disconnect();
-		}
+			// Handle authentication
+			if ( isset( $_POST['dupr_connect'] ) && wp_verify_nonce( $_POST['dupr_auth_nonce'], 'dupr_authenticate' ) ) {
+				$this->handle_authentication();
+			}
+
+			// Handle disconnect
+			if ( isset( $_POST['dupr_disconnect'] ) && wp_verify_nonce( $_POST['dupr_disconnect_nonce'], 'dupr_disconnect' ) ) {
+				$this->handle_disconnect();
+			}
 
 		?>
 		<div class="wrap">
@@ -305,16 +316,8 @@ class DUPR_Admin_Settings {
 	 * Handle form submission
 	 */
 	private function handle_form_submission() {
-		// Handle cache clearing
-		if ( isset( $_POST['clear_cache'] ) && wp_verify_nonce( $_POST['dupr_cache_nonce'], 'dupr_clear_cache' ) ) {
-			$this->api->clear_cache();
-			add_settings_error(
-				'dupr_rating_settings',
-				'cache_cleared',
-				__( 'Cache cleared successfully.', 'dupr-rating' ),
-				'success'
-			);
-		}
+		// This method is called when the main settings form is submitted
+		// Cache clearing is now handled in the main settings_page method
 	}
 
 	/**
