@@ -1,10 +1,31 @@
+# Build directories
+/dist
+/build
+/assets/build
+
+# Dependencies
+/node_modules
+/vendor
+
+# Compiled files
+*.min.css
+*.min.js
+*.map
+
+# Environment files
+.env
+.env.local
+debug.log
+
+# IDE files
+/.vscode
+/.idea
+
+# OS files
 .DS_Store
-phpcs.xml
-phpunit.xml
 Thumbs.db
-wp-cli.local.yml
-node_modules/
-vendor/
+
+# Backups
 *.sql
 *.tar.gz
 *.zip
