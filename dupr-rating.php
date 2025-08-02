@@ -39,7 +39,7 @@ function dupr_rating_init() {
 	add_theme_support( 'editor-gradient-presets', array(
 		array(
 			'name'     => __( 'DUPR Blue Gradient', 'dupr-rating' ),
-			'gradient' => 'linear-gradient(135deg, #001762 0%, #0f4299 50%, #187ae8 100%)',
+			'gradient' => 'linear-gradient(45deg, #001762 0%, #0f4299 50%, #187ae8 100%)',
 			'slug'     => 'dupr-blue-gradient',
 		),
 	) );
