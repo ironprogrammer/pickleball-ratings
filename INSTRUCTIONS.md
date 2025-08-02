@@ -1,5 +1,7 @@
 The following coding and design instructions pertain to the WordPress plugin described in @REQUIREMENTS.md.
 
+Don't change docblocks/code comments unless it's related to a change you're working on.
+
 If you need to scan WordPress source code for examples of core block structure or how they solve specific problems, the path to my local `wordpress-develop` repo is `/Users/brian/Sites/wordpress-develop/src/`. The locally configured site is at https://wp-src.test. The dupr-rating plugin source files are located in a dedicated directory and symlinked/activated on the test site.
 
 ## **Phase 1: Core Foundation (MVP)**
