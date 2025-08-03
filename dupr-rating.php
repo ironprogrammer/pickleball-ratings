@@ -251,9 +251,6 @@ function dupr_rating_render_block( $attributes ) {
 	
 	// Build the output
 	$output = '<div class="dupr-rating-block' . $color_class_string . '"' . $color_style_string . '>';
-	$output .= '<div class="dupr-rating-header">';
-	$output .= '<h3 class="dupr-rating-title">DUPR Rating</h3>';
-	$output .= '</div>';
 	
 	// Add player name if available
 	if ( ! empty( $player_data['name'] ) ) {

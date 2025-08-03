@@ -223,9 +223,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 					</PanelBody>
 				</InspectorControls>
 
-				<div className="dupr-rating-header">
-					<h3 className="dupr-rating-title">DUPR Rating</h3>
-				</div>
+
 
 					{ ( () => {
 						if ( ! duprId ) {
