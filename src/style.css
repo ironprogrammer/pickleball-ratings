@@ -5,8 +5,8 @@
 /* CSS Variables for icon styling */
 :root {
 	--dupr-icon-size: 20px;
-	--dupr-icon-color: #0f4299;
-	--dupr-doubles-back-color: #187ae8;
+	--dupr-icon-color: #187ae8;
+	--dupr-doubles-back-color: #1461c0;
 	--dupr-doubles-back-size: 15px;
 	--dupr-icon-stack-offset: -1rem;
 }
