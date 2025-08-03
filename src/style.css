@@ -134,6 +134,11 @@
 	color: #d63638;
 }
 
+/* Sidebar error notice spacing */
+.components-notice {
+	margin-bottom: 16px;
+}
+
 .dupr-rating-loading {
 	text-align: center;
 	padding: 20px;
