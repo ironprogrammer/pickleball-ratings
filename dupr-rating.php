@@ -130,6 +130,10 @@ function dupr_rating_register_block() {
 				'type' => 'boolean',
 				'default' => false,
 			),
+			'stackedLayout' => array(
+				'type' => 'boolean',
+				'default' => false,
+			),
 			'showPoweredBy' => array(
 				'type' => 'boolean',
 				'default' => false,
@@ -185,6 +189,7 @@ function dupr_rating_render_block( $attributes ) {
 	$dupr_id = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
 	$show_profile_pic = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
 	$show_dupr_id = isset( $attributes['showDuprId'] ) ? (bool) $attributes['showDuprId'] : false;
+	$stacked_layout = isset( $attributes['stackedLayout'] ) ? (bool) $attributes['stackedLayout'] : false;
 	$show_powered_by = isset( $attributes['showPoweredBy'] ) ? (bool) $attributes['showPoweredBy'] : false;
 	$use_light_logo = isset( $attributes['useLightLogo'] ) ? (bool) $attributes['useLightLogo'] : false;
 	$background_color = isset( $attributes['backgroundColor'] ) ? sanitize_text_field( $attributes['backgroundColor'] ) : '';
@@ -295,7 +300,11 @@ function dupr_rating_render_block( $attributes ) {
 		$output .= '</div>';
 	}
 	
-	$output .= '<div class="dupr-rating-content">';
+	$content_class = 'dupr-rating-content';
+	if ( $stacked_layout ) {
+		$content_class .= ' dupr-rating-stacked';
+	}
+	$output .= '<div class="' . $content_class . '">';
 	$output .= '<div class="dupr-rating-item">';
 	$output .= '<span class="dupr-rating-label">';
 	$output .= '<span class="dashicons dashicons-admin-users dupr-icon dupr-doubles-back"></span>';

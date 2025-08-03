@@ -39,6 +39,10 @@ registerBlockType( 'dupr-rating/player-rating', {
 			type: 'boolean',
 			default: false,
 		},
+		stackedLayout: {
+			type: 'boolean',
+			default: false,
+		},
 		showPoweredBy: {
 			type: 'boolean',
 			default: false,
@@ -78,7 +82,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 
 	},
 	edit: function Edit( { attributes, setAttributes } ) {
-		const { duprId, showProfilePic, showDuprId, showPoweredBy, useLightLogo, backgroundColor, textColor, customBackgroundColor, customTextColor, gradient, customGradient, fontSize } = attributes;
+		const { duprId, showProfilePic, showDuprId, stackedLayout, showPoweredBy, useLightLogo, backgroundColor, textColor, customBackgroundColor, customTextColor, gradient, customGradient, fontSize } = attributes;
 		const [ validationError, setValidationError ] = useState( '' );
 		const [ isLoading, setIsLoading ] = useState( false );
 		const [ playerData, setPlayerData ] = useState( null );
@@ -232,6 +236,15 @@ registerBlockType( 'dupr-rating/player-rating', {
 								) }
 							/>
 						) }
+						<ToggleControl
+							label={ __( 'Stacked Layout', 'dupr-rating' ) }
+							checked={ stackedLayout }
+							onChange={ ( value ) => setAttributes( { stackedLayout: value } ) }
+							help={ __(
+								'Display ratings vertically with headings above numbers.',
+								'dupr-rating'
+							) }
+						/>
 					</PanelBody>
 				</InspectorControls>
 
@@ -282,7 +295,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 								: '';
 
 							return (
-								<div className="dupr-rating-content">
+								<div>
 									{ playerData.name && (
 										<div className="dupr-rating-player-name" title={ titleAttribute }>
 											{ showProfilePic && (
@@ -302,25 +315,39 @@ registerBlockType( 'dupr-rating/player-rating', {
 											) }
 										</div>
 									) }
-									<div className="dupr-rating-item">
-										<span className="dupr-rating-label">
-											<span className="dashicons dashicons-admin-users dupr-icon dupr-doubles-back"></span>
-											<span className="dashicons dashicons-admin-users dupr-icon dupr-doubles-front"></span>
-											Doubles
-										</span>
-										<span className="dupr-rating-value" title={ playerData.doubles_rating === 'NR' ? 'Not Rated' : '' }>
-											{ playerData.doubles_rating }
-										</span>
+									<div className={`dupr-rating-content${ stackedLayout ? ' dupr-rating-stacked' : '' }`}>
+										<div className="dupr-rating-item">
+											<span className="dupr-rating-label">
+												<span className="dashicons dashicons-admin-users dupr-icon dupr-doubles-back"></span>
+												<span className="dashicons dashicons-admin-users dupr-icon dupr-doubles-front"></span>
+												Doubles
+											</span>
+											<span className="dupr-rating-value" title={ playerData.doubles_rating === 'NR' ? 'Not Rated' : '' }>
+												{ playerData.doubles_rating }
+											</span>
+										</div>
+										<div className="dupr-rating-item">
+											<span className="dupr-rating-label">
+												<span className="dashicons dashicons-admin-users dupr-icon"></span>
+												Singles
+											</span>
+											<span className="dupr-rating-value" title={ playerData.singles_rating === 'NR' ? 'Not Rated' : '' }>
+												{ playerData.singles_rating }
+											</span>
+										</div>
 									</div>
-									<div className="dupr-rating-item">
-										<span className="dupr-rating-label">
-											<span className="dashicons dashicons-admin-users dupr-icon"></span>
-											Singles
-										</span>
-										<span className="dupr-rating-value" title={ playerData.singles_rating === 'NR' ? 'Not Rated' : '' }>
-											{ playerData.singles_rating }
-										</span>
-									</div>
+									{ showPoweredBy && (
+										<div className="dupr-rating-footer">
+											<span className="dupr-rating-powered-by">
+												Powered by{' '}
+												<img 
+													src={ useLightLogo ? '/wp-content/plugins/dupr-rating/images/dupr-logo-white.png' : '/wp-content/plugins/dupr-rating/images/dupr-logo-blue.png' }
+													alt="DUPR"
+													className="dupr-rating-logo"
+												/>
+											</span>
+										</div>
+									) }
 								</div>
 							);
 						}
@@ -331,18 +358,6 @@ registerBlockType( 'dupr-rating/player-rating', {
 							</div>
 						);
 					} )() }
-					{ showPoweredBy && (
-						<div className="dupr-rating-footer">
-							<span className="dupr-rating-powered-by">
-								Powered by{' '}
-								<img 
-									src={ useLightLogo ? '/wp-content/plugins/dupr-rating/images/dupr-logo-white.png' : '/wp-content/plugins/dupr-rating/images/dupr-logo-blue.png' }
-									alt="DUPR"
-									className="dupr-rating-logo"
-								/>
-							</span>
-						</div>
-					) }
 			</div>
 		);
 	},

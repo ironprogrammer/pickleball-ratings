@@ -99,6 +99,27 @@
 	margin-bottom: 15px;
 }
 
+/* Stacked layout styles */
+.dupr-rating-stacked {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 20px;
+	justify-content: center;
+}
+
+.dupr-rating-stacked .dupr-rating-item {
+	flex-direction: column;
+	text-align: center;
+	align-items: center;
+	flex: 0 1 auto;
+	min-width: 80px;
+}
+
+.dupr-rating-stacked .dupr-rating-value {
+	margin-top: 4px;
+}
+
 .dupr-rating-item {
 	display: flex;
 	justify-content: space-between;
