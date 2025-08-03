@@ -162,6 +162,11 @@ function dupr_rating_register_block() {
 				'type' => 'string',
 				'default' => '',
 			),
+			'fontSize' => array(
+				'type' => 'string',
+				'default' => '',
+			),
+
 		),
 	) );
 
@@ -188,6 +193,8 @@ function dupr_rating_render_block( $attributes ) {
 	$custom_text_color = isset( $attributes['customTextColor'] ) ? sanitize_text_field( $attributes['customTextColor'] ) : '';
 	$gradient = isset( $attributes['gradient'] ) ? sanitize_text_field( $attributes['gradient'] ) : '';
 	$custom_gradient = isset( $attributes['customGradient'] ) ? sanitize_text_field( $attributes['customGradient'] ) : '';
+	$font_size = isset( $attributes['fontSize'] ) ? sanitize_text_field( $attributes['fontSize'] ) : '';
+
 	
 	// Basic validation
 	if ( empty( $dupr_id ) ) {
@@ -249,8 +256,16 @@ function dupr_rating_render_block( $attributes ) {
 	$color_class_string = ! empty( $color_classes ) ? ' ' . implode( ' ', $color_classes ) : '';
 	$color_style_string = ! empty( $color_styles ) ? ' style="' . implode( '; ', $color_styles ) . '"' : '';
 	
+	// Build typography classes
+	$typography_classes = array();
+	if ( ! empty( $font_size ) ) {
+		$typography_classes[] = 'has-' . $font_size . '-font-size';
+	}
+
+	$typography_class_string = ! empty( $typography_classes ) ? ' ' . implode( ' ', $typography_classes ) : '';
+	
 	// Build the output
-	$output = '<div class="dupr-rating-block' . $color_class_string . '"' . $color_style_string . '>';
+	$output = '<div class="dupr-rating-block' . $color_class_string . $typography_class_string . '"' . $color_style_string . '>';
 	
 	// Add player name if available
 	if ( ! empty( $player_data['name'] ) ) {

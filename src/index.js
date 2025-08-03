@@ -22,6 +22,9 @@ registerBlockType( 'dupr-rating/player-rating', {
 			text: true,
 			gradients: true,
 		},
+		typography: {
+			fontSize: true,
+		},
 	},
 	attributes: {
 		duprId: {
@@ -68,9 +71,14 @@ registerBlockType( 'dupr-rating/player-rating', {
 			type: 'string',
 			default: '',
 		},
+		fontSize: {
+			type: 'string',
+			default: '',
+		},
+
 	},
 	edit: function Edit( { attributes, setAttributes } ) {
-		const { duprId, showProfilePic, showDuprId, showPoweredBy, useLightLogo, backgroundColor, textColor, customBackgroundColor, customTextColor, gradient, customGradient } = attributes;
+		const { duprId, showProfilePic, showDuprId, showPoweredBy, useLightLogo, backgroundColor, textColor, customBackgroundColor, customTextColor, gradient, customGradient, fontSize } = attributes;
 		const [ validationError, setValidationError ] = useState( '' );
 		const [ isLoading, setIsLoading ] = useState( false );
 		const [ playerData, setPlayerData ] = useState( null );
@@ -158,7 +166,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 
 		return (
 			<div { ...useBlockProps( {
-				className: `dupr-rating-block${ backgroundColor ? ' has-background has-' + backgroundColor + '-background-color' : '' }${ gradient ? ' has-background has-' + gradient + '-gradient-background' : '' }${ textColor ? ' has-text-color has-' + textColor + '-color' : '' }`,
+				className: `dupr-rating-block${ backgroundColor ? ' has-background has-' + backgroundColor + '-background-color' : '' }${ gradient ? ' has-background has-' + gradient + '-gradient-background' : '' }${ textColor ? ' has-text-color has-' + textColor + '-color' : '' }${ fontSize ? ' has-' + fontSize + '-font-size' : '' }`,
 				style: {
 					...( customBackgroundColor && { backgroundColor: customBackgroundColor } ),
 					...( customGradient && { background: customGradient } ),
