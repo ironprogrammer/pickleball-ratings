@@ -160,7 +160,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 				<InspectorControls>
 					<PanelBody title={ __( 'Display Settings', 'dupr-rating' ) }>
 						<TextControl
-							label={ __( 'DUPR Player ID', 'dupr-rating' ) }
+							label={ __( 'Player DUPR ID', 'dupr-rating' ) }
 							value={ duprId }
 							onChange={ handleDuprIdChange }
 							placeholder="e.g., 8WZ4ML"
