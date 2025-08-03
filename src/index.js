@@ -185,9 +185,13 @@ registerBlockType( 'dupr-rating/player-rating', {
 								'dupr-rating'
 							) }
 						/>
-						{ validationError && (
+						{ validationError ? (
 							<Notice status="error" isDismissible={ false }>
 								{ validationError }
+							</Notice>
+						) : apiError && (
+							<Notice status="error" isDismissible={ false }>
+								{ apiError }
 							</Notice>
 						) }
 						<ToggleControl
