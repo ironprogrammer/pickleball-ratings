@@ -94,7 +94,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 			if ( ! /^[A-Z0-9]{6}$/.test( id ) ) {
 				setValidationError(
 					__(
-						'DUPR ID must be exactly 6 characters (letters and numbers only)',
+						'DUPR ID must be exactly 6 characters',
 						'dupr-rating'
 					)
 				);
