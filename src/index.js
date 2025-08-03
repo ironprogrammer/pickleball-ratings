@@ -36,6 +36,14 @@ registerBlockType( 'dupr-rating/player-rating', {
 			type: 'boolean',
 			default: false,
 		},
+		showPoweredBy: {
+			type: 'boolean',
+			default: false,
+		},
+		useLightLogo: {
+			type: 'boolean',
+			default: false,
+		},
 		backgroundColor: {
 			type: 'string',
 			default: '',
@@ -62,7 +70,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 		},
 	},
 	edit: function Edit( { attributes, setAttributes } ) {
-		const { duprId, showProfilePic, showDuprId, backgroundColor, textColor, customBackgroundColor, customTextColor, gradient, customGradient } = attributes;
+		const { duprId, showProfilePic, showDuprId, showPoweredBy, useLightLogo, backgroundColor, textColor, customBackgroundColor, customTextColor, gradient, customGradient } = attributes;
 		const [ validationError, setValidationError ] = useState( '' );
 		const [ isLoading, setIsLoading ] = useState( false );
 		const [ playerData, setPlayerData ] = useState( null );
@@ -192,6 +200,26 @@ registerBlockType( 'dupr-rating/player-rating', {
 								'dupr-rating'
 							) }
 						/>
+						<ToggleControl
+							label={ __( 'Show Powered by DUPR', 'dupr-rating' ) }
+							checked={ showPoweredBy }
+							onChange={ ( value ) => setAttributes( { showPoweredBy: value } ) }
+							help={ __(
+								'Display a "Powered by DUPR®" footer at the bottom of the block.',
+								'dupr-rating'
+							) }
+						/>
+						{ showPoweredBy && (
+							<ToggleControl
+								label={ __( 'Use Light Logo', 'dupr-rating' ) }
+								checked={ useLightLogo }
+								onChange={ ( value ) => setAttributes( { useLightLogo: value } ) }
+								help={ __(
+									'Use white logo for dark backgrounds. Unchecked uses blue logo for light backgrounds.',
+									'dupr-rating'
+								) }
+							/>
+						) }
 					</PanelBody>
 				</InspectorControls>
 
@@ -293,6 +321,18 @@ registerBlockType( 'dupr-rating/player-rating', {
 							</div>
 						);
 					} )() }
+					{ showPoweredBy && (
+						<div className="dupr-rating-footer">
+							<span className="dupr-rating-powered-by">
+								Powered by{' '}
+								<img 
+									src={ useLightLogo ? '/wp-content/plugins/dupr-rating/images/dupr-logo-white.png' : '/wp-content/plugins/dupr-rating/images/dupr-logo-blue.png' }
+									alt="DUPR"
+									className="dupr-rating-logo"
+								/>
+							</span>
+						</div>
+					) }
 			</div>
 		);
 	},

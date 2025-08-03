@@ -130,6 +130,14 @@ function dupr_rating_register_block() {
 				'type' => 'boolean',
 				'default' => false,
 			),
+			'showPoweredBy' => array(
+				'type' => 'boolean',
+				'default' => false,
+			),
+			'useLightLogo' => array(
+				'type' => 'boolean',
+				'default' => false,
+			),
 			'backgroundColor' => array(
 				'type' => 'string',
 				'default' => '',
@@ -172,6 +180,8 @@ function dupr_rating_render_block( $attributes ) {
 	$dupr_id = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
 	$show_profile_pic = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
 	$show_dupr_id = isset( $attributes['showDuprId'] ) ? (bool) $attributes['showDuprId'] : false;
+	$show_powered_by = isset( $attributes['showPoweredBy'] ) ? (bool) $attributes['showPoweredBy'] : false;
+	$use_light_logo = isset( $attributes['useLightLogo'] ) ? (bool) $attributes['useLightLogo'] : false;
 	$background_color = isset( $attributes['backgroundColor'] ) ? sanitize_text_field( $attributes['backgroundColor'] ) : '';
 	$text_color = isset( $attributes['textColor'] ) ? sanitize_text_field( $attributes['textColor'] ) : '';
 	$custom_background_color = isset( $attributes['customBackgroundColor'] ) ? sanitize_text_field( $attributes['customBackgroundColor'] ) : '';
@@ -292,6 +302,19 @@ function dupr_rating_render_block( $attributes ) {
 	$output .= '<span class="dupr-rating-value"' . $singles_title . '>' . esc_html( $player_data['singles_rating'] ) . '</span>';
 	$output .= '</div>';
 	$output .= '</div>';
+	
+	// Add powered by footer if enabled
+	if ( $show_powered_by ) {
+		$logo_file = $use_light_logo ? 'dupr-logo-white.png' : 'dupr-logo-blue.png';
+		$logo_url = DUPR_RATING_PLUGIN_URL . 'images/' . $logo_file;
+		
+		$output .= '<div class="dupr-rating-footer">';
+		$output .= '<span class="dupr-rating-powered-by">';
+		$output .= 'Powered by ';
+		$output .= '<img src="' . esc_url( $logo_url ) . '" alt="DUPR" class="dupr-rating-logo" />';
+		$output .= '</span>';
+		$output .= '</div>';
+	}
 	
 	$output .= '</div>';
 	

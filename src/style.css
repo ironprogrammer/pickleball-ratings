@@ -141,6 +141,26 @@
 	font-style: italic;
 }
 
+.dupr-rating-footer {
+	margin-top: 15px;
+	padding-top: 10px;
+	text-align: center;
+	font-size: 0.8em;
+}
+
+.dupr-rating-powered-by {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+}
+
+.dupr-rating-logo {
+	height: 16px;
+	width: auto;
+	vertical-align: middle;
+}
+
 .dupr-rating-note {
 	font-size: 0.8em;
 	color: #888;
