@@ -104,11 +104,21 @@ function dupr_rating_register_block() {
 		$asset_file['version']
 	);
 
+	// Register frontend script
+	wp_register_script(
+		'dupr-rating-block-frontend',
+		DUPR_RATING_PLUGIN_URL . 'build/frontend.js',
+		array(),
+		$asset_file['version'],
+		true // Load in footer
+	);
+
 	// Register the block
 	register_block_type( 'dupr-rating/player-rating', array(
 		'editor_script' => 'dupr-rating-block',
 		'editor_style'  => 'dupr-rating-block-editor',
 		'style'         => 'dupr-rating-block-style',
+		'script'        => 'dupr-rating-block-frontend',
 		'render_callback' => 'dupr_rating_render_block',
 		'supports'      => array(
 			'color' => array(
@@ -126,10 +136,7 @@ function dupr_rating_register_block() {
 				'type' => 'boolean',
 				'default' => true,
 			),
-			'showDuprId' => array(
-				'type' => 'boolean',
-				'default' => false,
-			),
+
 			'stackedLayout' => array(
 				'type' => 'boolean',
 				'default' => false,
@@ -188,7 +195,7 @@ function dupr_rating_register_block() {
 function dupr_rating_render_block( $attributes ) {
 	$dupr_id = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
 	$show_profile_pic = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
-	$show_dupr_id = isset( $attributes['showDuprId'] ) ? (bool) $attributes['showDuprId'] : false;
+
 	$stacked_layout = isset( $attributes['stackedLayout'] ) ? (bool) $attributes['stackedLayout'] : false;
 	$show_powered_by = isset( $attributes['showPoweredBy'] ) ? (bool) $attributes['showPoweredBy'] : false;
 	$use_light_logo = isset( $attributes['useLightLogo'] ) ? (bool) $attributes['useLightLogo'] : false;
@@ -292,9 +299,11 @@ function dupr_rating_render_block( $attributes ) {
 		
 		$output .= esc_html( $player_data['name'] );
 		
-		// Add DUPR ID after player name if enabled
-		if ( $show_dupr_id ) {
-			$output .= '<span class="dupr-rating-id">' . esc_html( $dupr_id ) . '</span>';
+		// Add copy button for DUPR ID
+		if ( ! empty( $dupr_id ) ) {
+			$output .= '<button class="dupr-rating-copy-id" onclick="window.duprCopyToClipboard(\'' . esc_js( $dupr_id ) . '\', this)" title="Copy DUPR ID: ' . esc_attr( $dupr_id ) . '">';
+			$output .= '<span class="dashicons dashicons-clipboard"></span>';
+			$output .= '</button>';
 		}
 		
 		$output .= '</div>';

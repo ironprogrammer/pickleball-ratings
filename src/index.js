@@ -35,10 +35,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 			type: 'boolean',
 			default: true,
 		},
-		showDuprId: {
-			type: 'boolean',
-			default: false,
-		},
+
 		stackedLayout: {
 			type: 'boolean',
 			default: false,
@@ -82,11 +79,12 @@ registerBlockType( 'dupr-rating/player-rating', {
 
 	},
 	edit: function Edit( { attributes, setAttributes } ) {
-		const { duprId, showProfilePic, showDuprId, stackedLayout, showPoweredBy, useLightLogo, backgroundColor, textColor, customBackgroundColor, customTextColor, gradient, customGradient, fontSize } = attributes;
+		const { duprId, showProfilePic, stackedLayout, showPoweredBy, useLightLogo, backgroundColor, textColor, customBackgroundColor, customTextColor, gradient, customGradient, fontSize } = attributes;
 		const [ validationError, setValidationError ] = useState( '' );
 		const [ isLoading, setIsLoading ] = useState( false );
 		const [ playerData, setPlayerData ] = useState( null );
 		const [ apiError, setApiError ] = useState( '' );
+
 
 		// Validate DUPR ID format
 		const validateDuprId = ( id ) => {
@@ -207,15 +205,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 								'dupr-rating'
 							) }
 						/>
-						<ToggleControl
-							label={ __( 'Show DUPR ID', 'dupr-rating' ) }
-							checked={ showDuprId }
-							onChange={ ( value ) => setAttributes( { showDuprId: value } ) }
-							help={ __(
-								'Display the player\'s DUPR ID next to their name.',
-								'dupr-rating'
-							) }
-						/>
+
 						<ToggleControl
 							label={ __( 'Show Powered by DUPR', 'dupr-rating' ) }
 							checked={ showPoweredBy }
@@ -308,10 +298,16 @@ registerBlockType( 'dupr-rating/player-rating', {
 												</>
 											) }
 											{ playerData.name }
-											{ showDuprId && duprId && (
-												<span className="dupr-rating-id">
-													{ duprId }
-												</span>
+											{ duprId && (
+												<button 
+													className="dupr-rating-copy-id"
+													onClick={ () => {
+														window.duprCopyToClipboard( duprId, event.target.closest( '.dupr-rating-copy-id' ) );
+													} }
+													title={ `Copy DUPR ID: ${duprId}` }
+												>
+													<span className="dashicons dashicons-clipboard"></span>
+												</button>
 											) }
 										</div>
 									) }

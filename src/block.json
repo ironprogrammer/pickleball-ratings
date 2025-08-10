@@ -1,0 +1,5 @@
+{
+    "name": "dupr-rating/player-rating",
+    "script": "file:./index.js",
+    "viewScript": "file:./frontend.js"
+}
