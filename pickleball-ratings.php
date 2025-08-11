@@ -56,9 +56,9 @@ function pbr_log( $message, $context = array() ) {
 }
 
 // Include required files
-require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-dupr-api.php';
-require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-ajax-handler.php';
-require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'admin/class-admin-settings.php';
+require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-dupr-api.php';
+require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-ajax-handler.php';
+require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'admin/class-pbr-admin-settings.php';
 
 // Initialize the plugin
 function pickleball_ratings_init() {
