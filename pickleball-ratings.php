@@ -5,11 +5,12 @@
  * Description:     Display pickleball player ratings using a customizable block. Uses the official DUPR API for data; not affiliated with DUPR.
  * Author:          Brian Alexander
  * Author URI:      https://brianalexander.com
+ * License:         GPLv2 or later
+ * License URI:     https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:     pickleball-ratings
- * Domain Path:     /languages
  * Version:         0.2.0
  * Requires at least: 5.0
- * Tested up to: 6.4
+ * Tested up to: 6.8
  * Requires PHP: 7.4
  *
  * @package         Pickleball_Ratings
@@ -32,9 +33,6 @@ require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'admin/class-admin-settings.php';
 
 // Initialize the plugin
 function pickleball_ratings_init() {
-	// Load text domain for internationalization
-    load_plugin_textdomain( 'pickleball-ratings', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-	
 	// Add theme support for gradients
 	add_theme_support( 'editor-gradient-presets', array(
 		array(
