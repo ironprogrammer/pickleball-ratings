@@ -21,7 +21,7 @@ class PBR_Ajax_Handler {
 	/**
 	 * API instance
 	 *
-     * @var PBR_DUPR_API
+	 * @var PBR_DUPR_API
 	 */
 	private $api;
 
@@ -30,13 +30,13 @@ class PBR_Ajax_Handler {
 	 */
 	public function __construct() {
 		// Ensure the API class is available
-        if ( ! class_exists( 'PBR_DUPR_API' ) ) {
-            require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-dupr-api.php';
+		if ( ! class_exists( 'PBR_DUPR_API' ) ) {
+			require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-dupr-api.php';
 		}
-		
-        $this->api = new PBR_DUPR_API();
-        add_action( 'wp_ajax_pickleball_ratings_test_dupr_connection', array( $this, 'test_connection' ) );
-        add_action( 'wp_ajax_pickleball_ratings_get_player_data', array( $this, 'get_player_data' ) );
+
+		$this->api = new PBR_DUPR_API();
+		add_action( 'wp_ajax_pickleball_ratings_test_dupr_connection', array( $this, 'test_connection' ) );
+		add_action( 'wp_ajax_pickleball_ratings_get_player_data', array( $this, 'get_player_data' ) );
 	}
 
 	/**
@@ -44,31 +44,31 @@ class PBR_Ajax_Handler {
 	 */
 	public function test_connection() {
 		// Check nonce
-        if ( ! check_ajax_referer( 'pickleball_ratings_test_dupr_connection', 'nonce', false ) ) {
-            wp_send_json_error( 'Security check failed' );
-        }
+		if ( ! check_ajax_referer( 'pickleball_ratings_test_dupr_connection', 'nonce', false ) ) {
+			wp_send_json_error( 'Security check failed' );
+		}
 
 		// Check permissions
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( 'Insufficient permissions' );
 		}
 
-        // Debug marker
-        if ( function_exists( 'pbr_log' ) ) {
-            pbr_log( 'AJAX: test_connection called' );
-        }
+		// Debug marker
+		if ( function_exists( 'pbr_log' ) ) {
+			pbr_log( 'AJAX: test_connection called' );
+		}
 
-        $result = $this->api->test_connection();
+		$result = $this->api->test_connection();
 
-        if ( is_wp_error( $result ) ) {
-            if ( function_exists( 'pbr_log' ) ) {
-                pbr_log( 'AJAX: test_connection failed', array( 'error' => $result->get_error_message() ) );
-            }
+		if ( is_wp_error( $result ) ) {
+			if ( function_exists( 'pbr_log' ) ) {
+				pbr_log( 'AJAX: test_connection failed', array( 'error' => $result->get_error_message() ) );
+			}
 			wp_send_json_error( $result->get_error_message() );
 		} else {
-            if ( function_exists( 'pbr_log' ) ) {
-                pbr_log( 'AJAX: test_connection successful' );
-            }
+			if ( function_exists( 'pbr_log' ) ) {
+				pbr_log( 'AJAX: test_connection successful' );
+			}
 			wp_send_json_success( $result );
 		}
 	}
@@ -78,16 +78,16 @@ class PBR_Ajax_Handler {
 	 */
 	public function get_player_data() {
 		// Check nonce
-        if ( ! check_ajax_referer( 'pickleball_ratings_get_player_data', 'nonce', false ) ) {
-            wp_die( 'Security check failed' );
-        }
+		if ( ! check_ajax_referer( 'pickleball_ratings_get_player_data', 'nonce', false ) ) {
+			wp_die( 'Security check failed' );
+		}
 
 		// Check permissions (allow for logged-in users)
 		if ( ! is_user_logged_in() ) {
 			wp_die( 'Authentication required' );
 		}
 
-        $dupr_id = isset( $_POST['dupr_id'] ) ? sanitize_text_field( wp_unslash( $_POST['dupr_id'] ) ) : '';
+		$dupr_id = isset( $_POST['dupr_id'] ) ? sanitize_text_field( wp_unslash( $_POST['dupr_id'] ) ) : '';
 
 		if ( empty( $dupr_id ) ) {
 			wp_send_json_error( 'DUPR ID is required' );
@@ -101,4 +101,4 @@ class PBR_Ajax_Handler {
 			wp_send_json_success( $result );
 		}
 	}
-} 
+}
