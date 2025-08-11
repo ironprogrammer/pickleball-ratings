@@ -87,7 +87,7 @@ class PBR_Admin_Settings {
 	 * Cache section callback
 	 */
 	public function cache_section_callback() {
-        echo '<p>' . __( 'Configure caching settings for DUPR player data.', 'pickleball-ratings' ) . '</p>';
+        echo '<p>' . esc_html__( 'Configure caching settings for DUPR player data.', 'pickleball-ratings' ) . '</p>';
 	}
 
 	/**
@@ -97,7 +97,7 @@ class PBR_Admin_Settings {
         $ttl = get_option( 'pickleball_ratings_cache_ttl', 86400 );
 		$hours = intval( $ttl / 3600 );
         echo '<input type="number" id="pickleball_ratings_cache_ttl" name="pickleball_ratings_cache_ttl" value="' . esc_attr( $hours ) . '" min="1" max="168" class="small-text" />';
-        echo '<p class="description">' . __( 'How long to cache player data (1-168 hours).', 'pickleball-ratings' ) . '</p>';
+        echo '<p class="description">' . esc_html__( 'How long to cache player data (1-168 hours).', 'pickleball-ratings' ) . '</p>';
 	}
 
 	/**
@@ -277,7 +277,7 @@ class PBR_Admin_Settings {
 					type: 'POST',
                     data: {
                         action: 'pickleball_ratings_test_dupr_connection',
-                        nonce: '<?php echo wp_create_nonce( 'pickleball_ratings_test_dupr_connection' ); ?>'
+                        nonce: '<?php echo esc_js( wp_create_nonce( 'pickleball_ratings_test_dupr_connection' ) ); ?>'
                     },
 					success: function(response) {
 						console.log('DUPR: AJAX success response:', response);
@@ -359,14 +359,15 @@ class PBR_Admin_Settings {
 			
             add_settings_error(
                 'pickleball_ratings_settings',
-				'auth_success',
+                'auth_success',
                 sprintf(
-                    __( 'Authentication successful! Connected as %s (DUPR ID: %s)', 'pickleball-ratings' ),
-					esc_html( $auth_data['user_name'] ),
-					esc_html( $auth_data['dupr_id'] )
-				),
-				'success'
-			);
+                    /* translators: 1: user name, 2: DUPR ID */
+                    __( 'Authentication successful! Connected as %1$s (DUPR ID: %2$s)', 'pickleball-ratings' ),
+                    esc_html( $auth_data['user_name'] ),
+                    esc_html( $auth_data['dupr_id'] )
+                ),
+                'success'
+            );
 		} else {
 			error_log( 'DUPR: Authentication failed - auth_data: ' . print_r( $auth_data, true ) );
             add_settings_error(
