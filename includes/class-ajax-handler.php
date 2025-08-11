@@ -44,9 +44,9 @@ class PBR_Ajax_Handler {
 	 */
 	public function test_connection() {
 		// Check nonce
-        if ( ! wp_verify_nonce( $_POST['nonce'], 'pickleball_ratings_test_dupr_connection' ) ) {
-			wp_send_json_error( 'Security check failed' );
-		}
+        if ( ! check_ajax_referer( 'pickleball_ratings_test_dupr_connection', 'nonce', false ) ) {
+            wp_send_json_error( 'Security check failed' );
+        }
 
 		// Check permissions
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -72,16 +72,16 @@ class PBR_Ajax_Handler {
 	 */
 	public function get_player_data() {
 		// Check nonce
-        if ( ! wp_verify_nonce( $_POST['nonce'], 'pickleball_ratings_get_player_data' ) ) {
-			wp_die( 'Security check failed' );
-		}
+        if ( ! check_ajax_referer( 'pickleball_ratings_get_player_data', 'nonce', false ) ) {
+            wp_die( 'Security check failed' );
+        }
 
 		// Check permissions (allow for logged-in users)
 		if ( ! is_user_logged_in() ) {
 			wp_die( 'Authentication required' );
 		}
 
-		$dupr_id = sanitize_text_field( $_POST['dupr_id'] );
+        $dupr_id = isset( $_POST['dupr_id'] ) ? sanitize_text_field( wp_unslash( $_POST['dupr_id'] ) ) : '';
 
 		if ( empty( $dupr_id ) ) {
 			wp_send_json_error( 'DUPR ID is required' );
