@@ -4,7 +4,11 @@ Don't change docblocks/code comments unless it's related to a change you're work
 
 If you need to scan WordPress source code for examples of core block structure or how they solve specific problems, the path to my local `wordpress-develop` repo is `/Users/brian/Sites/wordpress-develop/src/`. The locally configured site is at https://wp-src.test. The pickleball-ratings plugin source files are located in a dedicated directory and symlinked/activated on the test site.
 
-## **Phase 1: Core Foundation (MVP)**
+## Phase checkpoints
+
+Use these checkpoints as a quick reference during execution. They summarize the essential goals from the phase documents without changing the original intent.
+
+### Phase 1: Core Foundation (MVP)
 
 **Goal**: Basic functional plugin with minimal styling
 
@@ -23,7 +27,7 @@ If you need to scan WordPress source code for examples of core block structure o
 
 ---
 
-## **Phase 2: DUPR Integration**
+### Phase 2: DUPR Integration
 
 **Goal**: Connect to actual DUPR data
 
@@ -41,7 +45,7 @@ If you need to scan WordPress source code for examples of core block structure o
 
 ---
 
-## **Phase 3: Styling & Design**
+### Phase 3: Styling & Design
 
 **Goal**: Professional appearance with customization options
 
