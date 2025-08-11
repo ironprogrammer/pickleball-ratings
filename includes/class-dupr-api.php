@@ -312,8 +312,8 @@ class PBR_DUPR_API {
 	 * @param string $dupr_id The DUPR player ID.
 	 * @return array|false Cached data or false if not found/expired.
 	 */
-	private function get_cached_player_data( $dupr_id ) {
-        $cache_key = 'pbr_dupr_player_' . $dupr_id;
+    private function get_cached_player_data( $dupr_id ) {
+        $cache_key = 'pbr_dupr_player_' . $this->get_cache_salt() . '_' . $dupr_id;
 		$cached    = get_transient( $cache_key );
 
 		if ( false === $cached ) {
@@ -336,10 +336,10 @@ class PBR_DUPR_API {
 	 * @param string $dupr_id The DUPR player ID.
 	 * @param array  $data    Player data to cache.
 	 */
-	private function cache_player_data( $dupr_id, $data ) {
-        $cache_key = 'pbr_dupr_player_' . $dupr_id;
-		set_transient( $cache_key, $data, $this->cache_ttl );
-	}
+    private function cache_player_data( $dupr_id, $data ) {
+        $cache_key = 'pbr_dupr_player_' . $this->get_cache_salt() . '_' . $dupr_id;
+        set_transient( $cache_key, $data, $this->cache_ttl );
+    }
 
 	/**
 	 * Validate DUPR ID format
@@ -402,24 +402,27 @@ class PBR_DUPR_API {
 	/**
 	 * Clear all cached data
 	 */
-	public function clear_cache() {
-		global $wpdb;
-		
-        // Delete all DUPR-related transients for this plugin
-		$wpdb->query(
-			$wpdb->prepare(
-                "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-                '_transient_pbr_dupr_player_%'
-			)
-		);
-		
-		$wpdb->query(
-			$wpdb->prepare(
-                "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-                '_transient_timeout_pbr_dupr_player_%'
-			)
-		);
-	}
+    public function clear_cache() {
+        // Invalidate all cached entries by bumping the salt; old keys will expire naturally
+        $this->bump_cache_salt();
+    }
+
+    private function get_cache_salt() {
+        $salt = get_option( 'pickleball_ratings_cache_salt', '' );
+        if ( empty( $salt ) ) {
+            $salt = $this->generate_new_salt();
+            update_option( 'pickleball_ratings_cache_salt', $salt, false );
+        }
+        return $salt;
+    }
+
+    private function bump_cache_salt() {
+        update_option( 'pickleball_ratings_cache_salt', $this->generate_new_salt(), false );
+    }
+
+    private function generate_new_salt() {
+        return 'v' . wp_generate_password( 8, false, false );
+    }
 
 	/**
 	 * Refresh access token using refresh token
