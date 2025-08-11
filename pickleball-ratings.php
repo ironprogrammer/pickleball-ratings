@@ -1,18 +1,18 @@
 <?php
 /**
- * Plugin Name:     DUPR Rating
- * Plugin URI:      https://github.com/ironprogrammer/dupr-rating
- * Description:     Display DUPR ratings for pickleball players using a customizable block.
+ * Plugin Name:     Pickleball Ratings
+ * Plugin URI:      https://github.com/ironprogrammer/pickleball-ratings
+ * Description:     Display pickleball player ratings using a customizable block. Uses the official DUPR API for data; not affiliated with DUPR.
  * Author:          Brian Alexander
  * Author URI:      https://brianalexander.com
- * Text Domain:     dupr-rating
+ * Text Domain:     pickleball-ratings
  * Domain Path:     /languages
  * Version:         0.2.0
  * Requires at least: 5.0
  * Tested up to: 6.4
  * Requires PHP: 7.4
  *
- * @package         Dupr_Rating
+ * @package         Pickleball_Ratings
  */
 
 // Prevent direct access
@@ -21,105 +21,105 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants
-define( 'DUPR_RATING_VERSION', '0.2.0' );
-define( 'DUPR_RATING_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'DUPR_RATING_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'PICKLEBALL_RATINGS_VERSION', '0.2.0' );
+define( 'PICKLEBALL_RATINGS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'PICKLEBALL_RATINGS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 // Include required files
-require_once DUPR_RATING_PLUGIN_DIR . 'includes/class-dupr-api.php';
-require_once DUPR_RATING_PLUGIN_DIR . 'includes/class-ajax-handler.php';
-require_once DUPR_RATING_PLUGIN_DIR . 'admin/class-admin-settings.php';
+require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-dupr-api.php';
+require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-ajax-handler.php';
+require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'admin/class-admin-settings.php';
 
 // Initialize the plugin
-function dupr_rating_init() {
+function pickleball_ratings_init() {
 	// Load text domain for internationalization
-	load_plugin_textdomain( 'dupr-rating', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+    load_plugin_textdomain( 'pickleball-ratings', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	
 	// Add theme support for gradients
 	add_theme_support( 'editor-gradient-presets', array(
 		array(
-			'name'     => __( 'DUPR Blue Gradient', 'dupr-rating' ),
+            'name'     => __( 'DUPR Blue Gradient', 'pickleball-ratings' ),
 			'gradient' => 'linear-gradient(45deg, #001762 0%, #0f4299 50%, #187ae8 100%)',
-			'slug'     => 'dupr-blue-gradient',
+            'slug'     => 'dupr-blue-gradient',
 		),
 	) );
 	
 	// Register the Gutenberg block
-	dupr_rating_register_block();
+    pickleball_ratings_register_block();
 }
-add_action( 'init', 'dupr_rating_init' );
+add_action( 'init', 'pickleball_ratings_init' );
 
 // Initialize admin functionality
-function dupr_rating_admin_init() {
+function pickleball_ratings_admin_init() {
 	if ( is_admin() ) {
-		new DUPR_Admin_Settings();
+        new PBR_Admin_Settings();
 	}
 }
-add_action( 'init', 'dupr_rating_admin_init' );
+add_action( 'init', 'pickleball_ratings_admin_init' );
 
 // Initialize AJAX handler
-function dupr_rating_ajax_init() {
+function pickleball_ratings_ajax_init() {
 	try {
-		new DUPR_Ajax_Handler();
+        new PBR_Ajax_Handler();
 	} catch ( Exception $e ) {
 		error_log( 'DUPR: AJAX handler error: ' . $e->getMessage() );
 	}
 }
-add_action( 'wp_loaded', 'dupr_rating_ajax_init' );
+add_action( 'wp_loaded', 'pickleball_ratings_ajax_init' );
 
 // Add settings link to plugin list
-function dupr_rating_add_settings_link( $links ) {
-	$settings_link = '<a href="' . admin_url( 'options-general.php?page=dupr-rating-settings' ) . '">' . __( 'Settings', 'dupr-rating' ) . '</a>';
+function pickleball_ratings_add_settings_link( $links ) {
+    $settings_link = '<a href="' . admin_url( 'options-general.php?page=pickleball-ratings-settings' ) . '">' . __( 'Settings', 'pickleball-ratings' ) . '</a>';
 	array_unshift( $links, $settings_link );
 	return $links;
 }
-add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'dupr_rating_add_settings_link' );
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'pickleball_ratings_add_settings_link' );
 
 // Register the Gutenberg block
-function dupr_rating_register_block() {
+function pickleball_ratings_register_block() {
 	// Get asset file for dependencies and version
-	$asset_file = include( DUPR_RATING_PLUGIN_DIR . 'build/index.asset.php' );
+    $asset_file = include( PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/index.asset.php' );
 
 	// Register block script
-	wp_register_script(
-		'dupr-rating-block',
-		DUPR_RATING_PLUGIN_URL . 'build/index.js',
+    wp_register_script(
+        'pickleball-ratings-block',
+        PICKLEBALL_RATINGS_PLUGIN_URL . 'build/index.js',
 		$asset_file['dependencies'],
 		$asset_file['version']
 	);
 
 	// Register block style
-	wp_register_style(
-		'dupr-rating-block-style',
-		DUPR_RATING_PLUGIN_URL . 'build/style-index.css',
+    wp_register_style(
+        'pickleball-ratings-block-style',
+        PICKLEBALL_RATINGS_PLUGIN_URL . 'build/style-index.css',
 		array(),
 		$asset_file['version']
 	);
 
 	// Register block editor style
-	wp_register_style(
-		'dupr-rating-block-editor',
-		DUPR_RATING_PLUGIN_URL . 'build/style-index.css',
+    wp_register_style(
+        'pickleball-ratings-block-editor',
+        PICKLEBALL_RATINGS_PLUGIN_URL . 'build/style-index.css',
 		array( 'wp-edit-blocks', 'dashicons' ),
 		$asset_file['version']
 	);
 
 	// Register frontend script
-	wp_register_script(
-		'dupr-rating-block-frontend',
-		DUPR_RATING_PLUGIN_URL . 'build/frontend.js',
+    wp_register_script(
+        'pickleball-ratings-block-frontend',
+        PICKLEBALL_RATINGS_PLUGIN_URL . 'build/frontend.js',
 		array(),
 		$asset_file['version'],
 		true // Load in footer
 	);
 
 	// Register the block
-	register_block_type( 'dupr-rating/player-rating', array(
-		'editor_script' => 'dupr-rating-block',
-		'editor_style'  => 'dupr-rating-block-editor',
-		'style'         => 'dupr-rating-block-style',
-		'script'        => 'dupr-rating-block-frontend',
-		'render_callback' => 'dupr_rating_render_block',
+    register_block_type( 'pickleball-ratings/player-ratings', array(
+        'editor_script' => 'pickleball-ratings-block',
+        'editor_style'  => 'pickleball-ratings-block-editor',
+        'style'         => 'pickleball-ratings-block-style',
+        'script'        => 'pickleball-ratings-block-frontend',
+        'render_callback' => 'pickleball_ratings_render_block',
 		'supports'      => array(
 			'color' => array(
 				'background' => true,
@@ -182,17 +182,18 @@ function dupr_rating_register_block() {
 	) );
 
 	// Localize script for AJAX
-	wp_localize_script(
-		'dupr-rating-block',
-		'duprRatingAjax',
+    wp_localize_script(
+        'pickleball-ratings-block',
+        'duprRatingAjax',
 		array(
-			'nonce' => wp_create_nonce( 'dupr_get_player_data' ),
+            'nonce' => wp_create_nonce( 'pickleball_ratings_get_player_data' ),
+            'pluginUrl' => PICKLEBALL_RATINGS_PLUGIN_URL,
 		)
 	);
 }
 
 // Render callback for the block
-function dupr_rating_render_block( $attributes ) {
+function pickleball_ratings_render_block( $attributes ) {
 	$dupr_id = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
 	$show_profile_pic = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
 
@@ -210,16 +211,16 @@ function dupr_rating_render_block( $attributes ) {
 	
 	// Basic validation
 	if ( empty( $dupr_id ) ) {
-		return '<div class="dupr-rating-block dupr-rating-error">Please enter a valid DUPR ID.</div>';
+    return '<div class="pickleball-ratings-block pickleball-ratings-error">Please enter a valid DUPR ID.</div>';
 	}
 	
 	// Validate 6-character alphanumeric format
 	if ( ! preg_match( '/^[A-Z0-9]{6}$/', $dupr_id ) ) {
-		return '<div class="dupr-rating-block dupr-rating-error">Invalid DUPR ID format. Please enter a 6-character alphanumeric code.</div>';
+    return '<div class="pickleball-ratings-block pickleball-ratings-error">Invalid DUPR ID format.</div>';
 	}
 	
 	// Get player data from DUPR API
-	$api = new DUPR_API();
+    $api = new PBR_DUPR_API();
 	$player_data = $api->get_player_data( $dupr_id );
 	
 	// Handle API errors
@@ -231,7 +232,7 @@ function dupr_rating_render_block( $attributes ) {
 			$error_message = 'DUPR API not configured. Please contact the site administrator.';
 		}
 		
-		return '<div class="dupr-rating-block dupr-rating-error">' . esc_html( $error_message ) . '</div>';
+        return '<div class="pickleball-ratings-block pickleball-ratings-error">' . esc_html( $error_message ) . '.</div>';
 	}
 	
 	// Build color classes and styles using WordPress functions
@@ -277,7 +278,7 @@ function dupr_rating_render_block( $attributes ) {
 	$typography_class_string = ! empty( $typography_classes ) ? ' ' . implode( ' ', $typography_classes ) : '';
 	
 	// Build the output
-	$output = '<div class="dupr-rating-block' . $color_class_string . $typography_class_string . '"' . $color_style_string . '>';
+    $output = '<div class="pickleball-ratings-block' . $color_class_string . $typography_class_string . '"' . $color_style_string . '>';
 	
 	// Add player name if available
 	if ( ! empty( $player_data['name'] ) ) {
@@ -286,14 +287,14 @@ function dupr_rating_render_block( $attributes ) {
 			? ' title="Last updated: ' . esc_attr( $player_data['last_updated'] ) . '"' 
 			: '';
 		
-		$output .= '<div class="dupr-rating-player-name"' . $title_attribute . '>';
+    $output .= '<div class="pickleball-ratings-player-name"' . $title_attribute . '>';
 		
 		// Add profile picture if enabled and available
 		if ( $show_profile_pic ) {
 			if ( ! empty( $player_data['profile_image'] ) ) {
-				$output .= '<img src="' . esc_url( $player_data['profile_image'] ) . '" alt="' . esc_attr( $player_data['name'] ) . '" class="dupr-rating-profile-pic" />';
+                $output .= '<img src="' . esc_url( $player_data['profile_image'] ) . '" alt="' . esc_attr( $player_data['name'] ) . '" class="pickleball-ratings-profile-pic" />';
 			} else {
-				$output .= '<span class="dashicons dashicons-admin-users dupr-rating-profile-pic-fallback"></span>';
+                $output .= '<span class="dashicons dashicons-admin-users pickleball-ratings-profile-pic-fallback"></span>';
 			}
 		}
 		
@@ -301,7 +302,7 @@ function dupr_rating_render_block( $attributes ) {
 		
 		// Add copy button for DUPR ID
 		if ( ! empty( $dupr_id ) ) {
-			$output .= '<button class="dupr-rating-copy-id" onclick="window.duprCopyToClipboard(\'' . esc_js( $dupr_id ) . '\', this)" title="Copy DUPR ID: ' . esc_attr( $dupr_id ) . '">';
+            $output .= '<button class="pickleball-ratings-copy-id" onclick="window.pbrCopyToClipboard(\'' . esc_js( $dupr_id ) . '\', this)" title="Copy DUPR ID: ' . esc_attr( $dupr_id ) . '">';
 			$output .= '<span class="dashicons dashicons-clipboard"></span>';
 			$output .= '</button>';
 		}
@@ -309,39 +310,39 @@ function dupr_rating_render_block( $attributes ) {
 		$output .= '</div>';
 	}
 	
-	$content_class = 'dupr-rating-content';
+    $content_class = 'pickleball-ratings-content';
 	if ( $stacked_layout ) {
-		$content_class .= ' dupr-rating-stacked';
+        $content_class .= ' pickleball-ratings-stacked';
 	}
 	$output .= '<div class="' . $content_class . '">';
-	$output .= '<div class="dupr-rating-item">';
-	$output .= '<span class="dupr-rating-label">';
-	$output .= '<span class="dashicons dashicons-admin-users dupr-icon dupr-doubles-back"></span>';
-	$output .= '<span class="dashicons dashicons-admin-users dupr-icon dupr-doubles-front"></span>';
+    $output .= '<div class="pickleball-ratings-item">';
+    $output .= '<span class="pickleball-ratings-label">';
+    $output .= '<span class="dashicons dashicons-admin-users pbr-icon pbr-doubles-back"></span>';
+    $output .= '<span class="dashicons dashicons-admin-users pbr-icon pbr-doubles-front"></span>';
 	$output .= 'Doubles';
 	$output .= '</span>';
 	$doubles_title = ( $player_data['doubles_rating'] === 'NR' ) ? ' title="Not Rated"' : '';
-	$output .= '<span class="dupr-rating-value"' . $doubles_title . '>' . esc_html( $player_data['doubles_rating'] ) . '</span>';
+    $output .= '<span class="pickleball-ratings-value"' . $doubles_title . '>' . esc_html( $player_data['doubles_rating'] ) . '</span>';
 	$output .= '</div>';
-	$output .= '<div class="dupr-rating-item">';
-	$output .= '<span class="dupr-rating-label">';
-	$output .= '<span class="dashicons dashicons-admin-users dupr-icon"></span>';
+    $output .= '<div class="pickleball-ratings-item">';
+    $output .= '<span class="pickleball-ratings-label">';
+    $output .= '<span class="dashicons dashicons-admin-users pbr-icon"></span>';
 	$output .= 'Singles';
 	$output .= '</span>';
 	$singles_title = ( $player_data['singles_rating'] === 'NR' ) ? ' title="Not Rated"' : '';
-	$output .= '<span class="dupr-rating-value"' . $singles_title . '>' . esc_html( $player_data['singles_rating'] ) . '</span>';
+    $output .= '<span class="pickleball-ratings-value"' . $singles_title . '>' . esc_html( $player_data['singles_rating'] ) . '</span>';
 	$output .= '</div>';
 	$output .= '</div>';
 	
 	// Add powered by footer if enabled
-	if ( $show_powered_by ) {
+    if ( $show_powered_by ) {
 		$logo_file = $use_light_logo ? 'dupr-logo-white.png' : 'dupr-logo-blue.png';
-		$logo_url = DUPR_RATING_PLUGIN_URL . 'images/' . $logo_file;
+        $logo_url = PICKLEBALL_RATINGS_PLUGIN_URL . 'images/' . $logo_file;
 		
-		$output .= '<div class="dupr-rating-footer">';
-		$output .= '<span class="dupr-rating-powered-by">';
+        $output .= '<div class="pickleball-ratings-footer">';
+        $output .= '<span class="pickleball-ratings-powered-by">';
 		$output .= 'Powered by ';
-		$output .= '<img src="' . esc_url( $logo_url ) . '" alt="DUPR" class="dupr-rating-logo" />';
+        $output .= '<img src="' . esc_url( $logo_url ) . '" alt="DUPR" class="pickleball-ratings-logo" />';
 		$output .= '</span>';
 		$output .= '</div>';
 	}

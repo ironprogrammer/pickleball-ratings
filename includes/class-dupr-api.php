@@ -4,7 +4,7 @@
  *
  * Handles authentication, data fetching, and caching for the DUPR API.
  *
- * @package Dupr_Rating
+ * @package Pickleball_Ratings
  * @since 0.2.0
  */
 
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * DUPR API Integration Class
  */
-class DUPR_API {
+class PBR_DUPR_API {
 
 	/**
 	 * API base URL
@@ -50,9 +50,9 @@ class DUPR_API {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->auth_token = get_option( 'dupr_rating_auth_token', '' );
-		$this->refresh_token = get_option( 'dupr_rating_auth_refresh_token', '' );
-		$this->cache_ttl  = get_option( 'dupr_rating_cache_ttl', 86400 );
+        $this->auth_token = get_option( 'pickleball_ratings_dupr_auth_token', '' );
+        $this->refresh_token = get_option( 'pickleball_ratings_dupr_auth_refresh_token', '' );
+        $this->cache_ttl  = get_option( 'pickleball_ratings_cache_ttl', 86400 );
 	}
 
 	/**
@@ -70,18 +70,18 @@ class DUPR_API {
 		}
 
 		// Check cache first
-		$cached_data = $this->get_cached_player_data( $dupr_id );
+        $cached_data = $this->get_cached_player_data( $dupr_id );
 		if ( false !== $cached_data ) {
 			return $cached_data;
 		}
 
 		// Check if we have authentication
 		if ( empty( $this->auth_token ) ) {
-			return new WP_Error( 'no_auth', 'DUPR API authentication required. Please configure in plugin settings.' );
+            return new WP_Error( 'no_auth', 'DUPR API authentication required. Please configure in plugin settings.' );
 		}
 
 		// Fetch data from API using the correct flow
-		$player_data = $this->fetch_player_data( $dupr_id );
+        $player_data = $this->fetch_player_data( $dupr_id );
 		
 		if ( is_wp_error( $player_data ) ) {
 			return $player_data;
@@ -313,7 +313,7 @@ class DUPR_API {
 	 * @return array|false Cached data or false if not found/expired.
 	 */
 	private function get_cached_player_data( $dupr_id ) {
-		$cache_key = 'dupr_player_' . $dupr_id;
+        $cache_key = 'pbr_dupr_player_' . $dupr_id;
 		$cached    = get_transient( $cache_key );
 
 		if ( false === $cached ) {
@@ -337,7 +337,7 @@ class DUPR_API {
 	 * @param array  $data    Player data to cache.
 	 */
 	private function cache_player_data( $dupr_id, $data ) {
-		$cache_key = 'dupr_player_' . $dupr_id;
+        $cache_key = 'pbr_dupr_player_' . $dupr_id;
 		set_transient( $cache_key, $data, $this->cache_ttl );
 	}
 
@@ -358,7 +358,7 @@ class DUPR_API {
 	 */
 	public function set_auth_token( $token ) {
 		$this->auth_token = sanitize_text_field( $token );
-		update_option( 'dupr_rating_auth_token', $this->auth_token );
+        update_option( 'pickleball_ratings_dupr_auth_token', $this->auth_token );
 	}
 
 	/**
@@ -376,8 +376,8 @@ class DUPR_API {
 	public function clear_auth_token() {
 		$this->auth_token = '';
 		$this->refresh_token = '';
-		delete_option( 'dupr_rating_auth_token' );
-		delete_option( 'dupr_rating_auth_refresh_token' );
+        delete_option( 'pickleball_ratings_dupr_auth_token' );
+        delete_option( 'pickleball_ratings_dupr_auth_refresh_token' );
 	}
 
 	/**
@@ -387,7 +387,7 @@ class DUPR_API {
 	 */
 	public function set_cache_ttl( $ttl ) {
 		$this->cache_ttl = absint( $ttl );
-		update_option( 'dupr_rating_cache_ttl', $this->cache_ttl );
+        update_option( 'pickleball_ratings_cache_ttl', $this->cache_ttl );
 	}
 
 	/**
@@ -405,18 +405,18 @@ class DUPR_API {
 	public function clear_cache() {
 		global $wpdb;
 		
-		// Delete all DUPR-related transients
+        // Delete all DUPR-related transients for this plugin
 		$wpdb->query(
 			$wpdb->prepare(
-				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-				'_transient_dupr_player_%'
+                "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+                '_transient_pbr_dupr_player_%'
 			)
 		);
 		
 		$wpdb->query(
 			$wpdb->prepare(
-				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-				'_transient_timeout_dupr_player_%'
+                "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+                '_transient_timeout_pbr_dupr_player_%'
 			)
 		);
 	}
@@ -467,8 +467,8 @@ class DUPR_API {
 		$this->refresh_token = $data['result']['refreshToken'];
 		
 		// Save to database
-		update_option( 'dupr_rating_auth_token', $this->auth_token );
-		update_option( 'dupr_rating_auth_refresh_token', $this->refresh_token );
+        update_option( 'pickleball_ratings_dupr_auth_token', $this->auth_token );
+        update_option( 'pickleball_ratings_dupr_auth_refresh_token', $this->refresh_token );
 
 		return true;
 	}
@@ -553,8 +553,8 @@ class DUPR_API {
 		}
 
 		// Get the authenticated user's data for display
-		$user_name = get_option( 'dupr_rating_auth_user_name', '' );
-		$dupr_id = get_option( 'dupr_rating_auth_dupr_id', '' );
+        $user_name = get_option( 'pickleball_ratings_dupr_auth_user_name', '' );
+        $dupr_id = get_option( 'pickleball_ratings_dupr_auth_id', '' );
 
 		return array(
 			'success' => true,

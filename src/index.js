@@ -5,13 +5,13 @@ import { PanelBody, TextControl, Notice, ToggleControl } from '@wordpress/compon
 import { useState, useEffect } from '@wordpress/element';
 import './style.css';
 
-registerBlockType( 'dupr-rating/player-rating', {
+registerBlockType( 'pickleball-ratings/player-ratings', {
 	apiVersion: 2,
-	title: __( 'DUPR Player Rating', 'dupr-rating' ),
-	description: __(
-		'Display DUPR ratings for a specific player.',
-		'dupr-rating'
-	),
+    title: __( 'Pickleball Player Ratings', 'pickleball-ratings' ),
+    description: __(
+        'Display DUPR ratings for a specific player.',
+        'pickleball-ratings'
+    ),
 	category: 'widgets',
 	icon: 'chart-line',
 	supports: {
@@ -95,10 +95,10 @@ registerBlockType( 'dupr-rating/player-rating', {
 
 			if ( ! /^[A-Z0-9]{6}$/.test( id ) ) {
 				setValidationError(
-					__(
-						'DUPR ID must be exactly 6 characters',
-						'dupr-rating'
-					)
+						__(
+							'DUPR ID must be exactly 6 characters',
+							'pickleball-ratings'
+						)
 				);
 				return false;
 			}
@@ -126,13 +126,13 @@ registerBlockType( 'dupr-rating/player-rating', {
 			setApiError( '' );
 
 			try {
-				const response = await fetch( '/wp-admin/admin-ajax.php', {
+                const response = await fetch( '/wp-admin/admin-ajax.php', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/x-www-form-urlencoded',
 					},
-					body: new URLSearchParams( {
-						action: 'dupr_get_player_data',
+                    body: new URLSearchParams( {
+                        action: 'pickleball_ratings_get_player_data',
 						dupr_id: id,
 						nonce: duprRatingAjax.nonce,
 					} ),
@@ -167,8 +167,8 @@ registerBlockType( 'dupr-rating/player-rating', {
 		}, [ duprId, validationError ] );
 
 		return (
-			<div { ...useBlockProps( {
-				className: `dupr-rating-block${ backgroundColor ? ' has-background has-' + backgroundColor + '-background-color' : '' }${ gradient ? ' has-background has-' + gradient + '-gradient-background' : '' }${ textColor ? ' has-text-color has-' + textColor + '-color' : '' }${ fontSize ? ' has-' + fontSize + '-font-size' : '' }`,
+            <div { ...useBlockProps( {
+                className: `pickleball-ratings-block${ backgroundColor ? ' has-background has-' + backgroundColor + '-background-color' : '' }${ gradient ? ' has-background has-' + gradient + '-gradient-background' : '' }${ textColor ? ' has-text-color has-' + textColor + '-color' : '' }${ fontSize ? ' has-' + fontSize + '-font-size' : '' }`,
 				style: {
 					...( customBackgroundColor && { backgroundColor: customBackgroundColor } ),
 					...( customGradient && { background: customGradient } ),
@@ -176,16 +176,16 @@ registerBlockType( 'dupr-rating/player-rating', {
 				}
 			} ) }>
 				<InspectorControls>
-					<PanelBody title={ __( 'Display Settings', 'dupr-rating' ) }>
+                    <PanelBody title={ __( 'Display Settings', 'pickleball-ratings' ) }>
 						<TextControl
-							label={ __( 'Player DUPR ID', 'dupr-rating' ) }
+                            label={ __( 'Player DUPR ID', 'pickleball-ratings' ) }
 							value={ duprId }
 							onChange={ handleDuprIdChange }
 							placeholder="e.g., 8WZ4ML"
-							help={ __(
-								'Enter the 6-character DUPR ID for the player.',
-								'dupr-rating'
-							) }
+                            help={ __(
+                                'Enter the 6-character DUPR ID for the player.',
+                                'pickleball-ratings'
+                            ) }
 						/>
 						{ validationError ? (
 							<Notice status="error" isDismissible={ false }>
@@ -196,44 +196,44 @@ registerBlockType( 'dupr-rating/player-rating', {
 								{ apiError }
 							</Notice>
 						) }
-						<ToggleControl
-							label={ __( 'Show Profile Picture', 'dupr-rating' ) }
+                        <ToggleControl
+                            label={ __( 'Show Profile Picture', 'pickleball-ratings' ) }
 							checked={ showProfilePic }
 							onChange={ ( value ) => setAttributes( { showProfilePic: value } ) }
-							help={ __(
-								'Display the player\'s profile picture if available.',
-								'dupr-rating'
-							) }
+                            help={ __(
+                                'Display the player\'s profile picture if available.',
+                                'pickleball-ratings'
+                            ) }
 						/>
 
-						<ToggleControl
-							label={ __( 'Show Powered by DUPR', 'dupr-rating' ) }
+                        <ToggleControl
+                            label={ __( 'Show Powered by DUPR', 'pickleball-ratings' ) }
 							checked={ showPoweredBy }
 							onChange={ ( value ) => setAttributes( { showPoweredBy: value } ) }
-							help={ __(
-								'Display a "Powered by DUPR®" footer at the bottom of the block.',
-								'dupr-rating'
-							) }
+                            help={ __(
+                                'Display a "Powered by DUPR®" footer at the bottom of the block.',
+                                'pickleball-ratings'
+                            ) }
 						/>
 						{ showPoweredBy && (
 							<ToggleControl
-								label={ __( 'Use Light Logo', 'dupr-rating' ) }
+                                label={ __( 'Use Light Logo', 'pickleball-ratings' ) }
 								checked={ useLightLogo }
 								onChange={ ( value ) => setAttributes( { useLightLogo: value } ) }
-								help={ __(
-									'Use white logo for dark backgrounds. Unchecked uses blue logo for light backgrounds.',
-									'dupr-rating'
-								) }
+                                help={ __(
+                                    'Use white logo for dark backgrounds. Unchecked uses blue logo for light backgrounds.',
+                                    'pickleball-ratings'
+                                ) }
 							/>
 						) }
-						<ToggleControl
-							label={ __( 'Stacked Layout', 'dupr-rating' ) }
+                        <ToggleControl
+                            label={ __( 'Stacked Layout', 'pickleball-ratings' ) }
 							checked={ stackedLayout }
 							onChange={ ( value ) => setAttributes( { stackedLayout: value } ) }
-							help={ __(
-								'Display ratings vertically with headings above numbers.',
-								'dupr-rating'
-							) }
+                            help={ __(
+                                'Display ratings vertically with headings above numbers.',
+                                'pickleball-ratings'
+                            ) }
 						/>
 					</PanelBody>
 				</InspectorControls>
@@ -241,44 +241,44 @@ registerBlockType( 'dupr-rating/player-rating', {
 
 
 					{ ( () => {
-						if ( ! duprId ) {
+                        if ( ! duprId ) {
 							return (
-								<div className="dupr-rating-placeholder">
+                                <div className="pickleball-ratings-placeholder">
 									<p>
-										{ __(
-											'Please enter a DUPR ID in the block settings to display player ratings.',
-											'dupr-rating'
-										) }
+                                        { __(
+                                            'Please enter a DUPR ID in the block settings to display player ratings.',
+                                            'pickleball-ratings'
+                                        ) }
 									</p>
 								</div>
 							);
 						}
 						
-						if ( validationError ) {
+                        if ( validationError ) {
 							return (
-								<div className="dupr-rating-error">
+                                <div className="pickleball-ratings-error">
 									<p>{ validationError }</p>
 								</div>
 							);
 						}
 						
-						if ( isLoading ) {
+                        if ( isLoading ) {
 							return (
-								<div className="dupr-rating-loading">
-									<p>{ __( 'Loading player data...', 'dupr-rating' ) }</p>
+                                <div className="pickleball-ratings-loading">
+                                    <p>{ __( 'Loading player data...', 'pickleball-ratings' ) }</p>
 								</div>
 							);
 						}
 						
-						if ( apiError ) {
+                        if ( apiError ) {
 							return (
-								<div className="dupr-rating-error">
+                                <div className="pickleball-ratings-error">
 									<p>{ apiError }</p>
 								</div>
 							);
 						}
 						
-						if ( playerData ) {
+                        if ( playerData ) {
 							// Create title attribute for last updated info
 							const titleAttribute = playerData.last_updated 
 								? `Last updated: ${playerData.last_updated}` 
@@ -287,22 +287,22 @@ registerBlockType( 'dupr-rating/player-rating', {
 							return (
 								<div>
 									{ playerData.name && (
-										<div className="dupr-rating-player-name" title={ titleAttribute }>
+                                        <div className="pickleball-ratings-player-name" title={ titleAttribute }>
 											{ showProfilePic && (
 												<>
 													{ playerData.profile_image ? (
-														<img src={ playerData.profile_image } alt={ playerData.name } className="dupr-rating-profile-pic" />
+                                                        <img src={ playerData.profile_image } alt={ playerData.name } className="pickleball-ratings-profile-pic" />
 													) : (
-														<span className="dashicons dashicons-admin-users dupr-rating-profile-pic-fallback"></span>
+                                                        <span className="dashicons dashicons-admin-users pickleball-ratings-profile-pic-fallback"></span>
 													) }
 												</>
 											) }
 											{ playerData.name }
 											{ duprId && (
 												<button 
-													className="dupr-rating-copy-id"
-													onClick={ () => {
-														window.duprCopyToClipboard( duprId, event.target.closest( '.dupr-rating-copy-id' ) );
+                                                    className="pickleball-ratings-copy-id"
+                                                    onClick={ ( event ) => {
+                                                        window.pbrCopyToClipboard( duprId, event.target.closest( '.pickleball-ratings-copy-id' ) );
 													} }
 													title={ `Copy DUPR ID: ${duprId}` }
 												>
@@ -311,35 +311,35 @@ registerBlockType( 'dupr-rating/player-rating', {
 											) }
 										</div>
 									) }
-									<div className={`dupr-rating-content${ stackedLayout ? ' dupr-rating-stacked' : '' }`}>
-										<div className="dupr-rating-item">
-											<span className="dupr-rating-label">
-												<span className="dashicons dashicons-admin-users dupr-icon dupr-doubles-back"></span>
-												<span className="dashicons dashicons-admin-users dupr-icon dupr-doubles-front"></span>
+                                    <div className={`pickleball-ratings-content${ stackedLayout ? ' pickleball-ratings-stacked' : '' }`}>
+                                        <div className="pickleball-ratings-item">
+                                            <span className="pickleball-ratings-label">
+                                                <span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-back"></span>
+                                                <span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-front"></span>
 												Doubles
 											</span>
-											<span className="dupr-rating-value" title={ playerData.doubles_rating === 'NR' ? 'Not Rated' : '' }>
+                                            <span className="pickleball-ratings-value" title={ playerData.doubles_rating === 'NR' ? 'Not Rated' : '' }>
 												{ playerData.doubles_rating }
 											</span>
 										</div>
-										<div className="dupr-rating-item">
-											<span className="dupr-rating-label">
-												<span className="dashicons dashicons-admin-users dupr-icon"></span>
+                                        <div className="pickleball-ratings-item">
+                                            <span className="pickleball-ratings-label">
+                                                <span className="dashicons dashicons-admin-users pbr-icon"></span>
 												Singles
 											</span>
-											<span className="dupr-rating-value" title={ playerData.singles_rating === 'NR' ? 'Not Rated' : '' }>
+                                            <span className="pickleball-ratings-value" title={ playerData.singles_rating === 'NR' ? 'Not Rated' : '' }>
 												{ playerData.singles_rating }
 											</span>
 										</div>
 									</div>
-									{ showPoweredBy && (
-										<div className="dupr-rating-footer">
-											<span className="dupr-rating-powered-by">
+                                    { showPoweredBy && (
+                                        <div className="pickleball-ratings-footer">
+                                            <span className="pickleball-ratings-powered-by">
 												Powered by{' '}
-												<img 
-													src={ useLightLogo ? '/wp-content/plugins/dupr-rating/images/dupr-logo-white.png' : '/wp-content/plugins/dupr-rating/images/dupr-logo-blue.png' }
+                                                <img 
+                                                    src={ duprRatingAjax.pluginUrl + ( useLightLogo ? 'images/dupr-logo-white.png' : 'images/dupr-logo-blue.png' ) }
 													alt="DUPR"
-													className="dupr-rating-logo"
+                                                    className="pickleball-ratings-logo"
 												/>
 											</span>
 										</div>
@@ -349,8 +349,8 @@ registerBlockType( 'dupr-rating/player-rating', {
 						}
 						
 						return (
-							<div className="dupr-rating-placeholder">
-								<p>{ __( 'Enter a valid DUPR ID to load player data.', 'dupr-rating' ) }</p>
+                            <div className="pickleball-ratings-placeholder">
+                                <p>{ __( 'Enter a valid DUPR ID to load player data.', 'pickleball-ratings' ) }</p>
 							</div>
 						);
 					} )() }
@@ -358,7 +358,7 @@ registerBlockType( 'dupr-rating/player-rating', {
 		);
 	},
 
-	save: function Save() {
+    save: function Save() {
 		// Use PHP render callback for dynamic content
 		return null;
 	},

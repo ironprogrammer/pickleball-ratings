@@ -1,38 +1,38 @@
 /**
- * DUPR Rating Block Styles
+ * Pickleball Ratings Block Styles
  */
 
 /* CSS Variables for icon styling */
 :root {
-	--dupr-icon-size: 20px;
-	--dupr-icon-color: #187ae8;
-	--dupr-doubles-back-color: #1461c0;
-	--dupr-doubles-back-size: 15px;
-	--dupr-icon-stack-offset: -1rem;
+	--pbr-icon-size: 20px;
+	--pbr-icon-color: #187ae8;
+	--pbr-doubles-back-color: #1461c0;
+	--pbr-doubles-back-size: 15px;
+	--pbr-icon-stack-offset: -1rem;
 }
 
 /* Shared utility classes for icons */
-.dupr-icon {
-	font-size: var(--dupr-icon-size);
-	color: var(--dupr-icon-color);
+.pbr-icon {
+    font-size: var(--pbr-icon-size);
+    color: var(--pbr-icon-color);
 }
 
-.dupr-doubles-back {
-	color: var(--dupr-doubles-back-color);
-	font-size: var(--dupr-doubles-back-size);
+.pbr-doubles-back {
+    color: var(--pbr-doubles-back-color);
+    font-size: var(--pbr-doubles-back-size);
 	position: relative;
 	z-index: 1;
 }
 
-.dupr-doubles-front {
-	color: var(--dupr-icon-color);
-	font-size: var(--dupr-icon-size);
+.pbr-doubles-front {
+    color: var(--pbr-icon-color);
+    font-size: var(--pbr-icon-size);
 	position: relative;
 	z-index: 2;
-	margin-left: var(--dupr-icon-stack-offset);
+    margin-left: var(--pbr-icon-stack-offset);
 }
 
-.dupr-rating-block {
+.pickleball-ratings-block {
 	border: 1px solid #ddd;
 	border-radius: 8px;
 	padding: 20px;
@@ -41,7 +41,7 @@
 	font-size: var(--wp--preset--font-size--large, 1.125rem); /* Use WordPress's large font size */
 }
 
-.dupr-rating-header {
+.pickleball-ratings-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -50,13 +50,13 @@
 	border-bottom: 1px solid #eee;
 }
 
-.dupr-rating-title {
+.pickleball-ratings-title {
 	margin: 0;
 	font-size: 1.2em;
 	font-weight: 600;
 }
 
-.dupr-rating-copy-id {
+.pickleball-ratings-copy-id {
 	background: none;
 	border: none;
 	padding: 4px;
@@ -66,17 +66,17 @@
 	transition: background-color 0.2s ease;
 }
 
-.dupr-rating-copy-id:hover {
+.pickleball-ratings-copy-id:hover {
 	background-color: rgba(0, 0, 0, 0.1);
 }
 
-.dupr-rating-copy-id .dashicons {
+.pickleball-ratings-copy-id .dashicons {
 	font-size: 16px;
 	width: 16px;
 	height: 16px;
 }
 
-.dupr-rating-player-name {
+.pickleball-ratings-player-name {
 	font-size: 1.1em;
 	font-weight: 600;
 	margin-bottom: 10px;
@@ -87,7 +87,7 @@
 	gap: 10px;
 }
 
-.dupr-rating-profile-pic {
+.pickleball-ratings-profile-pic {
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
@@ -95,7 +95,7 @@
 	border: 2px solid #ddd;
 }
 
-.dupr-rating-profile-pic-fallback {
+.pickleball-ratings-profile-pic-fallback {
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
@@ -108,12 +108,12 @@
 	color: #666;
 }
 
-.dupr-rating-content {
+.pickleball-ratings-content {
 	/*margin-bottom: 15px;*/
 }
 
 /* Stacked layout styles */
-.dupr-rating-stacked {
+.pickleball-ratings-stacked {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -121,7 +121,7 @@
 	justify-content: center;
 }
 
-.dupr-rating-stacked .dupr-rating-item {
+.pickleball-ratings-stacked .pickleball-ratings-item {
 	flex-direction: column;
 	text-align: center;
 	align-items: center;
@@ -129,37 +129,37 @@
 	min-width: 80px;
 }
 
-.dupr-rating-stacked .dupr-rating-value {
+.pickleball-ratings-stacked .pickleball-ratings-value {
 	margin-top: 4px;
 }
 
-.dupr-rating-item {
+.pickleball-ratings-item {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 8px;
 }
 
-.dupr-rating-label {
+.pickleball-ratings-label {
 	font-weight: 500;
 	display: flex;
 	align-items: center;
 	gap: 4px;
 }
 
-.dupr-rating-value {
+.pickleball-ratings-value {
 	font-weight: 600;
 	font-size: 1.2em;
 }
 
-.dupr-rating-placeholder {
+.pickleball-ratings-placeholder {
 	text-align: center;
 	padding: 20px;
 	color: #666;
 	font-style: italic;
 }
 
-.dupr-rating-error {
+.pickleball-ratings-error {
 	background: #fef7f1;
 	border: 1px solid #f0b849;
 	border-radius: 4px;
@@ -172,35 +172,35 @@
 	margin-bottom: 16px;
 }
 
-.dupr-rating-loading {
+.pickleball-ratings-loading {
 	text-align: center;
 	padding: 20px;
 	color: #666;
 	font-style: italic;
 }
 
-.dupr-rating-footer {
+.pickleball-ratings-footer {
 	margin-top: 15px;
 	padding-top: 10px;
 	text-align: center;
 	font-size: 0.8em;
 }
 
-.dupr-rating-powered-by {
+.pickleball-ratings-powered-by {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 4px;
 }
 
-.dupr-rating-logo {
+.pickleball-ratings-logo {
 	height: 16px;
 	width: auto;
 	vertical-align: middle;
 	margin-left: 2px;
 }
 
-.dupr-rating-note {
+.pickleball-ratings-note {
 	font-size: 0.8em;
 	color: #888;
 	font-style: italic;
@@ -210,11 +210,11 @@
 }
 
 /* Editor-specific styles */
-.wp-block-dupr-rating-player-rating .dupr-rating-block {
+.wp-block-pickleball-ratings-player-ratings .pickleball-ratings-block {
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.wp-block-dupr-rating-player-rating .dupr-rating-placeholder {
+.wp-block-pickleball-ratings-player-ratings .pickleball-ratings-placeholder {
 	background: #f9f9f9;
 	border: 2px dashed #ddd;
 	border-radius: 4px;
@@ -222,17 +222,17 @@
 
 /* Responsive design */
 @media (max-width: 480px) {
-	.dupr-rating-block {
+    .pickleball-ratings-block {
 		padding: 15px;
 	}
 	
-	.dupr-rating-header {
+    .pickleball-ratings-header {
 		flex-direction: column;
 		align-items: flex-start;
 		gap: 8px;
 	}
 	
-	.dupr-rating-item {
+    .pickleball-ratings-item {
 		flex-direction: column;
 		align-items: flex-start;
 		gap: 4px;

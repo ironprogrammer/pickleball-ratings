@@ -4,7 +4,7 @@
  *
  * Handles AJAX requests for the DUPR Rating plugin.
  *
- * @package Dupr_Rating
+ * @package Pickleball_Ratings
  * @since 0.2.0
  */
 
@@ -16,12 +16,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * AJAX Handler Class
  */
-class DUPR_Ajax_Handler {
+class PBR_Ajax_Handler {
 
 	/**
 	 * API instance
 	 *
-	 * @var DUPR_API
+     * @var PBR_DUPR_API
 	 */
 	private $api;
 
@@ -30,13 +30,13 @@ class DUPR_Ajax_Handler {
 	 */
 	public function __construct() {
 		// Ensure the API class is available
-		if ( ! class_exists( 'DUPR_API' ) ) {
-			require_once DUPR_RATING_PLUGIN_DIR . 'includes/class-dupr-api.php';
+        if ( ! class_exists( 'PBR_DUPR_API' ) ) {
+            require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-dupr-api.php';
 		}
 		
-		$this->api = new DUPR_API();
-		add_action( 'wp_ajax_dupr_test_connection', array( $this, 'test_connection' ) );
-		add_action( 'wp_ajax_dupr_get_player_data', array( $this, 'get_player_data' ) );
+        $this->api = new PBR_DUPR_API();
+        add_action( 'wp_ajax_pickleball_ratings_test_dupr_connection', array( $this, 'test_connection' ) );
+        add_action( 'wp_ajax_pickleball_ratings_get_player_data', array( $this, 'get_player_data' ) );
 	}
 
 	/**
@@ -44,7 +44,7 @@ class DUPR_Ajax_Handler {
 	 */
 	public function test_connection() {
 		// Check nonce
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'dupr_test_connection' ) ) {
+        if ( ! wp_verify_nonce( $_POST['nonce'], 'pickleball_ratings_test_dupr_connection' ) ) {
 			wp_send_json_error( 'Security check failed' );
 		}
 
@@ -56,7 +56,7 @@ class DUPR_Ajax_Handler {
 		// Add some debugging
 		error_log( 'DUPR: Test connection called' );
 
-		$result = $this->api->test_connection();
+        $result = $this->api->test_connection();
 
 		if ( is_wp_error( $result ) ) {
 			error_log( 'DUPR: Test connection failed: ' . $result->get_error_message() );
@@ -72,7 +72,7 @@ class DUPR_Ajax_Handler {
 	 */
 	public function get_player_data() {
 		// Check nonce
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'dupr_get_player_data' ) ) {
+        if ( ! wp_verify_nonce( $_POST['nonce'], 'pickleball_ratings_get_player_data' ) ) {
 			wp_die( 'Security check failed' );
 		}
 

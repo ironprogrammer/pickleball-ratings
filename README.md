@@ -1,6 +1,6 @@
-# DUPR Rating WordPress Plugin
+# Pickleball Ratings WordPress Plugin
 
-A WordPress plugin that provides a custom Gutenberg block to display DUPR (Dynamic Universal Pickleball Rating) information for pickleball players using a customizable block.
+A WordPress plugin that provides a custom Gutenberg block to display DUPR (Dynamic Universal Pickleball Rating) information for pickleball players using a customizable block. Uses the official DUPR API; not affiliated with DUPR.
 
 ## Phase 1 Status
 
@@ -36,12 +36,12 @@ This is Phase 1 of the plugin development, which includes:
 ## Plugin Structure
 
 ```
-dupr-rating/
+pickleball-ratings/
 ├── src/
 │   ├── index.js          # Main Gutenberg block JavaScript
 │   └── style.css         # Block styles
 ├── build/                # Built files (generated)
-├── dupr-rating.php       # Main plugin file
+├── pickleball-ratings.php # Main plugin file
 ├── package.json          # NPM dependencies
 └── readme.txt           # WordPress.org readme
 ```

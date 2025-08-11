@@ -1,7 +1,7 @@
 {
-	"name": "dupr-rating",
+    "name": "pickleball-ratings",
 	"version": "0.2.0",
-	"description": "Display DUPR ratings for pickleball players using a customizable block.",
+    "description": "Display pickleball player ratings using a customizable block.",
 	"main": "build/index.js",
 	"scripts": {
 		"build": "wp-scripts build",

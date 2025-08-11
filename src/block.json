@@ -1,5 +1,5 @@
 {
-    "name": "dupr-rating/player-rating",
+    "name": "pickleball-ratings/player-ratings",
     "script": "file:./index.js",
     "viewScript": "file:./frontend.js"
 }

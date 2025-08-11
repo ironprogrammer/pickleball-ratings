@@ -9,7 +9,7 @@ At a high level, the plugin provides these pieces:
 
 Target users are pickleball players for their profile sites, pickleball clubs, and tournament sites. The block could be used in a personal site's footer, or alongside player profile information on a team site.
 
-Suggested slug: `dupr-rating`
+Suggested slug: `pickleball-ratings`
 
 ## Functional requirements
 The main feature of the block is to display the DUPR rating for a specified player, which can be customized through the block settings. The block supports both frontend and backend rendering, ensuring that the rating and styling is displayed consistently in the WordPress editor and the live site. The block supports all standard features, including styles, attributes for dynamic content, responsive design, and accessibility standards.

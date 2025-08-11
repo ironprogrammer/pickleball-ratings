@@ -1,6 +1,6 @@
-=== DUPR Rating ===
+=== Pickleball Ratings ===
 Contributors: ironprogrammer
-Donate link: https://github.com/ironprogrammer/dupr-rating
+Donate link: https://github.com/ironprogrammer/pickleball-ratings
 Tags: pickleball, ratings, sports, gutenberg, blocks
 Requires at least: 5.0
 Tested up to: 6.4
@@ -9,7 +9,7 @@ Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Display DUPR ratings for pickleball players using a customizable block.
+Display DUPR ratings for pickleball players using a customizable block. Uses the official DUPR API; not affiliated with DUPR.
 
 == Description ==
 
@@ -71,9 +71,9 @@ you put the stable version, in order to eliminate any doubt.
 
 == Installation ==
 
-1. Upload the `dupr-rating` folder to the `/wp-content/plugins/` directory
+1. Upload the `pickleball-ratings` folder to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Add the "DUPR Player Rating" block to any post or page using the Gutenberg editor
+3. Add the "Pickleball Player Ratings" block to any post or page using the Gutenberg editor
 4. Enter a DUPR ID in the block settings to display player ratings
 
 ## Development Setup
