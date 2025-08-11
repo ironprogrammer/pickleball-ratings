@@ -83,7 +83,8 @@ function pickleball_ratings_register_block() {
         'pickleball-ratings-block',
         PICKLEBALL_RATINGS_PLUGIN_URL . 'build/index.js',
 		$asset_file['dependencies'],
-		$asset_file['version']
+		$asset_file['version'],
+		true
 	);
 
 	// Register block style
