@@ -136,7 +136,10 @@ class PBR_Admin_Settings {
 			}
 
 			// Handle cache clearing
-            if ( isset( $_POST['clear_cache'] ) && wp_verify_nonce( $_POST['pbr_cache_nonce'], 'pbr_clear_cache' ) ) {
+            if (
+                isset( $_POST['clear_cache'] )
+                && check_admin_referer( 'pbr_clear_cache', 'pbr_cache_nonce' )
+            ) {
 				$this->api->clear_cache();
 				add_settings_error(
                     'pickleball_ratings_settings',
@@ -147,12 +150,25 @@ class PBR_Admin_Settings {
 			}
 
 			// Handle authentication
-            if ( isset( $_POST['pbr_connect'] ) && wp_verify_nonce( $_POST['pbr_auth_nonce'], 'pickleball_ratings_authenticate' ) ) {
-				$this->handle_authentication();
-			}
+            if (
+                isset( $_POST['pbr_connect'] )
+                && check_admin_referer( 'pickleball_ratings_authenticate', 'pbr_auth_nonce' )
+            ) {
+                $email = isset( $_POST['pickleball_ratings_dupr_auth_email'] )
+                    ? sanitize_email( wp_unslash( $_POST['pickleball_ratings_dupr_auth_email'] ) )
+                    : '';
+                $password = isset( $_POST['pickleball_ratings_dupr_auth_password'] )
+                    ? wp_unslash( $_POST['pickleball_ratings_dupr_auth_password'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+                    : '';
+
+                $this->handle_authentication( $email, $password );
+            }
 
 			// Handle disconnect
-            if ( isset( $_POST['pbr_disconnect'] ) && wp_verify_nonce( $_POST['pbr_disconnect_nonce'], 'pickleball_ratings_disconnect' ) ) {
+            if (
+                isset( $_POST['pbr_disconnect'] )
+                && check_admin_referer( 'pickleball_ratings_disconnect', 'pbr_disconnect_nonce' )
+            ) {
 				$this->handle_disconnect();
 			}
 
@@ -323,11 +339,8 @@ class PBR_Admin_Settings {
 	/**
 	 * Handle authentication when settings are saved
 	 */
-	private function handle_authentication() {
+    private function handle_authentication( $email, $password ) {
 		error_log( 'DUPR: Authentication attempt started' );
-		
-        $email = sanitize_email( $_POST['pickleball_ratings_dupr_auth_email'] ?? '' );
-        $password = $_POST['pickleball_ratings_dupr_auth_password'] ?? '';
 
 		error_log( 'DUPR: Email: ' . $email . ', Password provided: ' . ( ! empty( $password ) ? 'yes' : 'no' ) );
 
