@@ -53,16 +53,22 @@ class PBR_Ajax_Handler {
 			wp_send_json_error( 'Insufficient permissions' );
 		}
 
-		// Add some debugging
-		error_log( 'DUPR: Test connection called' );
+        // Debug marker
+        if ( function_exists( 'pbr_log' ) ) {
+            pbr_log( 'AJAX: test_connection called' );
+        }
 
         $result = $this->api->test_connection();
 
-		if ( is_wp_error( $result ) ) {
-			error_log( 'DUPR: Test connection failed: ' . $result->get_error_message() );
+        if ( is_wp_error( $result ) ) {
+            if ( function_exists( 'pbr_log' ) ) {
+                pbr_log( 'AJAX: test_connection failed', array( 'error' => $result->get_error_message() ) );
+            }
 			wp_send_json_error( $result->get_error_message() );
 		} else {
-			error_log( 'DUPR: Test connection successful' );
+            if ( function_exists( 'pbr_log' ) ) {
+                pbr_log( 'AJAX: test_connection successful' );
+            }
 			wp_send_json_success( $result );
 		}
 	}

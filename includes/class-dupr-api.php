@@ -127,7 +127,9 @@ class PBR_DUPR_API {
 		if ( 200 !== $search_status ) {
 			// Check if token is expired (401 status)
 			if ( 401 === $search_status && ! empty( $this->refresh_token ) ) {
-				error_log( 'DUPR: Token expired during search, attempting refresh' );
+                if ( function_exists( 'pbr_log' ) ) {
+                    pbr_log( 'API: token expired during search; attempting refresh' );
+                }
 				$refresh_result = $this->refresh_access_token();
 				
 				if ( ! is_wp_error( $refresh_result ) ) {
@@ -175,7 +177,7 @@ class PBR_DUPR_API {
 			return new WP_Error( 'player_not_found', 'Could not retrieve player ID' );
 		}
 
-		error_log( 'DUPR: Found user ID ' . $user_id . ' for DUPR ID ' . $dupr_id );
+        // Avoid logging PII (user_id/dupr_id)
 
 		// Step 2: Fetch player data using the internal user ID
 		$player_url = $this->api_base_url . '/player/v3/' . $user_id;
@@ -201,7 +203,9 @@ class PBR_DUPR_API {
 		if ( 200 !== $status_code ) {
 			// Check if token is expired (401 status)
 			if ( 401 === $status_code && ! empty( $this->refresh_token ) ) {
-				error_log( 'DUPR: Token expired during player fetch, attempting refresh' );
+                if ( function_exists( 'pbr_log' ) ) {
+                    pbr_log( 'API: token expired during player fetch; attempting refresh' );
+                }
 				$refresh_result = $this->refresh_access_token();
 				
 				if ( ! is_wp_error( $refresh_result ) ) {
@@ -510,7 +514,9 @@ class PBR_DUPR_API {
 		if ( 200 !== $status_code ) {
 			// Check if token is expired (401 status)
 			if ( 401 === $status_code && ! empty( $this->refresh_token ) ) {
-				error_log( 'DUPR: Token expired during test, attempting refresh' );
+                if ( function_exists( 'pbr_log' ) ) {
+                    pbr_log( 'API: token expired during test; attempting refresh' );
+                }
 				$refresh_result = $this->refresh_access_token();
 				
 				if ( ! is_wp_error( $refresh_result ) ) {

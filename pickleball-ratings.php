@@ -26,6 +26,35 @@ define( 'PICKLEBALL_RATINGS_VERSION', '0.2.0' );
 define( 'PICKLEBALL_RATINGS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PICKLEBALL_RATINGS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
+/**
+ * Plugin debug logger.
+ *
+ * Logs messages when:
+ * - PBR_DEBUG and WP_DEBUG are both true, or
+ * - PBR_DEBUG_FORCE is true (overrides WP_DEBUG requirement)
+ *
+ * @param string       $message Log message.
+ * @param array|string $context Optional context data.
+ */
+function pbr_log( $message, $context = array() ) {
+    $allow = ( defined( 'PBR_DEBUG_FORCE' ) && PBR_DEBUG_FORCE )
+        || ( defined( 'PBR_DEBUG' ) && PBR_DEBUG && defined( 'WP_DEBUG' ) && WP_DEBUG );
+    if ( ! $allow ) {
+        return;
+    }
+
+    $prefix = '[Pickleball Ratings] ';
+    if ( ! empty( $context ) ) {
+        if ( is_array( $context ) || is_object( $context ) ) {
+            $message .= ' | context=' . wp_json_encode( $context );
+        } else {
+            $message .= ' | context=' . (string) $context;
+        }
+    }
+    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+    error_log( $prefix . $message );
+}
+
 // Include required files
 require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-dupr-api.php';
 require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-ajax-handler.php';
@@ -57,11 +86,11 @@ add_action( 'init', 'pickleball_ratings_admin_init' );
 
 // Initialize AJAX handler
 function pickleball_ratings_ajax_init() {
-	try {
+    try {
         new PBR_Ajax_Handler();
-	} catch ( Exception $e ) {
-		error_log( 'DUPR: AJAX handler error: ' . $e->getMessage() );
-	}
+    } catch ( Exception $e ) {
+        pbr_log( 'AJAX handler error: ' . $e->getMessage() );
+    }
 }
 add_action( 'wp_loaded', 'pickleball_ratings_ajax_init' );
 
