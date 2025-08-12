@@ -296,7 +296,7 @@ class PBR_DUPR_API {
 			$player_data['profile_image'] = esc_url_raw( $api_data['imageUrl'] );
 		}
 
-		// Extract ratings from ratings object
+		// Extract ratings from ratings object.
 		if ( isset( $api_data['ratings'] ) ) {
 			$ratings = $api_data['ratings'];
 
@@ -328,7 +328,7 @@ class PBR_DUPR_API {
 			return false;
 		}
 
-		// Check if cache is expired
+		// Check if cache is expired.
 		$cache_time = get_option( '_transient_timeout_' . $cache_key, 0 );
 		if ( $cache_time < time() ) {
 			delete_transient( $cache_key );
@@ -411,7 +411,7 @@ class PBR_DUPR_API {
 	 * Clear all cached data
 	 */
 	public function clear_cache() {
-		// Invalidate all cached entries by bumping the salt; old keys will expire naturally
+		// Invalidate all cached entries by bumping the salt; old keys will expire naturally.
 		$this->bump_cache_salt();
 	}
 
@@ -490,11 +490,11 @@ class PBR_DUPR_API {
 			return new WP_Error( 'refresh_error', 'Invalid refresh response' );
 		}
 
-		// Update tokens
+		// Update tokens.
 		$this->auth_token    = $data['result']['accessToken'];
 		$this->refresh_token = $data['result']['refreshToken'];
 
-		// Save to database
+		// Save to database.
 		update_option( 'pickleball_ratings_dupr_auth_token', $this->auth_token );
 		update_option( 'pickleball_ratings_dupr_auth_refresh_token', $this->refresh_token );
 
@@ -533,7 +533,7 @@ class PBR_DUPR_API {
 		$body        = wp_remote_retrieve_body( $response );
 
 		if ( 200 !== $status_code ) {
-			// Check if token is expired (401 status)
+			// Check if token is expired (401 status).
 			if ( 401 === $status_code && ! empty( $this->refresh_token ) ) {
 				if ( function_exists( 'pbr_log' ) ) {
 					pbr_log( 'API: token expired during test; attempting refresh' );
@@ -541,7 +541,7 @@ class PBR_DUPR_API {
 				$refresh_result = $this->refresh_access_token();
 
 				if ( ! is_wp_error( $refresh_result ) ) {
-					// Retry the test with new token
+					// Retry the test with new token.
 					$response = wp_remote_get(
 						$url,
 						array(
@@ -556,10 +556,7 @@ class PBR_DUPR_API {
 					if ( ! is_wp_error( $response ) ) {
 						$status_code = wp_remote_retrieve_response_code( $response );
 						$body        = wp_remote_retrieve_body( $response );
-
-						if ( 200 === $status_code ) {
-							// Continue with successful response.
-						} else {
+						if ( 200 !== $status_code ) {
 							return new WP_Error( 'api_error', 'Token validation failed after refresh (HTTP ' . $status_code . ')' );
 						}
 					} else {
@@ -582,7 +579,7 @@ class PBR_DUPR_API {
 			return new WP_Error( 'validation_error', 'Token validation failed: ' . ( $data['message'] ?? 'Unknown error' ) );
 		}
 
-		// Get the authenticated user's data for display
+		// Get the authenticated user's data for display.
 		$user_name = get_option( 'pickleball_ratings_dupr_auth_user_name', '' );
 		$dupr_id   = get_option( 'pickleball_ratings_dupr_auth_id', '' );
 

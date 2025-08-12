@@ -369,10 +369,10 @@ class PBR_Admin_Settings {
 			return;
 		}
 
-		// Save email for future reference
+		// Save email for future reference.
 		update_option( 'pickleball_ratings_dupr_auth_email', $email );
 
-		// Attempt to authenticate with DUPR API
+		// Attempt to authenticate with DUPR API.
 		if ( function_exists( 'pbr_log' ) ) {
 			pbr_log( 'Auth: calling DUPR login endpoint' );
 		}
@@ -457,7 +457,7 @@ class PBR_Admin_Settings {
 			pbr_log( 'Auth: response received', array( 'status' => $status_code ) );
 		}
 
-		if ( $status_code !== 200 ) {
+		if ( 200 !== $status_code ) {
 			if ( function_exists( 'pbr_log' ) ) {
 				pbr_log( 'Auth: authentication failed with status', array( 'status' => $status_code ) );
 			}
@@ -496,13 +496,13 @@ class PBR_Admin_Settings {
 			pbr_log( 'Auth: disconnect requested' );
 		}
 
-		// Clear all authentication data
+		// Clear all authentication data.
 		delete_option( 'pickleball_ratings_dupr_auth_token' );
 		delete_option( 'pickleball_ratings_dupr_auth_refresh_token' );
 		delete_option( 'pickleball_ratings_dupr_auth_user_name' );
 		delete_option( 'pickleball_ratings_dupr_auth_id' );
 
-		// Clear any cached data
+		// Clear any cached data.
 		if ( $this->api ) {
 			$this->api->clear_cache();
 		}
