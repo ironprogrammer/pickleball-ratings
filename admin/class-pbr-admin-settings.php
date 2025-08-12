@@ -8,7 +8,7 @@
  * @since 0.2.0
  */
 
-// Prevent direct access
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -29,9 +29,9 @@ class PBR_Admin_Settings {
 	 * Constructor
 	 */
 	public function __construct() {
-		// Ensure the API class is available
+		// Ensure the API class is available.
 		if ( ! class_exists( 'PBR_DUPR_API' ) ) {
-			require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-dupr-api.php';
+			require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-dupr-api.php';
 		}
 
 		$this->api = new PBR_DUPR_API();
@@ -83,16 +83,16 @@ class PBR_Admin_Settings {
 		);
 	}
 
-	/**
-	 * Cache section callback
-	 */
+    /**
+     * Cache section callback.
+     */
 	public function cache_section_callback() {
 		echo '<p>' . esc_html__( 'Configure caching settings for DUPR player data.', 'pickleball-ratings' ) . '</p>';
 	}
 
-	/**
-	 * Cache TTL field callback
-	 */
+    /**
+     * Cache TTL field callback.
+     */
 	public function cache_ttl_field_callback() {
 		$ttl   = get_option( 'pickleball_ratings_cache_ttl', 86400 );
 		$hours = intval( $ttl / 3600 );
@@ -100,42 +100,48 @@ class PBR_Admin_Settings {
 		echo '<p class="description">' . esc_html__( 'How long to cache player data (1-168 hours).', 'pickleball-ratings' ) . '</p>';
 	}
 
-	/**
-	 * Sanitize password (store encrypted)
-	 */
+    /**
+     * Sanitize password (store encrypted).
+     *
+     * @param string $value Raw password input.
+     * @return string Empty string (we do not store passwords).
+     */
 	public function sanitize_password( $value ) {
-		// Don't store password in plain text - we'll use it for login then discard
+        // Don't store password in plain text - we'll use it for login then discard.
 		return '';
 	}
 
-	/**
-	 * Sanitize cache TTL (convert hours to seconds)
-	 */
+    /**
+     * Sanitize cache TTL (convert hours to seconds).
+     *
+     * @param int|string $value TTL in hours from settings field.
+     * @return int TTL in seconds, clamped to 1..168 hours.
+     */
 	public function sanitize_cache_ttl( $value ) {
 		$hours = absint( $value );
 
-		// Ensure minimum and maximum values
+        // Ensure minimum and maximum values.
 		if ( $hours < 1 ) {
 			$hours = 1;
 		} elseif ( $hours > 168 ) {
 			$hours = 168;
 		}
 
-		// Convert hours to seconds
+        // Convert hours to seconds.
 		return $hours * 3600;
 	}
 
-	/**
-	 * Settings page
-	 */
+    /**
+     * Settings page.
+     */
 	public function settings_page() {
 		try {
-			// Handle form submissions
+            // Handle form submissions.
 			if ( isset( $_POST['submit'] ) ) {
 				$this->handle_form_submission();
 			}
 
-			// Handle cache clearing
+            // Handle cache clearing.
 			if (
 				isset( $_POST['clear_cache'] )
 				&& check_admin_referer( 'pbr_clear_cache', 'pbr_cache_nonce' )
@@ -149,7 +155,7 @@ class PBR_Admin_Settings {
 				);
 			}
 
-			// Handle authentication
+            // Handle authentication.
 			if (
 				isset( $_POST['pbr_connect'] )
 				&& check_admin_referer( 'pickleball_ratings_authenticate', 'pbr_auth_nonce' )
@@ -164,7 +170,7 @@ class PBR_Admin_Settings {
 				$this->handle_authentication( $email, $password );
 			}
 
-			// Handle disconnect
+            // Handle disconnect.
 			if (
 				isset( $_POST['pbr_disconnect'] )
 				&& check_admin_referer( 'pickleball_ratings_disconnect', 'pbr_disconnect_nonce' )
@@ -332,15 +338,19 @@ class PBR_Admin_Settings {
 	}
 
 	/**
-	 * Handle form submission
+	 * Handle form submission.
 	 */
 	private function handle_form_submission() {
-		// This method is called when the main settings form is submitted
-		// Cache clearing is now handled in the main settings_page method
+		// This method is called when the main settings form is submitted.
+		// Cache clearing is now handled in the main settings_page method.
 	}
 
 	/**
-	 * Handle authentication when settings are saved
+	 * Handle authentication when settings are saved.
+	 *
+	 * @param string $email    DUPR account email address.
+	 * @param string $password DUPR account password.
+	 * @return void
 	 */
 	private function handle_authentication( $email, $password ) {
 		if ( function_exists( 'pbr_log' ) ) {
@@ -413,7 +423,11 @@ class PBR_Admin_Settings {
 	}
 
 	/**
-	 * Authenticate with DUPR API
+	 * Authenticate with DUPR API.
+	 *
+	 * @param string $email    Account email.
+	 * @param string $password Account password.
+	 * @return array|false Auth data array on success, false on failure.
 	 */
 	private function authenticate_with_dupr( $email, $password ) {
 		$api_url = 'https://api.dupr.gg/auth/v3/login';
@@ -427,7 +441,7 @@ class PBR_Admin_Settings {
 			'password' => $password,
 		);
 
-		// Do not log request body; contains credentials
+		// Do not log request body; contains credentials.
 
 		$response = wp_remote_post(
 			$api_url,
@@ -435,7 +449,7 @@ class PBR_Admin_Settings {
 				'headers' => array(
 					'Content-Type' => 'application/json',
 				),
-				'body'    => json_encode( $request_body ),
+				'body'    => wp_json_encode( $request_body ),
 				'timeout' => 30,
 			)
 		);
@@ -470,12 +484,12 @@ class PBR_Admin_Settings {
 			return false;
 		}
 
-		// Extract user information
+		// Extract user information.
 		$user      = $data['result']['user'] ?? array();
 		$user_name = $user['fullName'] ?? ( isset( $user['firstName'], $user['lastName'] ) ? $user['firstName'] . ' ' . $user['lastName'] : '' );
 		$dupr_id   = $user['referralCode'] ?? '';
 
-		// Avoid logging PII from user object
+		// Avoid logging PII from user object.
 
 		return array(
 			'token'         => $data['result']['accessToken'],
@@ -486,7 +500,7 @@ class PBR_Admin_Settings {
 	}
 
 	/**
-	 * Handle disconnect from DUPR
+	 * Handle disconnect from DUPR.
 	 */
 	private function handle_disconnect() {
 		if ( function_exists( 'pbr_log' ) ) {

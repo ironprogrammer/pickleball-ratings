@@ -16,12 +16,12 @@
  * @package         Pickleball_Ratings
  */
 
-// Prevent direct access
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Define plugin constants
+// Define plugin constants.
 define( 'PICKLEBALL_RATINGS_VERSION', '0.2.0' );
 define( 'PICKLEBALL_RATINGS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PICKLEBALL_RATINGS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -55,14 +55,16 @@ function pbr_log( $message, $context = array() ) {
 	error_log( $prefix . $message );
 }
 
-// Include required files
+// Include required files.
 require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-dupr-api.php';
 require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-ajax-handler.php';
 require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'admin/class-pbr-admin-settings.php';
 
-// Initialize the plugin
+/**
+ * Initialize the plugin.
+ */
 function pickleball_ratings_init() {
-	// Add theme support for gradients
+	// Add theme support for gradients.
 	add_theme_support(
 		'editor-gradient-presets',
 		array(
@@ -74,12 +76,14 @@ function pickleball_ratings_init() {
 		)
 	);
 
-	// Register the Gutenberg block
+	// Register the Gutenberg block.
 	pickleball_ratings_register_block();
 }
 add_action( 'init', 'pickleball_ratings_init' );
 
-// Initialize admin functionality
+/**
+ * Initialize admin functionality.
+ */
 function pickleball_ratings_admin_init() {
 	if ( is_admin() ) {
 		new PBR_Admin_Settings();
@@ -87,7 +91,9 @@ function pickleball_ratings_admin_init() {
 }
 add_action( 'init', 'pickleball_ratings_admin_init' );
 
-// Initialize AJAX handler
+/**
+ * Initialize AJAX handler.
+ */
 function pickleball_ratings_ajax_init() {
 	try {
 		new PBR_Ajax_Handler();
@@ -97,7 +103,12 @@ function pickleball_ratings_ajax_init() {
 }
 add_action( 'wp_loaded', 'pickleball_ratings_ajax_init' );
 
-// Add settings link to plugin list
+/**
+ * Add settings link to plugin list.
+ *
+ * @param array $links Existing plugin action links.
+ * @return array Modified links with settings link first.
+ */
 function pickleball_ratings_add_settings_link( $links ) {
 	$settings_link = '<a href="' . admin_url( 'options-general.php?page=pickleball-ratings-settings' ) . '">' . __( 'Settings', 'pickleball-ratings' ) . '</a>';
 	array_unshift( $links, $settings_link );
@@ -105,12 +116,14 @@ function pickleball_ratings_add_settings_link( $links ) {
 }
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'pickleball_ratings_add_settings_link' );
 
-// Register the Gutenberg block
+/**
+ * Register the Gutenberg block.
+ */
 function pickleball_ratings_register_block() {
-	// Get asset file for dependencies and version
+	// Get asset file for dependencies and version.
 	$asset_file = include PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/index.asset.php';
 
-	// Register block script
+	// Register block script.
 	wp_register_script(
 		'pickleball-ratings-block',
 		PICKLEBALL_RATINGS_PLUGIN_URL . 'build/index.js',
@@ -119,7 +132,7 @@ function pickleball_ratings_register_block() {
 		true
 	);
 
-	// Register block style
+	// Register block style.
 	wp_register_style(
 		'pickleball-ratings-block-style',
 		PICKLEBALL_RATINGS_PLUGIN_URL . 'build/style-index.css',
@@ -127,7 +140,7 @@ function pickleball_ratings_register_block() {
 		$asset_file['version']
 	);
 
-	// Register block editor style
+	// Register block editor style.
 	wp_register_style(
 		'pickleball-ratings-block-editor',
 		PICKLEBALL_RATINGS_PLUGIN_URL . 'build/style-index.css',
@@ -135,16 +148,16 @@ function pickleball_ratings_register_block() {
 		$asset_file['version']
 	);
 
-	// Register frontend script
+	// Register frontend script.
 	wp_register_script(
 		'pickleball-ratings-block-frontend',
 		PICKLEBALL_RATINGS_PLUGIN_URL . 'build/frontend.js',
 		array(),
 		$asset_file['version'],
-		true // Load in footer
+		true // Load in footer.
 	);
 
-	// Register the block
+	// Register the block.
 	register_block_type(
 		'pickleball-ratings/player-ratings',
 		array(
@@ -215,7 +228,7 @@ function pickleball_ratings_register_block() {
 		)
 	);
 
-	// Localize script for AJAX
+	// Localize script for AJAX.
 	wp_localize_script(
 		'pickleball-ratings-block',
 		'duprRatingAjax',
@@ -226,7 +239,12 @@ function pickleball_ratings_register_block() {
 	);
 }
 
-// Render callback for the block
+/**
+ * Render callback for the block.
+ *
+ * @param array $attributes Block attributes.
+ * @return string Rendered HTML output.
+ */
 function pickleball_ratings_render_block( $attributes ) {
 	$dupr_id          = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
 	$show_profile_pic = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
@@ -242,25 +260,25 @@ function pickleball_ratings_render_block( $attributes ) {
 	$custom_gradient         = isset( $attributes['customGradient'] ) ? sanitize_text_field( $attributes['customGradient'] ) : '';
 	$font_size               = isset( $attributes['fontSize'] ) ? sanitize_text_field( $attributes['fontSize'] ) : '';
 
-	// Basic validation
+	// Basic validation.
 	if ( empty( $dupr_id ) ) {
 		return '<div class="pickleball-ratings-block pickleball-ratings-error">Please enter a valid DUPR ID.</div>';
 	}
 
-	// Validate 6-character alphanumeric format
+	// Validate 6-character alphanumeric format.
 	if ( ! preg_match( '/^[A-Z0-9]{6}$/', $dupr_id ) ) {
 		return '<div class="pickleball-ratings-block pickleball-ratings-error">Invalid DUPR ID format.</div>';
 	}
 
-	// Get player data from DUPR API
+	// Get player data from DUPR API.
 	$api         = new PBR_DUPR_API();
 	$player_data = $api->get_player_data( $dupr_id );
 
-	// Handle API errors
+	// Handle API errors.
 	if ( is_wp_error( $player_data ) ) {
 		$error_message = $player_data->get_error_message();
 
-		// If it's an authentication error, show a different message
+		// If it's an authentication error, show a different message.
 		if ( 'no_auth' === $player_data->get_error_code() ) {
 			$error_message = 'DUPR API not configured. Please contact the site administrator.';
 		}
@@ -268,11 +286,11 @@ function pickleball_ratings_render_block( $attributes ) {
 		return '<div class="pickleball-ratings-block pickleball-ratings-error">' . esc_html( $error_message ) . '.</div>';
 	}
 
-	// Build color classes and styles using WordPress functions
+	// Build color classes and styles using WordPress functions.
 	$color_classes = array();
 	$color_styles  = array();
 
-	// Handle background color
+	// Handle background color.
 	if ( ! empty( $background_color ) ) {
 		$color_classes[] = 'has-background';
 		$color_classes[] = 'has-' . $background_color . '-background-color';
@@ -281,7 +299,7 @@ function pickleball_ratings_render_block( $attributes ) {
 		$color_styles[] = 'background-color: ' . esc_attr( $custom_background_color );
 	}
 
-	// Handle gradient
+	// Handle gradient.
 	if ( ! empty( $gradient ) ) {
 		$color_classes[] = 'has-background';
 		$color_classes[] = 'has-' . $gradient . '-gradient-background';
@@ -290,7 +308,7 @@ function pickleball_ratings_render_block( $attributes ) {
 		$color_styles[] = 'background: ' . esc_attr( $custom_gradient );
 	}
 
-	// Handle text color
+	// Handle text color.
 	if ( ! empty( $text_color ) ) {
 		$color_classes[] = 'has-text-color';
 		$color_classes[] = 'has-' . $text_color . '-color';
@@ -302,7 +320,7 @@ function pickleball_ratings_render_block( $attributes ) {
 	$color_class_string = ! empty( $color_classes ) ? ' ' . implode( ' ', $color_classes ) : '';
 	$color_style_string = ! empty( $color_styles ) ? ' style="' . implode( '; ', $color_styles ) . '"' : '';
 
-	// Build typography classes
+	// Build typography classes.
 	$typography_classes = array();
 	if ( ! empty( $font_size ) ) {
 		$typography_classes[] = 'has-' . $font_size . '-font-size';
@@ -310,19 +328,19 @@ function pickleball_ratings_render_block( $attributes ) {
 
 	$typography_class_string = ! empty( $typography_classes ) ? ' ' . implode( ' ', $typography_classes ) : '';
 
-	// Build the output
+	// Build the output.
 	$output = '<div class="pickleball-ratings-block' . $color_class_string . $typography_class_string . '"' . $color_style_string . '>';
 
-	// Add player name if available
+	// Add player name if available.
 	if ( ! empty( $player_data['name'] ) ) {
-		// Create title attribute for last updated info
+		// Create title attribute for last updated info.
 		$title_attribute = ! empty( $player_data['last_updated'] )
 			? ' title="Last updated: ' . esc_attr( $player_data['last_updated'] ) . '"'
 			: '';
 
 		$output .= '<div class="pickleball-ratings-player-name"' . $title_attribute . '>';
 
-		// Add profile picture if enabled and available
+		// Add profile picture if enabled and available.
 		if ( $show_profile_pic ) {
 			if ( ! empty( $player_data['profile_image'] ) ) {
 				$output .= '<img src="' . esc_url( $player_data['profile_image'] ) . '" alt="' . esc_attr( $player_data['name'] ) . '" class="pickleball-ratings-profile-pic" />';
@@ -333,7 +351,7 @@ function pickleball_ratings_render_block( $attributes ) {
 
 		$output .= esc_html( $player_data['name'] );
 
-		// Add copy button for DUPR ID
+		// Add copy button for DUPR ID.
 		if ( ! empty( $dupr_id ) ) {
 			$output .= '<button class="pickleball-ratings-copy-id" onclick="window.pbrCopyToClipboard(\'' . esc_js( $dupr_id ) . '\', this)" title="Copy DUPR ID: ' . esc_attr( $dupr_id ) . '">';
 			$output .= '<span class="dashicons dashicons-clipboard"></span>';
@@ -354,7 +372,7 @@ function pickleball_ratings_render_block( $attributes ) {
 	$output       .= '<span class="dashicons dashicons-admin-users pbr-icon pbr-doubles-front"></span>';
 	$output       .= 'Doubles';
 	$output       .= '</span>';
-	$doubles_title = ( $player_data['doubles_rating'] === 'NR' ) ? ' title="Not Rated"' : '';
+	$doubles_title = ( 'NR' === $player_data['doubles_rating'] ) ? ' title="Not Rated"' : '';
 	$output       .= '<span class="pickleball-ratings-value"' . $doubles_title . '>' . esc_html( $player_data['doubles_rating'] ) . '</span>';
 	$output       .= '</div>';
 	$output       .= '<div class="pickleball-ratings-item">';
@@ -362,12 +380,12 @@ function pickleball_ratings_render_block( $attributes ) {
 	$output       .= '<span class="dashicons dashicons-admin-users pbr-icon"></span>';
 	$output       .= 'Singles';
 	$output       .= '</span>';
-	$singles_title = ( $player_data['singles_rating'] === 'NR' ) ? ' title="Not Rated"' : '';
+	$singles_title = ( 'NR' === $player_data['singles_rating'] ) ? ' title="Not Rated"' : '';
 	$output       .= '<span class="pickleball-ratings-value"' . $singles_title . '>' . esc_html( $player_data['singles_rating'] ) . '</span>';
 	$output       .= '</div>';
 	$output       .= '</div>';
 
-	// Add powered by footer if enabled
+	// Add powered by footer if enabled.
 	if ( $show_powered_by ) {
 		$logo_file = $use_light_logo ? 'dupr-logo-white.png' : 'dupr-logo-blue.png';
 		$logo_url  = PICKLEBALL_RATINGS_PLUGIN_URL . 'images/' . $logo_file;

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<ruleset name="Pickleball Ratings">
+  <description>Project rules for WordPress Coding Standards.</description>
+
+  <rule ref="WordPress-Core"/>
+  <rule ref="WordPress-Docs"/>
+  <rule ref="WordPress-Extra"/>
+
+  <arg name="extensions" value="php"/>
+  <file>pickleball-ratings.php</file>
+  <directory>includes</directory>
+  <directory>admin</directory>
+
+  <exclude-pattern>vendor/*</exclude-pattern>
+  <exclude-pattern>build/*</exclude-pattern>
+  <exclude-pattern>node_modules/*</exclude-pattern>
+  <exclude-pattern>tests/*</exclude-pattern>
+  <exclude-pattern>docs/*</exclude-pattern>
+  <exclude-pattern>src/*</exclude-pattern>
+</ruleset>

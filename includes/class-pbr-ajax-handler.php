@@ -8,7 +8,7 @@
  * @since 0.2.0
  */
 
-// Prevent direct access
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -29,9 +29,9 @@ class PBR_Ajax_Handler {
 	 * Constructor
 	 */
 	public function __construct() {
-		// Ensure the API class is available
+		// Ensure the API class is available.
 		if ( ! class_exists( 'PBR_DUPR_API' ) ) {
-			require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-dupr-api.php';
+			require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-dupr-api.php';
 		}
 
 		$this->api = new PBR_DUPR_API();
@@ -43,17 +43,17 @@ class PBR_Ajax_Handler {
 	 * Test API connection
 	 */
 	public function test_connection() {
-		// Check nonce
+		// Check nonce.
 		if ( ! check_ajax_referer( 'pickleball_ratings_test_dupr_connection', 'nonce', false ) ) {
 			wp_send_json_error( 'Security check failed' );
 		}
 
-		// Check permissions
+		// Check permissions.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( 'Insufficient permissions' );
 		}
 
-		// Debug marker
+		// Debug marker.
 		if ( function_exists( 'pbr_log' ) ) {
 			pbr_log( 'AJAX: test_connection called' );
 		}
@@ -77,12 +77,12 @@ class PBR_Ajax_Handler {
 	 * Get player data via AJAX
 	 */
 	public function get_player_data() {
-		// Check nonce
+		// Check nonce.
 		if ( ! check_ajax_referer( 'pickleball_ratings_get_player_data', 'nonce', false ) ) {
 			wp_die( 'Security check failed' );
 		}
 
-		// Check permissions (allow for logged-in users)
+		// Check permissions (allow for logged-in users).
 		if ( ! is_user_logged_in() ) {
 			wp_die( 'Authentication required' );
 		}
