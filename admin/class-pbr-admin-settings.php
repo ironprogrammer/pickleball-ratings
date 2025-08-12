@@ -101,17 +101,6 @@ class PBR_Admin_Settings {
 	}
 
     /**
-     * Sanitize password (store encrypted).
-     *
-     * @param string $value Raw password input.
-     * @return string Empty string (we do not store passwords).
-     */
-	public function sanitize_password( $value ) {
-        // Don't store password in plain text - we'll use it for login then discard.
-		return '';
-	}
-
-    /**
      * Sanitize cache TTL (convert hours to seconds).
      *
      * @param int|string $value TTL in hours from settings field.
