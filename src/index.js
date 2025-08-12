@@ -1,17 +1,23 @@
 import { registerBlockType } from '@wordpress/blocks';
+/* global duprRatingAjax */
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, Notice, ToggleControl } from '@wordpress/components';
+import {
+	PanelBody,
+	TextControl,
+	Notice,
+	ToggleControl,
+} from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import './style.css';
 
 registerBlockType( 'pickleball-ratings/player-ratings', {
 	apiVersion: 2,
-    title: __( 'Pickleball Player Ratings', 'pickleball-ratings' ),
-    description: __(
-        'Display DUPR ratings for a specific player.',
-        'pickleball-ratings'
-    ),
+	title: __( 'Pickleball Player Ratings', 'pickleball-ratings' ),
+	description: __(
+		'Display DUPR ratings for a specific player.',
+		'pickleball-ratings'
+	),
 	category: 'widgets',
 	icon: 'chart-line',
 	supports: {
@@ -76,15 +82,26 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 			type: 'string',
 			default: '',
 		},
-
 	},
 	edit: function Edit( { attributes, setAttributes } ) {
-		const { duprId, showProfilePic, stackedLayout, showPoweredBy, useLightLogo, backgroundColor, textColor, customBackgroundColor, customTextColor, gradient, customGradient, fontSize } = attributes;
+		const {
+			duprId,
+			showProfilePic,
+			stackedLayout,
+			showPoweredBy,
+			useLightLogo,
+			backgroundColor,
+			textColor,
+			customBackgroundColor,
+			customTextColor,
+			gradient,
+			customGradient,
+			fontSize,
+		} = attributes;
 		const [ validationError, setValidationError ] = useState( '' );
 		const [ isLoading, setIsLoading ] = useState( false );
 		const [ playerData, setPlayerData ] = useState( null );
 		const [ apiError, setApiError ] = useState( '' );
-
 
 		// Validate DUPR ID format
 		const validateDuprId = ( id ) => {
@@ -95,10 +112,10 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 
 			if ( ! /^[A-Z0-9]{6}$/.test( id ) ) {
 				setValidationError(
-						__(
-							'DUPR ID must be exactly 6 characters',
-							'pickleball-ratings'
-						)
+					__(
+						'DUPR ID must be exactly 6 characters',
+						'pickleball-ratings'
+					)
 				);
 				return false;
 			}
@@ -126,13 +143,13 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 			setApiError( '' );
 
 			try {
-                const response = await fetch( '/wp-admin/admin-ajax.php', {
+				const response = await fetch( '/wp-admin/admin-ajax.php', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/x-www-form-urlencoded',
 					},
-                    body: new URLSearchParams( {
-                        action: 'pickleball_ratings_get_player_data',
+					body: new URLSearchParams( {
+						action: 'pickleball_ratings_get_player_data',
 						dupr_id: id,
 						nonce: duprRatingAjax.nonce,
 					} ),
@@ -167,198 +184,294 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 		}, [ duprId, validationError ] );
 
 		return (
-            <div { ...useBlockProps( {
-                className: `pickleball-ratings-block${ backgroundColor ? ' has-background has-' + backgroundColor + '-background-color' : '' }${ gradient ? ' has-background has-' + gradient + '-gradient-background' : '' }${ textColor ? ' has-text-color has-' + textColor + '-color' : '' }${ fontSize ? ' has-' + fontSize + '-font-size' : '' }`,
-				style: {
-					...( customBackgroundColor && { backgroundColor: customBackgroundColor } ),
-					...( customGradient && { background: customGradient } ),
-					...( customTextColor && { color: customTextColor } ),
-				}
-			} ) }>
+			<div
+				{ ...useBlockProps( {
+					className: `pickleball-ratings-block${
+						backgroundColor
+							? ' has-background has-' +
+							  backgroundColor +
+							  '-background-color'
+							: ''
+					}${
+						gradient
+							? ' has-background has-' +
+							  gradient +
+							  '-gradient-background'
+							: ''
+					}${
+						textColor
+							? ' has-text-color has-' + textColor + '-color'
+							: ''
+					}${ fontSize ? ' has-' + fontSize + '-font-size' : '' }`,
+					style: {
+						...( customBackgroundColor && {
+							backgroundColor: customBackgroundColor,
+						} ),
+						...( customGradient && { background: customGradient } ),
+						...( customTextColor && { color: customTextColor } ),
+					},
+				} ) }
+			>
 				<InspectorControls>
-                    <PanelBody title={ __( 'Display Settings', 'pickleball-ratings' ) }>
+					<PanelBody
+						title={ __( 'Display Settings', 'pickleball-ratings' ) }
+					>
 						<TextControl
-                            label={ __( 'Player DUPR ID', 'pickleball-ratings' ) }
+							label={ __(
+								'Player DUPR ID',
+								'pickleball-ratings'
+							) }
 							value={ duprId }
 							onChange={ handleDuprIdChange }
 							placeholder="e.g., 8WZ4ML"
-                            help={ __(
-                                'Enter the 6-character DUPR ID for the player.',
-                                'pickleball-ratings'
-                            ) }
+							help={ __(
+								'Enter the 6-character DUPR ID for the player.',
+								'pickleball-ratings'
+							) }
 						/>
 						{ validationError ? (
 							<Notice status="error" isDismissible={ false }>
 								{ validationError }
 							</Notice>
-						) : apiError && (
-							<Notice status="error" isDismissible={ false }>
-								{ apiError }
-							</Notice>
+						) : (
+							apiError && (
+								<Notice status="error" isDismissible={ false }>
+									{ apiError }
+								</Notice>
+							)
 						) }
-                        <ToggleControl
-                            label={ __( 'Show Profile Picture', 'pickleball-ratings' ) }
+						<ToggleControl
+							label={ __(
+								'Show Profile Picture',
+								'pickleball-ratings'
+							) }
 							checked={ showProfilePic }
-							onChange={ ( value ) => setAttributes( { showProfilePic: value } ) }
-                            help={ __(
-                                'Display the player\'s profile picture if available.',
-                                'pickleball-ratings'
-                            ) }
+							onChange={ ( value ) =>
+								setAttributes( { showProfilePic: value } )
+							}
+							help={ __(
+								"Display the player's profile picture if available.",
+								'pickleball-ratings'
+							) }
 						/>
 
-                        <ToggleControl
-                            label={ __( 'Show Powered by DUPR', 'pickleball-ratings' ) }
+						<ToggleControl
+							label={ __(
+								'Show Powered by DUPR',
+								'pickleball-ratings'
+							) }
 							checked={ showPoweredBy }
-							onChange={ ( value ) => setAttributes( { showPoweredBy: value } ) }
-                            help={ __(
-                                'Display a "Powered by DUPR®" footer at the bottom of the block.',
-                                'pickleball-ratings'
-                            ) }
+							onChange={ ( value ) =>
+								setAttributes( { showPoweredBy: value } )
+							}
+							help={ __(
+								'Display a "Powered by DUPR®" footer at the bottom of the block.',
+								'pickleball-ratings'
+							) }
 						/>
 						{ showPoweredBy && (
 							<ToggleControl
-                                label={ __( 'Use Light Logo', 'pickleball-ratings' ) }
+								label={ __(
+									'Use Light Logo',
+									'pickleball-ratings'
+								) }
 								checked={ useLightLogo }
-								onChange={ ( value ) => setAttributes( { useLightLogo: value } ) }
-                                help={ __(
-                                    'Use white logo for dark backgrounds. Unchecked uses blue logo for light backgrounds.',
-                                    'pickleball-ratings'
-                                ) }
+								onChange={ ( value ) =>
+									setAttributes( { useLightLogo: value } )
+								}
+								help={ __(
+									'Use white logo for dark backgrounds. Unchecked uses blue logo for light backgrounds.',
+									'pickleball-ratings'
+								) }
 							/>
 						) }
-                        <ToggleControl
-                            label={ __( 'Stacked Layout', 'pickleball-ratings' ) }
+						<ToggleControl
+							label={ __(
+								'Stacked Layout',
+								'pickleball-ratings'
+							) }
 							checked={ stackedLayout }
-							onChange={ ( value ) => setAttributes( { stackedLayout: value } ) }
-                            help={ __(
-                                'Display ratings vertically with headings above numbers.',
-                                'pickleball-ratings'
-                            ) }
+							onChange={ ( value ) =>
+								setAttributes( { stackedLayout: value } )
+							}
+							help={ __(
+								'Display ratings vertically with headings above numbers.',
+								'pickleball-ratings'
+							) }
 						/>
 					</PanelBody>
 				</InspectorControls>
 
-
-
-					{ ( () => {
-                        if ( ! duprId ) {
-							return (
-                                <div className="pickleball-ratings-placeholder">
-									<p>
-                                        { __(
-                                            'Please enter a DUPR ID in the block settings to display player ratings.',
-                                            'pickleball-ratings'
-                                        ) }
-									</p>
-								</div>
-							);
-						}
-						
-                        if ( validationError ) {
-							return (
-                                <div className="pickleball-ratings-error">
-									<p>{ validationError }</p>
-								</div>
-							);
-						}
-						
-                        if ( isLoading ) {
-							return (
-                                <div className="pickleball-ratings-loading">
-                                    <p>{ __( 'Loading player data...', 'pickleball-ratings' ) }</p>
-								</div>
-							);
-						}
-						
-                        if ( apiError ) {
-							return (
-                                <div className="pickleball-ratings-error">
-									<p>{ apiError }</p>
-								</div>
-							);
-						}
-						
-                        if ( playerData ) {
-							// Create title attribute for last updated info
-							const titleAttribute = playerData.last_updated 
-								? `Last updated: ${playerData.last_updated}` 
-								: '';
-
-							return (
-								<div>
-									{ playerData.name && (
-                                        <div className="pickleball-ratings-player-name" title={ titleAttribute }>
-											{ showProfilePic && (
-												<>
-													{ playerData.profile_image ? (
-                                                        <img src={ playerData.profile_image } alt={ playerData.name } className="pickleball-ratings-profile-pic" />
-													) : (
-                                                        <span className="dashicons dashicons-admin-users pickleball-ratings-profile-pic-fallback"></span>
-													) }
-												</>
-											) }
-											{ playerData.name }
-											{ duprId && (
-												<button 
-                                                    className="pickleball-ratings-copy-id"
-                                                    onClick={ ( event ) => {
-                                                        window.pbrCopyToClipboard( duprId, event.target.closest( '.pickleball-ratings-copy-id' ) );
-													} }
-													title={ `Copy DUPR ID: ${duprId}` }
-												>
-													<span className="dashicons dashicons-clipboard"></span>
-												</button>
-											) }
-										</div>
-									) }
-                                    <div className={`pickleball-ratings-content${ stackedLayout ? ' pickleball-ratings-stacked' : '' }`}>
-                                        <div className="pickleball-ratings-item">
-                                            <span className="pickleball-ratings-label">
-                                                <span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-back"></span>
-                                                <span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-front"></span>
-												Doubles
-											</span>
-                                            <span className="pickleball-ratings-value" title={ playerData.doubles_rating === 'NR' ? 'Not Rated' : '' }>
-												{ playerData.doubles_rating }
-											</span>
-										</div>
-                                        <div className="pickleball-ratings-item">
-                                            <span className="pickleball-ratings-label">
-                                                <span className="dashicons dashicons-admin-users pbr-icon"></span>
-												Singles
-											</span>
-                                            <span className="pickleball-ratings-value" title={ playerData.singles_rating === 'NR' ? 'Not Rated' : '' }>
-												{ playerData.singles_rating }
-											</span>
-										</div>
-									</div>
-                                    { showPoweredBy && (
-                                        <div className="pickleball-ratings-footer">
-                                            <span className="pickleball-ratings-powered-by">
-												Powered by{' '}
-                                                <img 
-                                                    src={ duprRatingAjax.pluginUrl + ( useLightLogo ? 'images/dupr-logo-white.png' : 'images/dupr-logo-blue.png' ) }
-													alt="DUPR"
-                                                    className="pickleball-ratings-logo"
-												/>
-											</span>
-										</div>
-									) }
-								</div>
-							);
-						}
-						
+				{ ( () => {
+					if ( ! duprId ) {
 						return (
-                            <div className="pickleball-ratings-placeholder">
-                                <p>{ __( 'Enter a valid DUPR ID to load player data.', 'pickleball-ratings' ) }</p>
+							<div className="pickleball-ratings-placeholder">
+								<p>
+									{ __(
+										'Please enter a DUPR ID in the block settings to display player ratings.',
+										'pickleball-ratings'
+									) }
+								</p>
 							</div>
 						);
-					} )() }
+					}
+
+					if ( validationError ) {
+						return (
+							<div className="pickleball-ratings-error">
+								<p>{ validationError }</p>
+							</div>
+						);
+					}
+
+					if ( isLoading ) {
+						return (
+							<div className="pickleball-ratings-loading">
+								<p>
+									{ __(
+										'Loading player data…',
+										'pickleball-ratings'
+									) }
+								</p>
+							</div>
+						);
+					}
+
+					if ( apiError ) {
+						return (
+							<div className="pickleball-ratings-error">
+								<p>{ apiError }</p>
+							</div>
+						);
+					}
+
+					if ( playerData ) {
+						// Create title attribute for last updated info
+						const titleAttribute = playerData.last_updated
+							? `Last updated: ${ playerData.last_updated }`
+							: '';
+
+						return (
+							<div>
+								{ playerData.name && (
+									<div
+										className="pickleball-ratings-player-name"
+										title={ titleAttribute }
+									>
+										{ showProfilePic && (
+											<>
+												{ playerData.profile_image ? (
+													<img
+														src={
+															playerData.profile_image
+														}
+														alt={ playerData.name }
+														className="pickleball-ratings-profile-pic"
+													/>
+												) : (
+													<span className="dashicons dashicons-admin-users pickleball-ratings-profile-pic-fallback"></span>
+												) }
+											</>
+										) }
+										{ playerData.name }
+										{ duprId && (
+											<button
+												className="pickleball-ratings-copy-id"
+												onClick={ ( event ) => {
+													window.pbrCopyToClipboard(
+														duprId,
+														event.target.closest(
+															'.pickleball-ratings-copy-id'
+														)
+													);
+												} }
+												title={ `Copy DUPR ID: ${ duprId }` }
+											>
+												<span className="dashicons dashicons-clipboard"></span>
+											</button>
+										) }
+									</div>
+								) }
+								<div
+									className={ `pickleball-ratings-content${
+										stackedLayout
+											? ' pickleball-ratings-stacked'
+											: ''
+									}` }
+								>
+									<div className="pickleball-ratings-item">
+										<span className="pickleball-ratings-label">
+											<span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-back"></span>
+											<span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-front"></span>
+											Doubles
+										</span>
+										<span
+											className="pickleball-ratings-value"
+											title={
+												playerData.doubles_rating ===
+												'NR'
+													? 'Not Rated'
+													: ''
+											}
+										>
+											{ playerData.doubles_rating }
+										</span>
+									</div>
+									<div className="pickleball-ratings-item">
+										<span className="pickleball-ratings-label">
+											<span className="dashicons dashicons-admin-users pbr-icon"></span>
+											Singles
+										</span>
+										<span
+											className="pickleball-ratings-value"
+											title={
+												playerData.singles_rating ===
+												'NR'
+													? 'Not Rated'
+													: ''
+											}
+										>
+											{ playerData.singles_rating }
+										</span>
+									</div>
+								</div>
+								{ showPoweredBy && (
+									<div className="pickleball-ratings-footer">
+										<span className="pickleball-ratings-powered-by">
+											Powered by{ ' ' }
+											<img
+												src={
+													duprRatingAjax.pluginUrl +
+													( useLightLogo
+														? 'images/dupr-logo-white.png'
+														: 'images/dupr-logo-blue.png' )
+												}
+												alt="DUPR"
+												className="pickleball-ratings-logo"
+											/>
+										</span>
+									</div>
+								) }
+							</div>
+						);
+					}
+
+					return (
+						<div className="pickleball-ratings-placeholder">
+							<p>
+								{ __(
+									'Enter a valid DUPR ID to load player data.',
+									'pickleball-ratings'
+								) }
+							</p>
+						</div>
+					);
+				} )() }
 			</div>
 		);
 	},
 
-    save: function Save() {
+	save: function Save() {
 		// Use PHP render callback for dynamic content
 		return null;
 	},
