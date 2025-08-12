@@ -2,9 +2,7 @@
 <ruleset name="Pickleball Ratings">
   <description>Project rules for WordPress Coding Standards.</description>
 
-  <rule ref="WordPress-Core"/>
-  <rule ref="WordPress-Docs"/>
-  <rule ref="WordPress-Extra"/>
+  <rule ref="WordPress"/>
 
   <arg name="extensions" value="php"/>
   <file>pickleball-ratings.php</file>

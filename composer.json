@@ -6,7 +6,8 @@
 	},
 	"scripts": {
 		"makepot": "wp i18n make-pot .",
-		"phpcs": "vendor/bin/phpcs --standard=.phpcs.xml.dist"
+		"phpcs": "vendor/bin/phpcs --standard=phpcs.xml.dist",
+		"phpcbf": "vendor/bin/phpcbf --standard=phpcs.xml.dist"
 	},
 	"config": {
 		"allow-plugins": {
