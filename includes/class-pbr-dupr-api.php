@@ -47,7 +47,7 @@ class PBR_DUPR_API {
 	private $cache_ttl = 86400;
 
 	/**
-     * Constructor.
+	 * Constructor.
 	 */
 	public function __construct() {
 		$this->auth_token    = get_option( 'pickleball_ratings_dupr_auth_token', '' );
@@ -62,45 +62,45 @@ class PBR_DUPR_API {
 	 * @return array|WP_Error Player data or error.
 	 */
 	public function get_player_data( $dupr_id ) {
-        // Sanitize the DUPR ID.
+		// Sanitize the DUPR ID.
 		$dupr_id = sanitize_text_field( $dupr_id );
 
 		if ( ! $this->is_valid_dupr_id( $dupr_id ) ) {
 			return new WP_Error( 'invalid_dupr_id', 'Invalid DUPR ID format' );
 		}
 
-        // Check cache first.
+		// Check cache first.
 		$cached_data = $this->get_cached_player_data( $dupr_id );
 		if ( false !== $cached_data ) {
 			return $cached_data;
 		}
 
-        // Check if we have authentication.
+		// Check if we have authentication.
 		if ( empty( $this->auth_token ) ) {
 			return new WP_Error( 'no_auth', 'DUPR API authentication required. Please configure in plugin settings.' );
 		}
 
-        // Fetch data from API using the correct flow.
+		// Fetch data from API using the correct flow.
 		$player_data = $this->fetch_player_data( $dupr_id );
 
 		if ( is_wp_error( $player_data ) ) {
 			return $player_data;
 		}
 
-        // Cache the data.
+		// Cache the data.
 		$this->cache_player_data( $dupr_id, $player_data );
 
 		return $player_data;
 	}
 
 	/**
-     * Fetch player data from DUPR API.
+	 * Fetch player data from DUPR API.
 	 *
 	 * @param string $dupr_id The DUPR player ID.
 	 * @return array|WP_Error Player data or error.
 	 */
 	private function fetch_player_data( $dupr_id ) {
-        // Step 1: Search by DUPR ID to get the internal user ID.
+		// Step 1: Search by DUPR ID to get the internal user ID.
 		$search_url = $this->api_base_url . '/player/search/byDuprId';
 
 		$search_response = wp_remote_post(
@@ -127,7 +127,7 @@ class PBR_DUPR_API {
 		$search_body   = wp_remote_retrieve_body( $search_response );
 
 		if ( 200 !== $search_status ) {
-            // Check if token is expired (401 status).
+			// Check if token is expired (401 status).
 			if ( 401 === $search_status && ! empty( $this->refresh_token ) ) {
 				if ( function_exists( 'pbr_log' ) ) {
 					pbr_log( 'API: token expired during search; attempting refresh' );
@@ -135,7 +135,7 @@ class PBR_DUPR_API {
 				$refresh_result = $this->refresh_access_token();
 
 				if ( ! is_wp_error( $refresh_result ) ) {
-                    // Retry the search with new token.
+					// Retry the search with new token.
 					$search_response = wp_remote_post(
 						$search_url,
 						array(
@@ -175,15 +175,15 @@ class PBR_DUPR_API {
 			return new WP_Error( 'player_not_found', 'Player not found or invalid DUPR ID' );
 		}
 
-        // Get the internal user ID from the search results.
+		// Get the internal user ID from the search results.
 		$user_id = $search_data['results'][0]['userId'] ?? null;
 		if ( ! $user_id ) {
 			return new WP_Error( 'player_not_found', 'Could not retrieve player ID' );
 		}
 
-        // Avoid logging PII (user_id/dupr_id).
+		// Avoid logging PII (user_id/dupr_id).
 
-        // Step 2: Fetch player data using the internal user ID.
+		// Step 2: Fetch player data using the internal user ID.
 		$player_url = $this->api_base_url . '/player/v3/' . $user_id;
 
 		$response = wp_remote_get(
@@ -205,7 +205,7 @@ class PBR_DUPR_API {
 		$body        = wp_remote_retrieve_body( $response );
 
 		if ( 200 !== $status_code ) {
-            // Check if token is expired (401 status).
+			// Check if token is expired (401 status).
 			if ( 401 === $status_code && ! empty( $this->refresh_token ) ) {
 				if ( function_exists( 'pbr_log' ) ) {
 					pbr_log( 'API: token expired during player fetch; attempting refresh' );
@@ -213,7 +213,7 @@ class PBR_DUPR_API {
 				$refresh_result = $this->refresh_access_token();
 
 				if ( ! is_wp_error( $refresh_result ) ) {
-                    // Retry the request with new token.
+					// Retry the request with new token.
 					$response = wp_remote_get(
 						$player_url,
 						array(
@@ -246,7 +246,7 @@ class PBR_DUPR_API {
 			} else {
 				$error_message = 'DUPR API error (HTTP ' . $status_code . ')';
 
-                // Try to parse error response.
+				// Try to parse error response.
 				$error_data = json_decode( $body, true );
 				if ( $error_data && isset( $error_data['message'] ) ) {
 					$error_message .= ': ' . $error_data['message'];
@@ -261,12 +261,12 @@ class PBR_DUPR_API {
 			return new WP_Error( 'parse_error', 'Failed to parse DUPR API response' );
 		}
 
-        // Parse and structure the player data.
+		// Parse and structure the player data.
 		return $this->parse_player_data( $data['result'] );
 	}
 
 	/**
-     * Parse and structure player data from API response.
+	 * Parse and structure player data from API response.
 	 *
 	 * @param array $api_data Raw API response data.
 	 * @return array Structured player data.
@@ -281,7 +281,7 @@ class PBR_DUPR_API {
 			'last_updated'   => current_time( 'mysql' ),
 		);
 
-        // Extract basic player info.
+		// Extract basic player info.
 		if ( isset( $api_data['duprId'] ) ) {
 			$player_data['dupr_id'] = sanitize_text_field( $api_data['duprId'] );
 		}
@@ -300,13 +300,13 @@ class PBR_DUPR_API {
 		if ( isset( $api_data['ratings'] ) ) {
 			$ratings = $api_data['ratings'];
 
-            // Doubles rating.
-            if ( isset( $ratings['doubles'] ) && 'NR' !== $ratings['doubles'] ) {
+			// Doubles rating.
+			if ( isset( $ratings['doubles'] ) && 'NR' !== $ratings['doubles'] ) {
 				$player_data['doubles_rating'] = (string) $ratings['doubles'];
 			}
 
-            // Singles rating.
-            if ( isset( $ratings['singles'] ) && 'NR' !== $ratings['singles'] ) {
+			// Singles rating.
+			if ( isset( $ratings['singles'] ) && 'NR' !== $ratings['singles'] ) {
 				$player_data['singles_rating'] = (string) $ratings['singles'];
 			}
 		}

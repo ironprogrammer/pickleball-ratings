@@ -83,16 +83,16 @@ class PBR_Admin_Settings {
 		);
 	}
 
-    /**
-     * Cache section callback.
-     */
+	/**
+	 * Cache section callback.
+	 */
 	public function cache_section_callback() {
 		echo '<p>' . esc_html__( 'Configure caching settings for DUPR player data.', 'pickleball-ratings' ) . '</p>';
 	}
 
-    /**
-     * Cache TTL field callback.
-     */
+	/**
+	 * Cache TTL field callback.
+	 */
 	public function cache_ttl_field_callback() {
 		$ttl   = get_option( 'pickleball_ratings_cache_ttl', 86400 );
 		$hours = intval( $ttl / 3600 );
@@ -100,37 +100,37 @@ class PBR_Admin_Settings {
 		echo '<p class="description">' . esc_html__( 'How long to cache player data (1-168 hours).', 'pickleball-ratings' ) . '</p>';
 	}
 
-    /**
-     * Sanitize cache TTL (convert hours to seconds).
-     *
-     * @param int|string $value TTL in hours from settings field.
-     * @return int TTL in seconds, clamped to 1..168 hours.
-     */
+	/**
+	 * Sanitize cache TTL (convert hours to seconds).
+	 *
+	 * @param int|string $value TTL in hours from settings field.
+	 * @return int TTL in seconds, clamped to 1..168 hours.
+	 */
 	public function sanitize_cache_ttl( $value ) {
 		$hours = absint( $value );
 
-        // Ensure minimum and maximum values.
+		// Ensure minimum and maximum values.
 		if ( $hours < 1 ) {
 			$hours = 1;
 		} elseif ( $hours > 168 ) {
 			$hours = 168;
 		}
 
-        // Convert hours to seconds.
+		// Convert hours to seconds.
 		return $hours * 3600;
 	}
 
-    /**
-     * Settings page.
-     */
+	/**
+	 * Settings page.
+	 */
 	public function settings_page() {
 		try {
-            // Handle form submissions.
+			// Handle form submissions.
 			if ( isset( $_POST['submit'] ) ) {
 				$this->handle_form_submission();
 			}
 
-            // Handle cache clearing.
+			// Handle cache clearing.
 			if (
 				isset( $_POST['clear_cache'] )
 				&& check_admin_referer( 'pbr_clear_cache', 'pbr_cache_nonce' )
@@ -144,7 +144,7 @@ class PBR_Admin_Settings {
 				);
 			}
 
-            // Handle authentication.
+			// Handle authentication.
 			if (
 				isset( $_POST['pbr_connect'] )
 				&& check_admin_referer( 'pickleball_ratings_authenticate', 'pbr_auth_nonce' )
@@ -159,7 +159,7 @@ class PBR_Admin_Settings {
 				$this->handle_authentication( $email, $password );
 			}
 
-            // Handle disconnect.
+			// Handle disconnect.
 			if (
 				isset( $_POST['pbr_disconnect'] )
 				&& check_admin_referer( 'pickleball_ratings_disconnect', 'pbr_disconnect_nonce' )
