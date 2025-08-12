@@ -1,11 +1,9 @@
 {
 	"require-dev": {
-		"wp-cli/i18n-command": "^2",
 		"squizlabs/php_codesniffer": "^3.9",
 		"wp-coding-standards/wpcs": "^3.0"
 	},
 	"scripts": {
-		"makepot": "wp i18n make-pot .",
 		"phpcs": "vendor/bin/phpcs --standard=phpcs.xml.dist",
 		"phpcbf": "vendor/bin/phpcbf --standard=phpcs.xml.dist"
 	},
