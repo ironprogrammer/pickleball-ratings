@@ -18,8 +18,23 @@ if ( false !== $_phpunit_polyfills_path ) {
 }
 
 if ( ! file_exists( "{$_tests_dir}/includes/functions.php" ) ) {
-	echo "Could not find {$_tests_dir}/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	exit( 1 );
+    // Try common macOS/Linux temp locations as fallbacks.
+    $candidates = array(
+        '/tmp/wordpress-tests-lib',
+        '/private/tmp/wordpress-tests-lib',
+    );
+    foreach ( $candidates as $candidate ) {
+        if ( file_exists( "$candidate/includes/functions.php" ) ) {
+            $_tests_dir = $candidate;
+            break;
+        }
+    }
+}
+
+if ( ! file_exists( "{$_tests_dir}/includes/functions.php" ) ) {
+    echo "Could not find {$_tests_dir}/includes/functions.php.\n";
+    echo "Tip: run bin/install-wp-tests.sh or set WP_TESTS_DIR to your install (e.g. /tmp/wordpress-tests-lib)." . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+    exit( 1 );
 }
 
 // Give access to tests_add_filter() function.
@@ -29,7 +44,8 @@ require_once "{$_tests_dir}/includes/functions.php";
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-    require dirname( dirname( __FILE__ ) ) . '/pickleball-ratings.php';
+    $plugin_dir = dirname( dirname( __FILE__ ) );
+    require $plugin_dir . '/pickleball-ratings.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );

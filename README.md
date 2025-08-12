@@ -32,6 +32,8 @@ This is Phase 1 of the plugin development, which includes:
 - `npm run lint:js` - Lint JavaScript files
 - `npm run lint:css` - Lint CSS files
 - `npm run format` - Format code with Prettier
+- `npm run test:setup` - One-time WordPress test suite setup (creates test DB and installs WP tests)
+- `npm test` - Build assets and run PHPUnit tests
 
 ## Plugin Structure
 
@@ -48,11 +50,16 @@ pickleball-ratings/
 
 ## Testing
 
-The plugin includes comprehensive tests that verify:
-- Plugin constants and functions
-- DUPR ID validation
-- Error handling
-- Build file generation
+Run tests locally:
+
+1. One-time setup (installs WP test suite and creates DB):
+   ```bash
+   npm run test:setup
+   ```
+2. Build assets and run PHPUnit:
+   ```bash
+   npm test
+   ```
 
 ## Future Phases
 
