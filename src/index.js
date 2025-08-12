@@ -8,7 +8,7 @@ import {
 	Notice,
 	ToggleControl,
 } from '@wordpress/components';
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useEffect, useCallback } from '@wordpress/element';
 import './style.css';
 
 registerBlockType( 'pickleball-ratings/player-ratings', {
@@ -132,44 +132,47 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 		};
 
 		// Fetch player data when DUPR ID changes
-		const fetchPlayerData = async ( id ) => {
-			if ( ! id || validationError ) {
-				setPlayerData( null );
-				setApiError( '' );
-				return;
-			}
-
-			setIsLoading( true );
-			setApiError( '' );
-
-			try {
-				const response = await fetch( '/wp-admin/admin-ajax.php', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded',
-					},
-					body: new URLSearchParams( {
-						action: 'pickleball_ratings_get_player_data',
-						dupr_id: id,
-						nonce: duprRatingAjax.nonce,
-					} ),
-				} );
-
-				const result = await response.json();
-
-				if ( result.success ) {
-					setPlayerData( result.data );
-				} else {
-					setApiError( result.data );
+		const fetchPlayerData = useCallback(
+			async ( id ) => {
+				if ( ! id || validationError ) {
 					setPlayerData( null );
+					setApiError( '' );
+					return;
 				}
-			} catch ( error ) {
-				setApiError( 'Failed to fetch player data' );
-				setPlayerData( null );
-			} finally {
-				setIsLoading( false );
-			}
-		};
+
+				setIsLoading( true );
+				setApiError( '' );
+
+				try {
+					const response = await fetch( '/wp-admin/admin-ajax.php', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded',
+						},
+						body: new URLSearchParams( {
+							action: 'pickleball_ratings_get_player_data',
+							dupr_id: id,
+							nonce: duprRatingAjax.nonce,
+						} ),
+					} );
+
+					const result = await response.json();
+
+					if ( result.success ) {
+						setPlayerData( result.data );
+					} else {
+						setApiError( result.data );
+						setPlayerData( null );
+					}
+				} catch ( error ) {
+					setApiError( 'Failed to fetch player data' );
+					setPlayerData( null );
+				} finally {
+					setIsLoading( false );
+				}
+			},
+			[ validationError ]
+		);
 
 		// Validate on mount and when duprId changes
 		useEffect( () => {
@@ -181,7 +184,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 			if ( duprId && ! validationError ) {
 				fetchPlayerData( duprId );
 			}
-		}, [ duprId, validationError ] );
+		}, [ duprId, validationError, fetchPlayerData ] );
 
 		return (
 			<div
