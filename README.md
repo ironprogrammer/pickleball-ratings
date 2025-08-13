@@ -61,6 +61,12 @@ Run tests locally:
    npm test
    ```
 
+The test suite includes coverage for:
+- Plugin registration and asset handles
+- Render callback validation and CSS classes/styles
+- DUPR API basic error handling and cache salt behavior
+- Admin settings TTL sanitizer and registration
+
 ## Future Phases
 
 - **Phase 2**: DUPR API integration with real data
