@@ -377,16 +377,6 @@ class PBR_DUPR_API {
 	}
 
 	/**
-	 * Clear authentication token.
-	 */
-	public function clear_auth_token() {
-		$this->auth_token    = '';
-		$this->refresh_token = '';
-		delete_option( 'pickleball_ratings_dupr_auth_token' );
-		delete_option( 'pickleball_ratings_dupr_auth_refresh_token' );
-	}
-
-	/**
 	 * Set cache TTL.
 	 *
 	 * @param int $ttl Cache TTL in seconds.
@@ -497,6 +487,192 @@ class PBR_DUPR_API {
 		update_option( 'pickleball_ratings_dupr_auth_refresh_token', $this->refresh_token );
 
 		return true;
+	}
+
+	/**
+	 * Authenticate with DUPR API using email and password.
+	 *
+	 * @param string $email    DUPR account email address.
+	 * @param string $password DUPR account password.
+	 * @return array|WP_Error Auth data array on success, WP_Error on failure.
+	 */
+	public function authenticate( $email, $password ) {
+		if ( function_exists( 'pbr_log' ) ) {
+			pbr_log( 'Auth: attempt started' );
+		}
+
+		if ( function_exists( 'pbr_log' ) ) {
+			pbr_log(
+				'Auth: received credentials',
+				array(
+					'email_present'    => ! empty( $email ),
+					'password_present' => ! empty( $password ),
+				)
+			);
+		}
+
+		if ( empty( $email ) || empty( $password ) ) {
+			if ( function_exists( 'pbr_log' ) ) {
+				pbr_log( 'Auth: missing email or password' );
+			}
+			return new WP_Error( 'missing_credentials', 'Email and password are required.' );
+		}
+
+		$api_url = $this->api_base_url . '/auth/v3/login';
+
+		if ( function_exists( 'pbr_log' ) ) {
+			pbr_log( 'Auth: making request', array( 'endpoint' => $api_url ) );
+		}
+
+		$request_body = array(
+			'email'    => $email,
+			'password' => $password,
+		);
+
+		$response = wp_remote_post(
+			$api_url,
+			array(
+				'headers' => array(
+					'Content-Type' => 'application/json',
+				),
+				'body'    => wp_json_encode( $request_body ),
+				'timeout' => 30,
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			if ( function_exists( 'pbr_log' ) ) {
+				pbr_log( 'Auth: request error', array( 'error' => $response->get_error_message() ) );
+			}
+			return new WP_Error( 'api_error', 'Failed to connect to DUPR API: ' . $response->get_error_message() );
+		}
+
+		$status_code = wp_remote_retrieve_response_code( $response );
+		$body        = wp_remote_retrieve_body( $response );
+
+		if ( function_exists( 'pbr_log' ) ) {
+			pbr_log( 'Auth: response received', array( 'status' => $status_code ) );
+		}
+
+		if ( 200 !== $status_code ) {
+			if ( function_exists( 'pbr_log' ) ) {
+				pbr_log( 'Auth: authentication failed with status', array( 'status' => $status_code ) );
+			}
+			return new WP_Error( 'auth_failed', 'Authentication failed. Please check your email and password.' );
+		}
+
+		$data = json_decode( $body, true );
+
+		if ( ! $data || ! isset( $data['result']['accessToken'] ) ) {
+			if ( function_exists( 'pbr_log' ) ) {
+				pbr_log( 'Auth: invalid response shape' );
+			}
+			return new WP_Error( 'invalid_response', 'Invalid authentication response from DUPR API.' );
+		}
+
+		// Extract user information.
+		$user      = $data['result']['user'] ?? array();
+		$user_name = $user['fullName'] ?? ( isset( $user['firstName'], $user['lastName'] ) ? $user['firstName'] . ' ' . $user['lastName'] : '' );
+		$dupr_id   = $user['referralCode'] ?? '';
+
+		$auth_data = array(
+			'token'         => $data['result']['accessToken'],
+			'refresh_token' => $data['result']['refreshToken'],
+			'user_name'     => $user_name,
+			'dupr_id'       => $dupr_id,
+			'email'         => $email,
+		);
+
+		// Save authentication data.
+		$this->save_auth_data( $auth_data );
+
+		if ( function_exists( 'pbr_log' ) ) {
+			pbr_log( 'Auth: authentication successful' );
+		}
+
+		return $auth_data;
+	}
+
+	/**
+	 * Disconnect from DUPR API.
+	 *
+	 * @return bool True on success.
+	 */
+	public function disconnect() {
+		if ( function_exists( 'pbr_log' ) ) {
+			pbr_log( 'Auth: disconnect requested' );
+		}
+
+		// Clear all authentication data.
+		$this->clear_auth_data();
+
+		// Clear cached data.
+		$this->clear_cache();
+
+		if ( function_exists( 'pbr_log' ) ) {
+			pbr_log( 'Auth: disconnected from DUPR API' );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check if user is authenticated.
+	 *
+	 * @return bool True if authenticated, false otherwise.
+	 */
+	public function is_authenticated() {
+		return ! empty( $this->auth_token );
+	}
+
+	/**
+	 * Get authenticated user information.
+	 *
+	 * @return array|false User info array or false if not authenticated.
+	 */
+	public function get_user_info() {
+		if ( ! $this->is_authenticated() ) {
+			return false;
+		}
+
+		return array(
+			'user_name' => get_option( 'pickleball_ratings_dupr_auth_user_name', '' ),
+			'dupr_id'   => get_option( 'pickleball_ratings_dupr_auth_id', '' ),
+			'email'     => get_option( 'pickleball_ratings_dupr_auth_email', '' ),
+		);
+	}
+
+	/**
+	 * Save authentication data to WordPress options.
+	 *
+	 * @param array $auth_data Authentication data array.
+	 */
+	private function save_auth_data( $auth_data ) {
+		$this->auth_token    = $auth_data['token'];
+		$this->refresh_token = $auth_data['refresh_token'];
+
+		update_option( 'pickleball_ratings_dupr_auth_token', $auth_data['token'] );
+		update_option( 'pickleball_ratings_dupr_auth_refresh_token', $auth_data['refresh_token'] );
+		update_option( 'pickleball_ratings_dupr_auth_user_name', $auth_data['user_name'] );
+		update_option( 'pickleball_ratings_dupr_auth_id', $auth_data['dupr_id'] );
+		
+		if ( isset( $auth_data['email'] ) ) {
+			update_option( 'pickleball_ratings_dupr_auth_email', $auth_data['email'] );
+		}
+	}
+
+	/**
+	 * Clear all authentication data from WordPress options.
+	 */
+	private function clear_auth_data() {
+		$this->auth_token    = '';
+		$this->refresh_token = '';
+
+		delete_option( 'pickleball_ratings_dupr_auth_token' );
+		delete_option( 'pickleball_ratings_dupr_auth_refresh_token' );
+		delete_option( 'pickleball_ratings_dupr_auth_user_name' );
+		delete_option( 'pickleball_ratings_dupr_auth_id' );
+		delete_option( 'pickleball_ratings_dupr_auth_email' );
 	}
 
 	/**
