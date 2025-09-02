@@ -238,9 +238,8 @@ function pickleball_ratings_register_block() {
  * @return string Rendered HTML output.
  */
 function pickleball_ratings_render_block( $attributes ) {
-	$dupr_id          = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
-	$show_profile_pic = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
-
+	$dupr_id                 = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
+	$show_profile_pic        = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
 	$stacked_layout          = isset( $attributes['stackedLayout'] ) ? (bool) $attributes['stackedLayout'] : false;
 	$show_powered_by         = isset( $attributes['showPoweredBy'] ) ? (bool) $attributes['showPoweredBy'] : false;
 	$use_light_logo          = isset( $attributes['useLightLogo'] ) ? (bool) $attributes['useLightLogo'] : false;
