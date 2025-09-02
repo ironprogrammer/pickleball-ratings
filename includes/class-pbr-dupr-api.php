@@ -1,6 +1,6 @@
 <?php
 /**
- * DUPR API Integration Class
+ * DUPR API Integration Class.
  *
  * Handles authentication, data fetching, and caching for the DUPR API.
  *
@@ -14,33 +14,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * DUPR API Integration Class
+ * DUPR API Integration Class.
  */
 class PBR_DUPR_API {
 
 	/**
-	 * API base URL
+	 * API base URL.
 	 *
 	 * @var string
 	 */
 	private $api_base_url = 'https://api.dupr.gg';
 
 	/**
-	 * Authentication token
+	 * Authentication token.
 	 *
 	 * @var string
 	 */
 	private $auth_token = '';
 
 	/**
-	 * Refresh token
+	 * Refresh token.
 	 *
 	 * @var string
 	 */
 	private $refresh_token = '';
 
 	/**
-	 * Cache TTL in seconds (default 24 hours)
+	 * Cache TTL in seconds (default 24 hours).
 	 *
 	 * @var int
 	 */
@@ -56,7 +56,7 @@ class PBR_DUPR_API {
 	}
 
 	/**
-	 * Get player data by DUPR ID
+	 * Get player data by DUPR ID.
 	 *
 	 * @param string $dupr_id The DUPR player ID.
 	 * @return array|WP_Error Player data or error.
@@ -180,8 +180,6 @@ class PBR_DUPR_API {
 		if ( ! $user_id ) {
 			return new WP_Error( 'player_not_found', 'Could not retrieve player ID' );
 		}
-
-		// Avoid logging PII (user_id/dupr_id).
 
 		// Step 2: Fetch player data using the internal user ID.
 		$player_url = $this->api_base_url . '/player/v3/' . $user_id;
@@ -315,7 +313,7 @@ class PBR_DUPR_API {
 	}
 
 	/**
-	 * Get cached player data
+	 * Get cached player data.
 	 *
 	 * @param string $dupr_id The DUPR player ID.
 	 * @return array|false Cached data or false if not found/expired.
@@ -339,7 +337,7 @@ class PBR_DUPR_API {
 	}
 
 	/**
-	 * Cache player data
+	 * Cache player data.
 	 *
 	 * @param string $dupr_id The DUPR player ID.
 	 * @param array  $data    Player data to cache.
@@ -350,7 +348,7 @@ class PBR_DUPR_API {
 	}
 
 	/**
-	 * Validate DUPR ID format
+	 * Validate DUPR ID format.
 	 *
 	 * @param string $dupr_id The DUPR ID to validate.
 	 * @return bool True if valid, false otherwise.
@@ -360,7 +358,7 @@ class PBR_DUPR_API {
 	}
 
 	/**
-	 * Set authentication token
+	 * Set authentication token.
 	 *
 	 * @param string $token Authentication token.
 	 */
@@ -370,7 +368,7 @@ class PBR_DUPR_API {
 	}
 
 	/**
-	 * Get authentication token
+	 * Get authentication token.
 	 *
 	 * @return string Authentication token.
 	 */
@@ -379,7 +377,7 @@ class PBR_DUPR_API {
 	}
 
 	/**
-	 * Clear authentication token
+	 * Clear authentication token.
 	 */
 	public function clear_auth_token() {
 		$this->auth_token    = '';
@@ -389,7 +387,7 @@ class PBR_DUPR_API {
 	}
 
 	/**
-	 * Set cache TTL
+	 * Set cache TTL.
 	 *
 	 * @param int $ttl Cache TTL in seconds.
 	 */
@@ -399,7 +397,7 @@ class PBR_DUPR_API {
 	}
 
 	/**
-	 * Get cache TTL
+	 * Get cache TTL.
 	 *
 	 * @return int Cache TTL in seconds.
 	 */
@@ -408,7 +406,7 @@ class PBR_DUPR_API {
 	}
 
 	/**
-	 * Clear all cached data
+	 * Clear all cached data.
 	 */
 	public function clear_cache() {
 		// Invalidate all cached entries by bumping the salt; old keys will expire naturally.

@@ -1,6 +1,6 @@
 <?php
 /**
- * Admin Settings Class
+ * Admin Settings Class.
  *
  * Handles the admin settings page for DUPR API configuration.
  *
@@ -14,19 +14,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Admin Settings Class
+ * Admin Settings Class.
  */
 class PBR_Admin_Settings {
 
 	/**
-	 * API instance
+	 * API instance.
 	 *
 	 * @var PBR_DUPR_API
 	 */
 	private $api;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public function __construct() {
 		// Ensure the API class is available.
@@ -41,7 +41,7 @@ class PBR_Admin_Settings {
 	}
 
 	/**
-	 * Add admin menu
+	 * Add admin menu.
 	 */
 	public function add_admin_menu() {
 		add_options_page(
@@ -54,7 +54,7 @@ class PBR_Admin_Settings {
 	}
 
 	/**
-	 * Initialize settings
+	 * Initialize settings.
 	 */
 	public function init_settings() {
 		register_setting(
@@ -511,7 +511,7 @@ class PBR_Admin_Settings {
 	}
 
 	/**
-	 * Admin notices
+	 * Admin notices.
 	 */
 	public function admin_notices() {
 		settings_errors( 'pickleball_ratings_settings' );

@@ -1,6 +1,6 @@
 <?php
 /**
- * AJAX Handler Class
+ * AJAX Handler Class.
  *
  * Handles AJAX requests for the DUPR Rating plugin.
  *
@@ -14,19 +14,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * AJAX Handler Class
+ * AJAX Handler Class.
  */
 class PBR_Ajax_Handler {
 
 	/**
-	 * API instance
+	 * API instance.
 	 *
 	 * @var PBR_DUPR_API
 	 */
 	private $api;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public function __construct() {
 		// Ensure the API class is available.
@@ -40,7 +40,7 @@ class PBR_Ajax_Handler {
 	}
 
 	/**
-	 * Test API connection
+	 * Test API connection.
 	 */
 	public function test_connection() {
 		// Check nonce.
@@ -74,7 +74,7 @@ class PBR_Ajax_Handler {
 	}
 
 	/**
-	 * Get player data via AJAX
+	 * Get player data via AJAX.
 	 */
 	public function get_player_data() {
 		// Check nonce.
