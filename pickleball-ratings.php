@@ -2,7 +2,7 @@
 /**
  * Plugin Name:     Pickleball Ratings
  * Plugin URI:      https://github.com/ironprogrammer/pickleball-ratings
- * Description:     Display pickleball player ratings using a customizable block. Uses the official DUPR API for data; not affiliated with DUPR.
+ * Description:     Display pickleball player ratings using a customizable block. Uses the official DUPR API for data.
  * Author:          Brian Alexander
  * Author URI:      https://brianalexander.com
  * License:         GPLv2 or later
