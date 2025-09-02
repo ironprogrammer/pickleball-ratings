@@ -8,14 +8,87 @@ Thanks for your interest in contributing! This project follows standard open-sou
 - Security: do not open public issues for security reports; instead, contact the maintainer privately.
 - Local dev: WordPress + this plugin; `npm install` then `npm run build` for assets.
 
-## Coding standards
+## Development Setup
 
-- Follow WordPress Coding Standards (WPCS) for PHP, JS, and CSS.
-- Run PHPCS before committing changes:
+1. **Install dependencies:**
+   ```bash
+   npm install
+   composer install
+   ```
 
+2. **Build assets:**
+   ```bash
+   npm run build
+   ```
+
+## Code Quality & Testing
+
+### Linting and Formatting
+
+This project uses multiple tools to ensure code quality:
+
+#### PHP Linting & Formatting
+- **PHPCS (PHP CodeSniffer) and WPCS:** Checks PHP code against PHPCS and WordPress Coding Standards
+- **PHPCBF (PHP Code Beautifier and Fixer):** Auto-fixes PHP formatting issues
+
+```bash
+# Run PHP linting
+npm run lint:php
+# or directly:
+composer run phpcs
+
+# Auto-fix PHP formatting issues
+npm run format:php
+# or directly:
+composer run phpcbf
 ```
-./vendor/bin/phpcs --standard=.phpcs.xml.dist
+
+If you don't have WPCS installed globally, you can install it via Composer, or use a local PHPCS binary in your environment.
+
+#### JavaScript/CSS Linting
+- **ESLint:** JavaScript linting using WordPress standards
+- **Stylelint:** CSS linting using WordPress standards
+
+```bash
+# Run all linting (PHP, JS, CSS)
+npm run lint
+
+# Run individual linters
+npm run lint:js
+npm run lint:css
 ```
 
-If you don’t have WPCS installed globally, you can install it via Composer, or use a local PHPCS binary in your environment.
+#### Formatting
+```bash
+# Format all code (PHP, JS, CSS)
+npm run format
+```
 
+### Unit Testing
+
+The project uses PHPUnit for unit testing with WordPress test utilities:
+
+```bash
+# Set up WordPress test environment (first time only)
+npm run test:setup
+
+# Run all tests
+npm run test
+```
+
+### Pre-commit Checklist
+
+Before committing your changes, ensure you've run:
+
+1. **Linting:** `npm run lint`
+2. **Formatting:** `npm run format` (if needed)
+3. **Testing:** `npm run test`
+4. **Build:** `npm run build` (if you modified assets)
+
+## Coding Standards
+
+- Follow WordPress Coding Standards (WPCS) for PHP, JavaScript, and CSS
+- Use PHP 7.4+ features when appropriate
+- Implement proper error handling and logging
+- Use WordPress hooks (actions and filters) for extensibility
+- Follow WordPress security best practices (nonces, sanitization, etc)
