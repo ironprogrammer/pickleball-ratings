@@ -263,15 +263,6 @@ class PBR_Admin_Settings {
 							value="<?php esc_attr_e( 'Clear Cache', 'pickleball-ratings' ); ?>" 
 							onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to clear all cached data?', 'pickleball-ratings' ); ?>')" />
 				</form>
-
-				<hr>
-
-				<h2><?php esc_html_e( 'Example DUPR IDs', 'pickleball-ratings' ); ?></h2>
-				<p><?php esc_html_e( 'Use these IDs to test the plugin:', 'pickleball-ratings' ); ?></p>
-				<ul>
-					<li><strong>JW Johnson:</strong> <code>8WZ4ML</code> (high reliability, lots of history)</li>
-					<li><strong>Test Player:</strong> <code>PW24RQ</code> (low reliability, minimal history)</li>
-				</ul>
 			<?php endif; ?>
 		</div>
 

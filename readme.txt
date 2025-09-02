@@ -31,11 +31,6 @@ The DUPR Rating plugin provides a custom Gutenberg block that displays DUPR (Dyn
 2. Enter a 6-character DUPR ID in the block settings
 3. The block will display the player's rating information
 
-## Example DUPR IDs
-
-* JW Johnson: `8WZ4ML`
-* Your ID: `PW24RQ`
-
 ## Phase 2 Status
 
 This is Phase 2 of the plugin development, which includes:
