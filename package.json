@@ -14,7 +14,8 @@
 		"test:setup": "WP_TESTS_DIR=/tmp/wordpress-tests-lib WP_CORE_DIR=/tmp/wordpress bin/install-wp-tests.sh wp_test root '' localhost latest",
 		"test": "WP_TESTS_DIR=/tmp/wordpress-tests-lib npm run build && WP_TESTS_DIR=/tmp/wordpress-tests-lib vendor/bin/phpunit --testdox",
 		"packages-update": "wp-scripts packages-update",
-		"plugin-zip": "wp-scripts plugin-zip",
+		"plugin-zip": "wp-scripts plugin-zip && npm run plugin-zip:add-images",
+		"plugin-zip:add-images": "mkdir -p temp-plugin && unzip -q pickleball-ratings.zip -d temp-plugin && cp -r images temp-plugin/ && cd temp-plugin && zip -r ../pickleball-ratings.zip . && cd .. && rm -rf temp-plugin",
 		"start": "wp-scripts start"
 	},
 	"devDependencies": {
