@@ -132,17 +132,9 @@ function pickleball_ratings_register_block() {
 		true
 	);
 
-	// Register block style.
+	// Register block style (used for both frontend and editor).
 	wp_register_style(
 		'pickleball-ratings-block-style',
-		PICKLEBALL_RATINGS_PLUGIN_URL . 'build/style-index.css',
-		array(),
-		$asset_file['version']
-	);
-
-	// Register block editor style.
-	wp_register_style(
-		'pickleball-ratings-block-editor',
 		PICKLEBALL_RATINGS_PLUGIN_URL . 'build/style-index.css',
 		array( 'wp-edit-blocks', 'dashicons' ),
 		$asset_file['version']
@@ -162,7 +154,7 @@ function pickleball_ratings_register_block() {
 		'pickleball-ratings/player-ratings',
 		array(
 			'editor_script'   => 'pickleball-ratings-block',
-			'editor_style'    => 'pickleball-ratings-block-editor',
+			'editor_style'    => 'pickleball-ratings-block-style',
 			'style'           => 'pickleball-ratings-block-style',
 			'script'          => 'pickleball-ratings-block-frontend',
 			'render_callback' => 'pickleball_ratings_render_block',
