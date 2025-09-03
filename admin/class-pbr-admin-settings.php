@@ -176,11 +176,9 @@ class PBR_Admin_Settings {
 			<p><?php esc_html_e( 'Connect to your DUPR account to enable API access.', 'pickleball-ratings' ); ?></p>
 			
 				<?php
-				$token     = get_option( 'pickleball_ratings_dupr_auth_token', '' );
-				$user_name = get_option( 'pickleball_ratings_dupr_auth_user_name', '' );
-				$dupr_id   = get_option( 'pickleball_ratings_dupr_auth_id', '' );
+				$user_info = $this->api->get_user_info();
 
-				if ( empty( $token ) || empty( $user_name ) ) :
+				if ( ! $this->api->is_authenticated() || ! $user_info ) :
 					?>
 					<!-- Authentication Form (only show when not connected) -->
 					<form method="post" action="">
@@ -192,7 +190,7 @@ class PBR_Admin_Settings {
 								</th>
 								<td>
 									<input type="email" id="pickleball_ratings_dupr_auth_email" name="pickleball_ratings_dupr_auth_email" 
-											value="<?php echo esc_attr( get_option( 'pickleball_ratings_dupr_auth_email', '' ) ); ?>" 
+											value="<?php echo esc_attr( $user_info ? $user_info['email'] : '' ); ?>" 
 											class="regular-text" required />
 									<p class="description"><?php esc_html_e( 'Enter your DUPR account email address.', 'pickleball-ratings' ); ?></p>
 								</td>
@@ -217,11 +215,11 @@ class PBR_Admin_Settings {
 				<?php else : ?>
 					<!-- Connected Status Display -->
 					<div class="notice notice-success inline">
-						<p><strong><?php esc_html_e( 'Connected as:', 'pickleball-ratings' ); ?></strong> <?php echo esc_html( $user_name ); ?>
+						<p><strong><?php esc_html_e( 'Connected as:', 'pickleball-ratings' ); ?></strong> <?php echo esc_html( $user_info['user_name'] ); ?>
 						<?php
-						if ( ! empty( $dupr_id ) ) :
+						if ( ! empty( $user_info['dupr_id'] ) ) :
 							?>
-							(DUPR ID: <?php echo esc_html( $dupr_id ); ?>)<?php endif; ?></p>
+							(DUPR ID: <?php echo esc_html( $user_info['dupr_id'] ); ?>)<?php endif; ?></p>
 					</div>
 					
 					<p>
@@ -250,7 +248,7 @@ class PBR_Admin_Settings {
 				?>
 			</form>
 
-			<?php if ( get_option( 'pickleball_ratings_dupr_auth_token' ) ) : ?>
+			<?php if ( $this->api->is_authenticated() ) : ?>
 				<hr>
 
 				<h2><?php esc_html_e( 'Cache Management', 'pickleball-ratings' ); ?></h2>
@@ -333,51 +331,17 @@ class PBR_Admin_Settings {
 	 * @return void
 	 */
 	private function handle_authentication( $email, $password ) {
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Auth: attempt started' );
-		}
+		// Attempt to authenticate with DUPR API.
+		$auth_data = $this->api->authenticate( $email, $password );
 
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log(
-				'Auth: received credentials',
-				array(
-					'email_present'    => ! empty( $email ),
-					'password_present' => ! empty( $password ),
-				)
-			);
-		}
-
-		if ( empty( $email ) || empty( $password ) ) {
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'Auth: missing email or password' );
-			}
+		if ( is_wp_error( $auth_data ) ) {
 			add_settings_error(
 				'pickleball_ratings_settings',
 				'auth_error',
-				__( 'Email and password are required.', 'pickleball-ratings' ),
+				$auth_data->get_error_message(),
 				'error'
 			);
-			return;
-		}
-
-		// Save email for future reference.
-		update_option( 'pickleball_ratings_dupr_auth_email', $email );
-
-		// Attempt to authenticate with DUPR API.
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Auth: calling DUPR login endpoint' );
-		}
-		$auth_data = $this->authenticate_with_dupr( $email, $password );
-
-		if ( $auth_data && isset( $auth_data['token'] ) ) {
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'Auth: authentication successful' );
-			}
-			update_option( 'pickleball_ratings_dupr_auth_token', $auth_data['token'] );
-			update_option( 'pickleball_ratings_dupr_auth_refresh_token', $auth_data['refresh_token'] );
-			update_option( 'pickleball_ratings_dupr_auth_user_name', $auth_data['user_name'] );
-			update_option( 'pickleball_ratings_dupr_auth_id', $auth_data['dupr_id'] );
-
+		} else {
 			add_settings_error(
 				'pickleball_ratings_settings',
 				'auth_success',
@@ -389,118 +353,16 @@ class PBR_Admin_Settings {
 				),
 				'success'
 			);
-		} else {
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'Auth: authentication failed' );
-			}
-			add_settings_error(
-				'pickleball_ratings_settings',
-				'auth_error',
-				__( 'Authentication failed. Please check your email and password.', 'pickleball-ratings' ),
-				'error'
-			);
 		}
 	}
 
-	/**
-	 * Authenticate with DUPR API.
-	 *
-	 * @param string $email    Account email.
-	 * @param string $password Account password.
-	 * @return array|false Auth data array on success, false on failure.
-	 */
-	private function authenticate_with_dupr( $email, $password ) {
-		$api_url = 'https://api.dupr.gg/auth/v3/login';
 
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Auth: making request', array( 'endpoint' => $api_url ) );
-		}
-
-		$request_body = array(
-			'email'    => $email,
-			'password' => $password,
-		);
-
-		// Do not log request body; contains credentials.
-
-		$response = wp_remote_post(
-			$api_url,
-			array(
-				'headers' => array(
-					'Content-Type' => 'application/json',
-				),
-				'body'    => wp_json_encode( $request_body ),
-				'timeout' => 30,
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'Auth: request error', array( 'error' => $response->get_error_message() ) );
-			}
-			return false;
-		}
-
-		$status_code = wp_remote_retrieve_response_code( $response );
-		$body        = wp_remote_retrieve_body( $response );
-
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Auth: response received', array( 'status' => $status_code ) );
-		}
-
-		if ( 200 !== $status_code ) {
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'Auth: authentication failed with status', array( 'status' => $status_code ) );
-			}
-			return false;
-		}
-
-		$data = json_decode( $body, true );
-
-		if ( ! $data || ! isset( $data['result']['accessToken'] ) ) {
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'Auth: invalid response shape' );
-			}
-			return false;
-		}
-
-		// Extract user information.
-		$user      = $data['result']['user'] ?? array();
-		$user_name = $user['fullName'] ?? ( isset( $user['firstName'], $user['lastName'] ) ? $user['firstName'] . ' ' . $user['lastName'] : '' );
-		$dupr_id   = $user['referralCode'] ?? '';
-
-		// Avoid logging PII from user object.
-
-		return array(
-			'token'         => $data['result']['accessToken'],
-			'refresh_token' => $data['result']['refreshToken'],
-			'user_name'     => $user_name,
-			'dupr_id'       => $dupr_id,
-		);
-	}
 
 	/**
 	 * Handle disconnect from DUPR.
 	 */
 	private function handle_disconnect() {
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Auth: disconnect requested' );
-		}
-
-		// Clear all authentication data.
-		delete_option( 'pickleball_ratings_dupr_auth_token' );
-		delete_option( 'pickleball_ratings_dupr_auth_refresh_token' );
-		delete_option( 'pickleball_ratings_dupr_auth_user_name' );
-		delete_option( 'pickleball_ratings_dupr_auth_id' );
-
-		// Clear any cached data.
-		if ( $this->api ) {
-			$this->api->clear_cache();
-		}
-
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Auth: disconnected from DUPR API' );
-		}
+		$this->api->disconnect();
 
 		add_settings_error(
 			'pickleball_ratings_settings',
