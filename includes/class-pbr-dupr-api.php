@@ -655,7 +655,7 @@ class PBR_DUPR_API {
 		update_option( 'pickleball_ratings_dupr_auth_refresh_token', $auth_data['refresh_token'] );
 		update_option( 'pickleball_ratings_dupr_auth_user_name', $auth_data['user_name'] );
 		update_option( 'pickleball_ratings_dupr_auth_id', $auth_data['dupr_id'] );
-		
+
 		if ( isset( $auth_data['email'] ) ) {
 			update_option( 'pickleball_ratings_dupr_auth_email', $auth_data['email'] );
 		}
@@ -754,15 +754,14 @@ class PBR_DUPR_API {
 		}
 
 		// Get the authenticated user's data for display.
-		$user_name = get_option( 'pickleball_ratings_dupr_auth_user_name', '' );
-		$dupr_id   = get_option( 'pickleball_ratings_dupr_auth_id', '' );
+		$user_info = $this->get_user_info();
 
 		return array(
 			'success' => true,
 			'message' => 'API connection successful - token is valid',
 			'data'    => array(
-				'name'    => $user_name,
-				'dupr_id' => $dupr_id,
+				'name'    => $user_info['user_name'] ?? '',
+				'dupr_id' => $user_info['dupr_id'] ?? '',
 			),
 		);
 	}
