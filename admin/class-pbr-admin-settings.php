@@ -176,9 +176,9 @@ class PBR_Admin_Settings {
 			<p><?php esc_html_e( 'Connect to your DUPR account to enable API access.', 'pickleball-ratings' ); ?></p>
 			
 				<?php
-				$user_info = $this->api->get_user_info();
+				$auth_status = $this->api->get_auth_status();
 
-				if ( ! $this->api->is_authenticated() || ! $user_info ) :
+				if ( ! $auth_status['authenticated'] ) :
 					?>
 					<!-- Authentication Form (only show when not connected) -->
 					<form method="post" action="">
@@ -190,7 +190,7 @@ class PBR_Admin_Settings {
 								</th>
 								<td>
 									<input type="email" id="pickleball_ratings_dupr_auth_email" name="pickleball_ratings_dupr_auth_email" 
-											value="<?php echo esc_attr( $user_info ? $user_info['email'] : '' ); ?>" 
+											value="<?php echo esc_attr( $auth_status['user_info'] ? $auth_status['user_info']['email'] : '' ); ?>" 
 											class="regular-text" required />
 									<p class="description"><?php esc_html_e( 'Enter your DUPR account email address.', 'pickleball-ratings' ); ?></p>
 								</td>
@@ -215,11 +215,11 @@ class PBR_Admin_Settings {
 				<?php else : ?>
 					<!-- Connected Status Display -->
 					<div class="notice notice-success inline">
-						<p><strong><?php esc_html_e( 'Connected as:', 'pickleball-ratings' ); ?></strong> <?php echo esc_html( $user_info['user_name'] ); ?>
+						<p><strong><?php esc_html_e( 'Connected as:', 'pickleball-ratings' ); ?></strong> <?php echo esc_html( $auth_status['user_info']['user_name'] ); ?>
 						<?php
-						if ( ! empty( $user_info['dupr_id'] ) ) :
+						if ( ! empty( $auth_status['user_info']['dupr_id'] ) ) :
 							?>
-							(DUPR ID: <?php echo esc_html( $user_info['dupr_id'] ); ?>)<?php endif; ?></p>
+							(DUPR ID: <?php echo esc_html( $auth_status['user_info']['dupr_id'] ); ?>)<?php endif; ?></p>
 					</div>
 					
 					<p>
@@ -248,7 +248,7 @@ class PBR_Admin_Settings {
 				?>
 			</form>
 
-			<?php if ( $this->api->is_authenticated() ) : ?>
+			<?php if ( $auth_status['authenticated'] ) : ?>
 				<hr>
 
 				<h2><?php esc_html_e( 'Cache Management', 'pickleball-ratings' ); ?></h2>

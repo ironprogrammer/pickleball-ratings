@@ -40,6 +40,27 @@ class PBR_DUPR_API {
 	private $refresh_token = '';
 
 	/**
+	 * Authenticated user's name.
+	 *
+	 * @var string
+	 */
+	private $user_name = '';
+
+	/**
+	 * Authenticated user's email.
+	 *
+	 * @var string
+	 */
+	private $user_email = '';
+
+	/**
+	 * Authenticated user's DUPR ID.
+	 *
+	 * @var string
+	 */
+	private $user_dupr_id = '';
+
+	/**
 	 * Cache TTL in seconds (default 24 hours).
 	 *
 	 * @var int
@@ -52,6 +73,9 @@ class PBR_DUPR_API {
 	public function __construct() {
 		$this->auth_token    = get_option( 'pickleball_ratings_dupr_auth_token', '' );
 		$this->refresh_token = get_option( 'pickleball_ratings_dupr_auth_refresh_token', '' );
+		$this->user_name     = get_option( 'pickleball_ratings_dupr_auth_user_name', '' );
+		$this->user_email    = get_option( 'pickleball_ratings_dupr_auth_email', '' );
+		$this->user_dupr_id  = get_option( 'pickleball_ratings_dupr_auth_id', '' );
 		$this->cache_ttl     = get_option( 'pickleball_ratings_cache_ttl', 86400 );
 	}
 
@@ -635,10 +659,54 @@ class PBR_DUPR_API {
 		}
 
 		return array(
-			'user_name' => get_option( 'pickleball_ratings_dupr_auth_user_name', '' ),
-			'dupr_id'   => get_option( 'pickleball_ratings_dupr_auth_id', '' ),
-			'email'     => get_option( 'pickleball_ratings_dupr_auth_email', '' ),
+			'user_name' => $this->user_name,
+			'dupr_id'   => $this->user_dupr_id,
+			'email'     => $this->user_email,
 		);
+	}
+
+	/**
+	 * Get complete authentication status and user information.
+	 *
+	 * @return array Authentication status with user info.
+	 */
+	public function get_auth_status() {
+		$is_authenticated = $this->is_authenticated();
+		$user_info = $is_authenticated ? $this->get_user_info() : false;
+
+		return array(
+			'authenticated' => $is_authenticated,
+			'user_info'     => $user_info,
+			'has_token'     => ! empty( $this->auth_token ),
+			'has_refresh'   => ! empty( $this->refresh_token ),
+		);
+	}
+
+	/**
+	 * Get authentication user name.
+	 *
+	 * @return string User name or empty string if not authenticated.
+	 */
+	public function get_auth_user_name() {
+		return $this->user_name;
+	}
+
+	/**
+	 * Get authentication user email.
+	 *
+	 * @return string User email or empty string if not authenticated.
+	 */
+	public function get_auth_user_email() {
+		return $this->user_email;
+	}
+
+	/**
+	 * Get authentication DUPR ID.
+	 *
+	 * @return string DUPR ID or empty string if not authenticated.
+	 */
+	public function get_auth_dupr_id() {
+		return $this->user_dupr_id;
 	}
 
 	/**
@@ -647,14 +715,17 @@ class PBR_DUPR_API {
 	 * @param array $auth_data Authentication data array.
 	 */
 	private function save_auth_data( $auth_data ) {
-		$this->auth_token    = $auth_data['token'];
-		$this->refresh_token = $auth_data['refresh_token'];
+		$this->auth_token     = $auth_data['token'];
+		$this->refresh_token  = $auth_data['refresh_token'];
+		$this->user_name      = $auth_data['user_name'];
+		$this->user_dupr_id   = $auth_data['dupr_id'];
+		$this->user_email     = $auth_data['email'] ?? '';
 
 		update_option( 'pickleball_ratings_dupr_auth_token', $auth_data['token'] );
 		update_option( 'pickleball_ratings_dupr_auth_refresh_token', $auth_data['refresh_token'] );
 		update_option( 'pickleball_ratings_dupr_auth_user_name', $auth_data['user_name'] );
 		update_option( 'pickleball_ratings_dupr_auth_id', $auth_data['dupr_id'] );
-
+		
 		if ( isset( $auth_data['email'] ) ) {
 			update_option( 'pickleball_ratings_dupr_auth_email', $auth_data['email'] );
 		}
@@ -664,8 +735,11 @@ class PBR_DUPR_API {
 	 * Clear all authentication data from WordPress options.
 	 */
 	private function clear_auth_data() {
-		$this->auth_token    = '';
-		$this->refresh_token = '';
+		$this->auth_token     = '';
+		$this->refresh_token  = '';
+		$this->user_name      = '';
+		$this->user_email     = '';
+		$this->user_dupr_id   = '';
 
 		delete_option( 'pickleball_ratings_dupr_auth_token' );
 		delete_option( 'pickleball_ratings_dupr_auth_refresh_token' );
