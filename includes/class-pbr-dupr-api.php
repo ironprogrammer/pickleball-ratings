@@ -596,6 +596,8 @@ class PBR_DUPR_API {
 	/**
 	 * Disconnect from DUPR API.
 	 *
+	 * Does not clear cached data on disconnect.
+	 *
 	 * @return bool True on success.
 	 */
 	public function disconnect() {
@@ -605,9 +607,6 @@ class PBR_DUPR_API {
 
 		// Clear all authentication data.
 		$this->clear_auth_data();
-
-		// Clear cached data.
-		$this->clear_cache();
 
 		if ( function_exists( 'pbr_log' ) ) {
 			pbr_log( 'Auth: disconnected from DUPR API' );
