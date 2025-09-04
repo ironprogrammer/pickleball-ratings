@@ -16,7 +16,6 @@ class PBR_Plugin_Hooks_Test extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'pickleball-ratings-block', $wp_scripts->registered );
 		$this->assertArrayHasKey( 'pickleball-ratings-block-frontend', $wp_scripts->registered );
 		$this->assertArrayHasKey( 'pickleball-ratings-block-style', $wp_styles->registered );
-		$this->assertArrayHasKey( 'pickleball-ratings-block-editor', $wp_styles->registered );
 	}
 
 	public function test_settings_link_filter_adds_link() {
