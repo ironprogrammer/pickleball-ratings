@@ -214,26 +214,44 @@ class PBR_Admin_Settings {
 					</form>
 				<?php else : ?>
 					<!-- Connected Status Display -->
-					<div class="notice notice-success inline">
-						<p><strong><?php esc_html_e( 'Connected as:', 'pickleball-ratings' ); ?></strong> <?php echo esc_html( $auth_status['user_info']['user_name'] ); ?>
-						<?php
-						if ( ! empty( $auth_status['user_info']['dupr_id'] ) ) :
-							?>
-							(DUPR ID: <?php echo esc_html( $auth_status['user_info']['dupr_id'] ); ?>)<?php endif; ?></p>
+					<div class="pbr-connection-status" style="margin-bottom: 20px;">
+						<h4 style="margin: 0 0 8px 0; color: #135e96;">
+							<span class="dashicons dashicons-yes-alt" style="font-size: 16px; margin-right: 5px; color: #00a32a;"></span>
+							<?php esc_html_e( 'Connected to DUPR', 'pickleball-ratings' ); ?>
+						</h4>
+						<div style="margin-left: 21px; font-size: 13px; line-height: 1.6;">
+							<div>
+								<strong><?php esc_html_e( 'User:', 'pickleball-ratings' ); ?></strong> <?php echo esc_html( $auth_status['user_info']['user_name'] ); ?>
+							</div>
+							<?php if ( ! empty( $auth_status['user_info']['dupr_id'] ) ) : ?>
+							<div>
+								<strong><?php esc_html_e( 'DUPR ID:', 'pickleball-ratings' ); ?></strong> <?php echo esc_html( $auth_status['user_info']['dupr_id'] ); ?>
+							</div>
+							<?php endif; ?>
+							<?php if ( ! empty( $auth_status['user_info']['email'] ) ) : ?>
+							<div>
+								<strong><?php esc_html_e( 'Email:', 'pickleball-ratings' ); ?></strong> <?php echo esc_html( $auth_status['user_info']['email'] ); ?>
+							</div>
+							<?php endif; ?>
+						</div>
+					</div>
+
+					<!-- Test Success Notice (hidden by default, shown via JS) -->
+					<div id="test-success-notice" class="notice notice-success is-dismissible" style="display: none;">
+						<p><strong><?php esc_html_e( 'Connection test successful!', 'pickleball-ratings' ); ?></strong> <?php esc_html_e( 'Your DUPR API connection is working properly.', 'pickleball-ratings' ); ?></p>
 					</div>
 					
-					<p>
+					<!-- Action Buttons -->
+					<div class="pbr-action-buttons" style="margin: 20px 0; display: flex; gap: 10px; align-items: center;">
 						<button type="button" class="button" id="test-connection"><?php esc_html_e( 'Test Connection', 'pickleball-ratings' ); ?></button>
-						<span id="test-result"></span>
-					</p>
-					
-					<!-- Disconnect Form -->
-					<form method="post" style="margin-top: 10px;">
-						<?php wp_nonce_field( 'pickleball_ratings_disconnect', 'pbr_disconnect_nonce' ); ?>
-						<input type="submit" name="pbr_disconnect" class="button button-secondary" 
-								value="<?php esc_attr_e( 'Disconnect from DUPR', 'pickleball-ratings' ); ?>" 
-								onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to disconnect from DUPR? This will remove your authentication and you will need to reconnect to use the plugin.', 'pickleball-ratings' ); ?>')" />
-					</form>
+						<form method="post" style="margin: 0; display: inline;">
+							<?php wp_nonce_field( 'pickleball_ratings_disconnect', 'pbr_disconnect_nonce' ); ?>
+							<input type="submit" name="pbr_disconnect" class="button button-secondary" 
+									value="<?php esc_attr_e( 'Disconnect from DUPR', 'pickleball-ratings' ); ?>" 
+									onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to disconnect from DUPR? This will remove your authentication and you will need to reconnect to use the plugin.', 'pickleball-ratings' ); ?>')" />
+						</form>
+						<span id="test-result" style="margin-left: 10px;"></span>
+					</div>
 				<?php endif; ?>
 
 			<hr>
@@ -266,14 +284,18 @@ class PBR_Admin_Settings {
 
 		<script>
 		jQuery(document).ready(function($) {
+			// Handle test connection
 			$('#test-connection').on('click', function() {
 				var button = $(this);
 				var resultSpan = $('#test-result');
+				var successNotice = $('#test-success-notice');
+				var testDetails = $('#test-details');
 				
 				console.log('DUPR: Test connection button clicked');
 				
 				button.prop('disabled', true).text('<?php echo esc_js( __( 'Testing...', 'pickleball-ratings' ) ); ?>');
 				resultSpan.html('');
+				successNotice.hide();
 				
 				$.ajax({
 					url: ajaxurl,
@@ -285,10 +307,8 @@ class PBR_Admin_Settings {
 					success: function(response) {
 						console.log('DUPR: AJAX success response:', response);
 						if (response.success) {
-							resultSpan.html('<span style="color: green;">✓ ' + response.data.message + '</span>');
-							if (response.data.data) {
-								resultSpan.append(' <small>' + response.data.data.name + ' (DUPR ID: ' + response.data.data.dupr_id + ')</small>');
-							}
+							// Show dismissible success notice (like WordPress settings pages)
+							successNotice.show();
 						} else {
 							resultSpan.html('<span style="color: red;">✗ ' + response.data + '</span>');
 						}
@@ -306,6 +326,11 @@ class PBR_Admin_Settings {
 						button.prop('disabled', false).text('<?php echo esc_js( __( 'Test Connection', 'pickleball-ratings' ) ); ?>');
 					}
 				});
+			});
+
+			// Handle dismissible notice close button
+			$(document).on('click', '#test-success-notice .notice-dismiss', function() {
+				$('#test-success-notice').fadeOut();
 			});
 		});
 		</script>
