@@ -96,8 +96,48 @@ class PBR_Admin_Settings {
 	public function cache_ttl_field_callback() {
 		$ttl   = get_option( 'pickleball_ratings_cache_ttl', 86400 );
 		$hours = intval( $ttl / 3600 );
+		
+		echo '<div style="display: flex; align-items: center; gap: 10px;">';
 		echo '<input type="number" id="pickleball_ratings_cache_ttl" name="pickleball_ratings_cache_ttl" value="' . esc_attr( $hours ) . '" min="1" max="168" class="small-text" />';
+		
+		// Only show clear cache button if user is authenticated
+		if ( $this->api && $this->api->is_authenticated() ) {
+			echo '<button type="button" id="clear-cache-btn" class="button button-secondary" onclick="return confirmClearCache();">' . esc_html__( 'Clear Cache', 'pickleball-ratings' ) . '</button>';
+		}
+		echo '</div>';
 		echo '<p class="description">' . esc_html__( 'How long to cache player data (1-168 hours).', 'pickleball-ratings' ) . '</p>';
+		
+		// Add JavaScript for clear cache functionality
+		if ( $this->api && $this->api->is_authenticated() ) :
+		?>
+		<script>
+		function confirmClearCache() {
+			if (confirm('<?php echo esc_js( __( 'Are you sure you want to clear all cached data?', 'pickleball-ratings' ) ); ?>')) {
+				// Create and submit a hidden form
+				var form = document.createElement('form');
+				form.method = 'post';
+				form.action = '';
+				
+				var nonceField = document.createElement('input');
+				nonceField.type = 'hidden';
+				nonceField.name = 'pbr_cache_nonce';
+				nonceField.value = '<?php echo esc_js( wp_create_nonce( 'pbr_clear_cache' ) ); ?>';
+				
+				var clearField = document.createElement('input');
+				clearField.type = 'hidden';
+				clearField.name = 'clear_cache';
+				clearField.value = '1';
+				
+				form.appendChild(nonceField);
+				form.appendChild(clearField);
+				document.body.appendChild(form);
+				form.submit();
+			}
+			return false;
+		}
+		</script>
+		<?php
+		endif;
 	}
 
 	/**
@@ -266,20 +306,7 @@ class PBR_Admin_Settings {
 				?>
 			</form>
 
-			<?php if ( $auth_status['authenticated'] ) : ?>
-				<hr>
 
-				<h2><?php esc_html_e( 'Cache Management', 'pickleball-ratings' ); ?></h2>
-				<p><?php esc_html_e( 'Clear cached player data to force fresh data from the DUPR API.', 'pickleball-ratings' ); ?></p>
-				<form method="post">
-					<?php wp_nonce_field( 'pbr_clear_cache', 'pbr_cache_nonce' ); ?>
-					<input type="submit" 
-							name="clear_cache" 
-							class="button button-secondary" 
-							value="<?php esc_attr_e( 'Clear Cache', 'pickleball-ratings' ); ?>" 
-							onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to clear all cached data?', 'pickleball-ratings' ); ?>')" />
-				</form>
-			<?php endif; ?>
 		</div>
 
 		<script>
