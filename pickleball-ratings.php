@@ -175,10 +175,6 @@ function pickleball_ratings_register_block() {
 					'default' => true,
 				),
 
-				'stackedLayout'         => array(
-					'type'    => 'boolean',
-					'default' => false,
-				),
 				'showPoweredBy'         => array(
 					'type'    => 'boolean',
 					'default' => false,
@@ -240,7 +236,6 @@ function pickleball_ratings_register_block() {
 function pickleball_ratings_render_block( $attributes ) {
 	$dupr_id                 = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
 	$show_profile_pic        = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
-	$stacked_layout          = isset( $attributes['stackedLayout'] ) ? (bool) $attributes['stackedLayout'] : false;
 	$show_powered_by         = isset( $attributes['showPoweredBy'] ) ? (bool) $attributes['showPoweredBy'] : false;
 	$use_light_logo          = isset( $attributes['useLightLogo'] ) ? (bool) $attributes['useLightLogo'] : false;
 	$background_color        = isset( $attributes['backgroundColor'] ) ? sanitize_text_field( $attributes['backgroundColor'] ) : '';
@@ -352,11 +347,7 @@ function pickleball_ratings_render_block( $attributes ) {
 		$output .= '</div>';
 	}
 
-	$content_class = 'pickleball-ratings-content';
-	if ( $stacked_layout ) {
-		$content_class .= ' pickleball-ratings-stacked';
-	}
-	$output       .= '<div class="' . $content_class . '">';
+	$output       .= '<div class="pickleball-ratings-content">';
 	$output       .= '<div class="pickleball-ratings-item">';
 	$output       .= '<span class="pickleball-ratings-label">';
 	$output       .= '<span class="dashicons dashicons-admin-users pbr-icon pbr-doubles-back"></span>';

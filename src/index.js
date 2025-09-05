@@ -42,10 +42,6 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 			default: true,
 		},
 
-		stackedLayout: {
-			type: 'boolean',
-			default: false,
-		},
 		showPoweredBy: {
 			type: 'boolean',
 			default: false,
@@ -87,7 +83,6 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 		const {
 			duprId,
 			showProfilePic,
-			stackedLayout,
 			showPoweredBy,
 			useLightLogo,
 			backgroundColor,
@@ -288,20 +283,6 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 								) }
 							/>
 						) }
-						<ToggleControl
-							label={ __(
-								'Stacked Layout',
-								'pickleball-ratings'
-							) }
-							checked={ stackedLayout }
-							onChange={ ( value ) =>
-								setAttributes( { stackedLayout: value } )
-							}
-							help={ __(
-								'Display ratings vertically with headings above numbers.',
-								'pickleball-ratings'
-							) }
-						/>
 					</PanelBody>
 				</InspectorControls>
 
@@ -395,13 +376,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 										) }
 									</div>
 								) }
-								<div
-									className={ `pickleball-ratings-content${
-										stackedLayout
-											? ' pickleball-ratings-stacked'
-											: ''
-									}` }
-								>
+								<div className="pickleball-ratings-content">
 									<div className="pickleball-ratings-item">
 										<span className="pickleball-ratings-label">
 											<span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-back"></span>

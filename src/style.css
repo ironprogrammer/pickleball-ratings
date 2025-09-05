@@ -108,8 +108,8 @@
 	color: #666;
 }
 
-/* Stacked layout styles */
-.pickleball-ratings-stacked {
+/* Rating items container */
+.pickleball-ratings-content {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -119,9 +119,11 @@
 
 .pickleball-ratings-item {
 	display: flex;
-	justify-content: space-between;
+	flex-direction: column;
+	text-align: center;
 	align-items: center;
-	margin-bottom: 8px;
+	flex: 0 1 auto;
+	min-width: 80px;
 }
 
 .pickleball-ratings-label {
@@ -131,21 +133,11 @@
 	gap: 4px;
 }
 
+
 .pickleball-ratings-value {
+	margin-top: 4px;
 	font-weight: 600;
 	font-size: 1.2em;
-}
-
-.pickleball-ratings-stacked .pickleball-ratings-item {
-	flex-direction: column;
-	text-align: center;
-	align-items: center;
-	flex: 0 1 auto;
-	min-width: 80px;
-}
-
-.pickleball-ratings-stacked .pickleball-ratings-value {
-	margin-top: 4px;
 }
 
 .pickleball-ratings-placeholder {
