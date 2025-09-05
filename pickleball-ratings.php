@@ -315,7 +315,15 @@ function pickleball_ratings_render_block( $attributes ) {
 	$typography_class_string = ! empty( $typography_classes ) ? ' ' . implode( ' ', $typography_classes ) : '';
 
 	// Build the output.
-	$output = '<div class="pickleball-ratings-block' . $color_class_string . $typography_class_string . '"' . $color_style_string . '>';
+	$output  = '<div class="pickleball-ratings-block' . $color_class_string . $typography_class_string . '"' . $color_style_string . '>';
+	$output .= '<div class="pickleball-ratings-block-wrapper">';
+
+	// Add corner copy button for DUPR ID.
+	if ( ! empty( $dupr_id ) ) {
+		$output .= '<button class="pickleball-ratings-copy-id-corner" onclick="window.pbrCopyToClipboard(\'' . esc_js( $dupr_id ) . '\', this)" title="Copy DUPR ID: ' . esc_attr( $dupr_id ) . '">';
+		$output .= '<span class="dashicons dashicons-clipboard"></span>';
+		$output .= '</button>';
+	}
 
 	// Add player name if available.
 	if ( ! empty( $player_data['name'] ) ) {
@@ -336,14 +344,6 @@ function pickleball_ratings_render_block( $attributes ) {
 		}
 
 		$output .= esc_html( $player_data['name'] );
-
-		// Add copy button for DUPR ID.
-		if ( ! empty( $dupr_id ) ) {
-			$output .= '<button class="pickleball-ratings-copy-id" onclick="window.pbrCopyToClipboard(\'' . esc_js( $dupr_id ) . '\', this)" title="Copy DUPR ID: ' . esc_attr( $dupr_id ) . '">';
-			$output .= '<span class="dashicons dashicons-clipboard"></span>';
-			$output .= '</button>';
-		}
-
 		$output .= '</div>';
 	}
 
@@ -381,6 +381,7 @@ function pickleball_ratings_render_block( $attributes ) {
 	}
 
 	$output .= '</div>';
+	$output .= '</div>'; // Close pickleball-ratings-block-wrapper.
 
 	return $output;
 }

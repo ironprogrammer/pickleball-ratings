@@ -33,12 +33,63 @@
 }
 
 .pickleball-ratings-block {
+	position: relative;
 	border: 1px solid #ddd;
 	border-radius: 8px;
 	padding: 20px;
 	background: #fff;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: var(--wp--preset--font-size--large, 1.125rem);
+}
+
+.pickleball-ratings-block-wrapper {
+
+	/* No positioning needed - wrapper is just for structure */
+}
+
+.pickleball-ratings-copy-id-corner {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: rgba(255, 255, 255, 0.9);
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 6px;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.3s ease, background-color 0.2s ease;
+	z-index: 10;
+
+	/* Reset button styles that might come from theme */
+	margin: 0;
+	line-height: 1;
+	text-decoration: none;
+	box-shadow: none;
+	font-family: inherit;
+	font-size: inherit;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: auto;
+	height: auto;
+	width: auto;
+	min-width: auto;
+}
+
+.pickleball-ratings-copy-id-corner:hover {
+	background: rgba(255, 255, 255, 1);
+	border-color: #999;
+}
+
+.pickleball-ratings-block:hover .pickleball-ratings-copy-id-corner {
+	opacity: 1;
+}
+
+.pickleball-ratings-copy-id-corner .dashicons {
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+	color: #666;
 }
 
 .pickleball-ratings-header {

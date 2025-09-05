@@ -336,7 +336,23 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 							: '';
 
 						return (
-							<div>
+							<div className="pickleball-ratings-block-wrapper">
+								{ duprId && (
+									<button
+										className="pickleball-ratings-copy-id-corner"
+										onClick={ ( event ) => {
+											window.pbrCopyToClipboard(
+												duprId,
+												event.target.closest(
+													'.pickleball-ratings-copy-id-corner'
+												)
+											);
+										} }
+										title={ `Copy DUPR ID: ${ duprId }` }
+									>
+										<span className="dashicons dashicons-clipboard"></span>
+									</button>
+								) }
 								{ playerData.name && (
 									<div
 										className="pickleball-ratings-player-name"
@@ -358,22 +374,6 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 											</>
 										) }
 										{ playerData.name }
-										{ duprId && (
-											<button
-												className="pickleball-ratings-copy-id"
-												onClick={ ( event ) => {
-													window.pbrCopyToClipboard(
-														duprId,
-														event.target.closest(
-															'.pickleball-ratings-copy-id'
-														)
-													);
-												} }
-												title={ `Copy DUPR ID: ${ duprId }` }
-											>
-												<span className="dashicons dashicons-clipboard"></span>
-											</button>
-										) }
 									</div>
 								) }
 								<div className="pickleball-ratings-content">
