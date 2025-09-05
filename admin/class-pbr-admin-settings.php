@@ -96,24 +96,24 @@ class PBR_Admin_Settings {
 	public function cache_ttl_field_callback() {
 		$ttl   = get_option( 'pickleball_ratings_cache_ttl', 86400 );
 		$hours = intval( $ttl / 3600 );
-		
+
 		echo '<div style="display: flex; align-items: center; gap: 10px;">';
 		echo '<input type="number" id="pickleball_ratings_cache_ttl" name="pickleball_ratings_cache_ttl" value="' . esc_attr( $hours ) . '" min="1" max="168" class="small-text" />';
-		
-		// Only show clear cache button if user is authenticated
+
+		// Only show clear cache button if user is authenticated.
 		if ( $this->api && $this->api->is_authenticated() ) {
 			echo '<button type="button" id="clear-cache-btn" class="button button-secondary" onclick="return confirmClearCache();">' . esc_html__( 'Clear Cache', 'pickleball-ratings' ) . '</button>';
 		}
 		echo '</div>';
 		echo '<p class="description">' . esc_html__( 'How long to cache player data (1-168 hours).', 'pickleball-ratings' ) . '</p>';
-		
-		// Add JavaScript for clear cache functionality
+
+		// Add JavaScript for clear cache functionality.
 		if ( $this->api && $this->api->is_authenticated() ) :
-		?>
+			?>
 		<script>
 		function confirmClearCache() {
 			if (confirm('<?php echo esc_js( __( 'Are you sure you want to clear all cached data?', 'pickleball-ratings' ) ); ?>')) {
-				// Create and submit a hidden form
+				// Create and submit a hidden form.
 				var form = document.createElement('form');
 				form.method = 'post';
 				form.action = '';
@@ -136,7 +136,7 @@ class PBR_Admin_Settings {
 			return false;
 		}
 		</script>
-		<?php
+			<?php
 		endif;
 	}
 

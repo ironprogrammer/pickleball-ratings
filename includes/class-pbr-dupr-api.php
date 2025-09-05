@@ -672,7 +672,7 @@ class PBR_DUPR_API {
 	 */
 	public function get_auth_status() {
 		$is_authenticated = $this->is_authenticated();
-		$user_info = $is_authenticated ? $this->get_user_info() : false;
+		$user_info        = $is_authenticated ? $this->get_user_info() : false;
 
 		return array(
 			'authenticated' => $is_authenticated,
@@ -715,17 +715,17 @@ class PBR_DUPR_API {
 	 * @param array $auth_data Authentication data array.
 	 */
 	private function save_auth_data( $auth_data ) {
-		$this->auth_token     = $auth_data['token'];
-		$this->refresh_token  = $auth_data['refresh_token'];
-		$this->user_name      = $auth_data['user_name'];
-		$this->user_dupr_id   = $auth_data['dupr_id'];
-		$this->user_email     = $auth_data['email'] ?? '';
+		$this->auth_token    = $auth_data['token'];
+		$this->refresh_token = $auth_data['refresh_token'];
+		$this->user_name     = $auth_data['user_name'];
+		$this->user_dupr_id  = $auth_data['dupr_id'];
+		$this->user_email    = $auth_data['email'] ?? '';
 
 		update_option( 'pickleball_ratings_dupr_auth_token', $auth_data['token'] );
 		update_option( 'pickleball_ratings_dupr_auth_refresh_token', $auth_data['refresh_token'] );
 		update_option( 'pickleball_ratings_dupr_auth_user_name', $auth_data['user_name'] );
 		update_option( 'pickleball_ratings_dupr_auth_id', $auth_data['dupr_id'] );
-		
+
 		if ( isset( $auth_data['email'] ) ) {
 			update_option( 'pickleball_ratings_dupr_auth_email', $auth_data['email'] );
 		}
@@ -735,11 +735,11 @@ class PBR_DUPR_API {
 	 * Clear all authentication data from WordPress options.
 	 */
 	private function clear_auth_data() {
-		$this->auth_token     = '';
-		$this->refresh_token  = '';
-		$this->user_name      = '';
-		$this->user_email     = '';
-		$this->user_dupr_id   = '';
+		$this->auth_token    = '';
+		$this->refresh_token = '';
+		$this->user_name     = '';
+		$this->user_email    = '';
+		$this->user_dupr_id  = '';
 
 		delete_option( 'pickleball_ratings_dupr_auth_token' );
 		delete_option( 'pickleball_ratings_dupr_auth_refresh_token' );
