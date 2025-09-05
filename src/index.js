@@ -385,12 +385,20 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 										</span>
 										<span
 											className="pickleball-ratings-value"
-											title={
-												playerData.doubles_rating ===
-												'NR'
-													? 'Not Rated'
-													: ''
-											}
+											title={ ( () => {
+												if (
+													playerData.doubles_rating ===
+													'NR'
+												) {
+													return 'Not Rated';
+												}
+												if (
+													playerData.doubles_reliability
+												) {
+													return `Doubles: ${ playerData.doubles_rating } (Reliability: ${ playerData.doubles_reliability }%)`;
+												}
+												return `Doubles: ${ playerData.doubles_rating }`;
+											} )() }
 										>
 											{ playerData.doubles_rating }
 										</span>
@@ -402,12 +410,20 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 										</span>
 										<span
 											className="pickleball-ratings-value"
-											title={
-												playerData.singles_rating ===
-												'NR'
-													? 'Not Rated'
-													: ''
-											}
+											title={ ( () => {
+												if (
+													playerData.singles_rating ===
+													'NR'
+												) {
+													return 'Not Rated';
+												}
+												if (
+													playerData.singles_reliability
+												) {
+													return `Singles: ${ playerData.singles_rating } (Reliability: ${ playerData.singles_reliability }%)`;
+												}
+												return `Singles: ${ playerData.singles_rating }`;
+											} )() }
 										>
 											{ playerData.singles_rating }
 										</span>

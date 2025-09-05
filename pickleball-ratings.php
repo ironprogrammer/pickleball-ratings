@@ -354,7 +354,14 @@ function pickleball_ratings_render_block( $attributes ) {
 	$output       .= '<span class="dashicons dashicons-admin-users pbr-icon pbr-doubles-front"></span>';
 	$output       .= 'Doubles';
 	$output       .= '</span>';
-	$doubles_title = ( 'NR' === $player_data['doubles_rating'] ) ? ' title="Not Rated"' : '';
+	$doubles_title = '';
+	if ( 'NR' === $player_data['doubles_rating'] ) {
+		$doubles_title = ' title="Not Rated"';
+	} elseif ( isset( $player_data['doubles_reliability'] ) && $player_data['doubles_reliability'] > 0 ) {
+		$doubles_title = ' title="Doubles: ' . esc_attr( $player_data['doubles_rating'] ) . ' (Reliability: ' . esc_attr( $player_data['doubles_reliability'] ) . '%)"';
+	} else {
+		$doubles_title = ' title="Doubles: ' . esc_attr( $player_data['doubles_rating'] ) . '"';
+	}
 	$output       .= '<span class="pickleball-ratings-value"' . $doubles_title . '>' . esc_html( $player_data['doubles_rating'] ) . '</span>';
 	$output       .= '</div>';
 	$output       .= '<div class="pickleball-ratings-item">';
@@ -362,10 +369,17 @@ function pickleball_ratings_render_block( $attributes ) {
 	$output       .= '<span class="dashicons dashicons-admin-users pbr-icon"></span>';
 	$output       .= 'Singles';
 	$output       .= '</span>';
-	$singles_title = ( 'NR' === $player_data['singles_rating'] ) ? ' title="Not Rated"' : '';
-	$output       .= '<span class="pickleball-ratings-value"' . $singles_title . '>' . esc_html( $player_data['singles_rating'] ) . '</span>';
-	$output       .= '</div>';
-	$output       .= '</div>';
+	$singles_title = '';
+	if ( 'NR' === $player_data['singles_rating'] ) {
+		$singles_title = ' title="Not Rated"';
+	} elseif ( isset( $player_data['singles_reliability'] ) && $player_data['singles_reliability'] > 0 ) {
+		$singles_title = ' title="Singles: ' . esc_attr( $player_data['singles_rating'] ) . ' (Reliability: ' . esc_attr( $player_data['singles_reliability'] ) . '%)"';
+	} else {
+		$singles_title = ' title="Singles: ' . esc_attr( $player_data['singles_rating'] ) . '"';
+	}
+	$output .= '<span class="pickleball-ratings-value"' . $singles_title . '>' . esc_html( $player_data['singles_rating'] ) . '</span>';
+	$output .= '</div>';
+	$output .= '</div>';
 
 	// Add powered by footer if enabled.
 	if ( $show_powered_by ) {

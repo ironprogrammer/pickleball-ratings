@@ -295,12 +295,14 @@ class PBR_DUPR_API {
 	 */
 	private function parse_player_data( $api_data ) {
 		$player_data = array(
-			'dupr_id'        => '',
-			'name'           => '',
-			'profile_image'  => '',
-			'doubles_rating' => 'NR',
-			'singles_rating' => 'NR',
-			'last_updated'   => current_time( 'mysql' ),
+			'dupr_id'             => '',
+			'name'                => '',
+			'profile_image'       => '',
+			'doubles_rating'      => 'NR',
+			'singles_rating'      => 'NR',
+			'doubles_reliability' => null,
+			'singles_reliability' => null,
+			'last_updated'        => current_time( 'mysql' ),
 		);
 
 		// Extract basic player info.
@@ -330,6 +332,16 @@ class PBR_DUPR_API {
 			// Singles rating.
 			if ( isset( $ratings['singles'] ) && 'NR' !== $ratings['singles'] ) {
 				$player_data['singles_rating'] = (string) $ratings['singles'];
+			}
+
+			// Doubles reliability score.
+			if ( isset( $ratings['doublesReliabilityScore'] ) ) {
+				$player_data['doubles_reliability'] = (int) $ratings['doublesReliabilityScore'];
+			}
+
+			// Singles reliability score.
+			if ( isset( $ratings['singlesReliabilityScore'] ) ) {
+				$player_data['singles_reliability'] = (int) $ratings['singlesReliabilityScore'];
 			}
 		}
 
