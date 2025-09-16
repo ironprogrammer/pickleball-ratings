@@ -2,7 +2,7 @@
 /**
  * PHPUnit bootstrap file.
  *
- * @package Dupr_Rating
+ * @package Pickleball_Ratings
  */
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
