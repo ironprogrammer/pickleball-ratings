@@ -67,12 +67,6 @@ To run tests locally:
    npm test
    ```
 
-The test suite includes coverage for:
-- Plugin registration and asset handles.
-- Render callback validation and CSS classes/styles.
-- DUPR API basic error handling and cache salt behavior.
-- Admin settings TTL sanitizer and registration.
-
 ## License
 
 GPL v2 or later.
