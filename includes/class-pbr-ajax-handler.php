@@ -2,7 +2,7 @@
 /**
  * AJAX Handler Class.
  *
- * Handles AJAX requests for the DUPR Rating plugin.
+ * Handles AJAX requests for the Pickleball Ratings plugin.
  *
  * @package Pickleball_Ratings
  * @since 0.2.0
@@ -79,12 +79,12 @@ class PBR_Ajax_Handler {
 	public function get_player_data() {
 		// Check nonce.
 		if ( ! check_ajax_referer( 'pickleball_ratings_get_player_data', 'nonce', false ) ) {
-			wp_die( 'Security check failed' );
+			wp_send_json_error( 'Security check failed' );
 		}
 
 		// Check permissions (allow for logged-in users).
 		if ( ! is_user_logged_in() ) {
-			wp_die( 'Authentication required' );
+			wp_send_json_error( 'Authentication required' );
 		}
 
 		$dupr_id = isset( $_POST['dupr_id'] ) ? sanitize_text_field( wp_unslash( $_POST['dupr_id'] ) ) : '';
