@@ -225,6 +225,8 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 								'Enter the 6-character DUPR ID for the player.',
 								'pickleball-ratings'
 							) }
+							__next40pxDefaultSize={ true }
+							__nextHasNoMarginBottom={ true }
 						/>
 						<ToggleControl
 							label={ __(
@@ -239,6 +241,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 								"Display the player's profile picture if available.",
 								'pickleball-ratings'
 							) }
+							__nextHasNoMarginBottom={ true }
 						/>
 
 						<ToggleControl
@@ -254,6 +257,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 								'Display a "Powered by DUPR®" footer at the bottom of the block.',
 								'pickleball-ratings'
 							) }
+							__nextHasNoMarginBottom={ true }
 						/>
 						{ showPoweredBy && (
 							<ToggleControl
@@ -269,6 +273,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 									'Use white logo for dark backgrounds. Unchecked uses blue logo for light backgrounds.',
 									'pickleball-ratings'
 								) }
+								__nextHasNoMarginBottom={ true }
 							/>
 						) }
 					</PanelBody>
