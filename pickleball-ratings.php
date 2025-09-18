@@ -248,12 +248,12 @@ function pickleball_ratings_render_block( $attributes ) {
 
 	// Basic validation.
 	if ( empty( $dupr_id ) ) {
-		return '<div class="pbr-block error">Please enter a valid DUPR ID.</div>';
+		return ''; // Hide block on frontend when no DUPR ID provided.
 	}
 
 	// Validate 6-character alphanumeric format.
 	if ( ! preg_match( '/^[A-Z0-9]{6}$/', $dupr_id ) ) {
-		return '<div class="pbr-block error">Invalid DUPR ID format.</div>';
+		return ''; // Hide block on frontend when DUPR ID format is invalid.
 	}
 
 	// Get player data from DUPR API.
@@ -269,7 +269,7 @@ function pickleball_ratings_render_block( $attributes ) {
 			$error_message = 'DUPR API not configured. Please contact the site administrator.';
 		}
 
-		return '<div class="pbr-block error">' . esc_html( $error_message ) . '.</div>';
+		return ''; // Hide block on frontend when API errors occur.
 	}
 
 	// Build color classes and styles using WordPress functions.
