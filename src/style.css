@@ -217,10 +217,6 @@
 	font-style: italic;
 }
 
-/* Editor notice spacing - scoped to our block only */
-.pbr-block .components-notice {
-	margin-bottom: 16px;
-}
 
 /* Footer section */
 .pbr-block .footer {

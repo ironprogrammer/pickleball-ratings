@@ -5,7 +5,6 @@ import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
-	Notice,
 	ToggleControl,
 } from '@wordpress/components';
 import { useState, useEffect, useCallback } from '@wordpress/element';
@@ -227,17 +226,6 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 								'pickleball-ratings'
 							) }
 						/>
-						{ validationError ? (
-							<Notice status="error" isDismissible={ false }>
-								{ validationError }
-							</Notice>
-						) : (
-							apiError && (
-								<Notice status="error" isDismissible={ false }>
-									{ apiError }
-								</Notice>
-							)
-						) }
 						<ToggleControl
 							label={ __(
 								'Show Profile Picture',
