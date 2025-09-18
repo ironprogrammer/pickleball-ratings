@@ -184,7 +184,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 		return (
 			<div
 				{ ...useBlockProps( {
-					className: `pickleball-ratings-block${
+					className: `pbr-block pickleball-ratings-block${
 						backgroundColor
 							? ' has-background has-' +
 							  backgroundColor +
@@ -289,7 +289,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 				{ ( () => {
 					if ( ! duprId ) {
 						return (
-							<div className="pickleball-ratings-placeholder">
+							<div className="placeholder">
 								<p>
 									{ __(
 										'Please enter a DUPR ID in the block settings to display player ratings.',
@@ -302,7 +302,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 
 					if ( validationError ) {
 						return (
-							<div className="pickleball-ratings-error">
+							<div className="error">
 								<p>{ validationError }</p>
 							</div>
 						);
@@ -310,7 +310,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 
 					if ( isLoading ) {
 						return (
-							<div className="pickleball-ratings-loading">
+							<div className="loading">
 								<p>
 									{ __(
 										'Loading player data…',
@@ -323,7 +323,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 
 					if ( apiError ) {
 						return (
-							<div className="pickleball-ratings-error">
+							<div className="error">
 								<p>{ apiError }</p>
 							</div>
 						);
@@ -336,15 +336,15 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 							: '';
 
 						return (
-							<div className="pickleball-ratings-block-wrapper">
+							<div className="block-wrapper">
 								{ duprId && (
 									<button
-										className="pickleball-ratings-copy-id-corner"
+										className="copy-btn"
 										onClick={ ( event ) => {
 											window.pbrCopyToClipboard(
 												duprId,
 												event.target.closest(
-													'.pickleball-ratings-copy-id-corner'
+													'.copy-btn'
 												)
 											);
 										} }
@@ -355,7 +355,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 								) }
 								{ playerData.name && (
 									<div
-										className="pickleball-ratings-player-name"
+										className="player-name"
 										title={ titleAttribute }
 									>
 										{ showProfilePic && (
@@ -366,25 +366,25 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 															playerData.profile_image
 														}
 														alt={ playerData.name }
-														className="pickleball-ratings-profile-pic"
+														className="profile-pic"
 													/>
 												) : (
-													<span className="dashicons dashicons-admin-users pickleball-ratings-profile-pic-fallback"></span>
+													<span className="dashicons dashicons-admin-users profile-pic-fallback"></span>
 												) }
 											</>
 										) }
 										{ playerData.name }
 									</div>
 								) }
-								<div className="pickleball-ratings-content">
-									<div className="pickleball-ratings-item">
-										<span className="pickleball-ratings-label">
+								<div className="rating-content">
+									<div className="pbr-item">
+										<span className="pbr-label">
 											<span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-back"></span>
 											<span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-front"></span>
 											Doubles
 										</span>
 										<span
-											className="pickleball-ratings-value"
+											className="pbr-value"
 											title={ ( () => {
 												if (
 													playerData.doubles_rating ===
@@ -403,13 +403,13 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 											{ playerData.doubles_rating }
 										</span>
 									</div>
-									<div className="pickleball-ratings-item">
-										<span className="pickleball-ratings-label">
+									<div className="pbr-item">
+										<span className="pbr-label">
 											<span className="dashicons dashicons-admin-users pbr-icon"></span>
 											Singles
 										</span>
 										<span
-											className="pickleball-ratings-value"
+											className="pbr-value"
 											title={ ( () => {
 												if (
 													playerData.singles_rating ===
@@ -430,8 +430,8 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 									</div>
 								</div>
 								{ showPoweredBy && (
-									<div className="pickleball-ratings-footer">
-										<span className="pickleball-ratings-powered-by">
+									<div className="footer">
+										<span className="powered-by">
 											Powered by{ ' ' }
 											<img
 												src={
@@ -441,7 +441,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 														: 'images/dupr-logo-blue.png' )
 												}
 												alt="DUPR"
-												className="pickleball-ratings-logo"
+												className="logo"
 											/>
 										</span>
 									</div>
@@ -451,7 +451,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 					}
 
 					return (
-						<div className="pickleball-ratings-placeholder">
+						<div className="placeholder">
 							<p>
 								{ __(
 									'Enter a valid DUPR ID to load player data.',

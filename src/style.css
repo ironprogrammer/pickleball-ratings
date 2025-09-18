@@ -2,8 +2,9 @@
  * Pickleball Ratings Block Styles
  */
 
-/* CSS Variables for icon styling */
-:root {
+/* Main block wrapper - all styles scoped within this */
+.pbr-block {
+	/* CSS Variables scoped to our block */
 	--pbr-icon-size: 20px;
 	--pbr-icon-color: #187ae8;
 	--pbr-doubles-back-color: #1461c0;
@@ -11,20 +12,20 @@
 	--pbr-icon-stack-offset: -1rem;
 }
 
-/* Shared utility classes for icons */
-.pbr-icon {
+/* Icon utility classes - scoped to our block */
+.pbr-block .pbr-icon {
 	font-size: var(--pbr-icon-size);
 	color: var(--pbr-icon-color);
 }
 
-.pbr-doubles-back {
+.pbr-block .pbr-doubles-back {
 	color: var(--pbr-doubles-back-color);
 	font-size: var(--pbr-doubles-back-size);
 	position: relative;
 	z-index: 1;
 }
 
-.pbr-doubles-front {
+.pbr-block .pbr-doubles-front {
 	color: var(--pbr-icon-color);
 	font-size: var(--pbr-icon-size);
 	position: relative;
@@ -32,7 +33,8 @@
 	margin-left: var(--pbr-icon-stack-offset);
 }
 
-.pickleball-ratings-block {
+/* Main block container styles */
+.pbr-block {
 	position: relative;
 	border: 1px solid #ddd;
 	border-radius: 8px;
@@ -42,12 +44,12 @@
 	font-size: var(--wp--preset--font-size--large, 1.125rem);
 }
 
-.pickleball-ratings-block-wrapper {
-
+.pbr-block .block-wrapper {
 	/* No positioning needed - wrapper is just for structure */
 }
 
-.pickleball-ratings-copy-id-corner {
+/* Copy button - corner positioned */
+.pbr-block .copy-btn {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -76,23 +78,24 @@
 	min-width: auto;
 }
 
-.pickleball-ratings-copy-id-corner:hover {
+.pbr-block .copy-btn:hover {
 	background: rgba(255, 255, 255, 1);
 	border-color: #999;
 }
 
-.pickleball-ratings-block:hover .pickleball-ratings-copy-id-corner {
+.pbr-block:hover .copy-btn {
 	opacity: 1;
 }
 
-.pickleball-ratings-copy-id-corner .dashicons {
+.pbr-block .copy-btn .dashicons {
 	font-size: 14px;
 	width: 14px;
 	height: 14px;
 	color: #666;
 }
 
-.pickleball-ratings-header {
+/* Header section */
+.pbr-block .header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -101,13 +104,13 @@
 	border-bottom: 1px solid #eee;
 }
 
-.pickleball-ratings-title {
+.pbr-block .title {
 	margin: 0;
 	font-size: 1.2em;
 	font-weight: 600;
 }
 
-.pickleball-ratings-copy-id {
+.pbr-block .copy-id-btn {
 	background: none;
 	border: none;
 	padding: 4px;
@@ -117,17 +120,18 @@
 	transition: background-color 0.2s ease;
 }
 
-.pickleball-ratings-copy-id:hover {
+.pbr-block .copy-id-btn:hover {
 	background-color: rgba(0, 0, 0, 0.1);
 }
 
-.pickleball-ratings-copy-id .dashicons {
+.pbr-block .copy-id-btn .dashicons {
 	font-size: 16px;
 	width: 16px;
 	height: 16px;
 }
 
-.pickleball-ratings-player-name {
+/* Player information section */
+.pbr-block .player-name {
 	font-size: 1.1em;
 	font-weight: 600;
 	margin-bottom: 10px;
@@ -138,7 +142,7 @@
 	gap: 10px;
 }
 
-.pickleball-ratings-profile-pic {
+.pbr-block .profile-pic {
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
@@ -146,7 +150,7 @@
 	border: 2px solid #ddd;
 }
 
-.pickleball-ratings-block .pickleball-ratings-profile-pic-fallback {
+.pbr-block .profile-pic-fallback {
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
@@ -159,8 +163,8 @@
 	color: #666;
 }
 
-/* Rating items container */
-.pickleball-ratings-content {
+/* Ratings display section */
+.pbr-block .rating-content {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -168,7 +172,7 @@
 	justify-content: center;
 }
 
-.pickleball-ratings-item {
+.pbr-block .pbr-item {
 	display: flex;
 	flex-direction: column;
 	text-align: center;
@@ -177,28 +181,28 @@
 	min-width: 80px;
 }
 
-.pickleball-ratings-label {
+.pbr-block .pbr-label {
 	font-weight: 500;
 	display: flex;
 	align-items: center;
 	gap: 4px;
 }
 
-
-.pickleball-ratings-value {
+.pbr-block .pbr-value {
 	margin-top: 4px;
 	font-weight: 600;
 	font-size: 1.2em;
 }
 
-.pickleball-ratings-placeholder {
+/* Block states */
+.pbr-block .placeholder {
 	text-align: center;
 	padding: 20px;
 	color: #666;
 	font-style: italic;
 }
 
-.pickleball-ratings-error {
+.pbr-block .error {
 	background: #fef7f1;
 	border: 1px solid #f0b849;
 	border-radius: 4px;
@@ -206,40 +210,41 @@
 	color: #d63638;
 }
 
-/* Sidebar error notice spacing */
-.components-notice {
-	margin-bottom: 16px;
-}
-
-.pickleball-ratings-loading {
+.pbr-block .loading {
 	text-align: center;
 	padding: 20px;
 	color: #666;
 	font-style: italic;
 }
 
-.pickleball-ratings-footer {
+/* Editor notice spacing - scoped to our block only */
+.pbr-block .components-notice {
+	margin-bottom: 16px;
+}
+
+/* Footer section */
+.pbr-block .footer {
 	margin-top: 15px;
 	padding-top: 10px;
 	text-align: center;
 	font-size: 0.8em;
 }
 
-.pickleball-ratings-powered-by {
+.pbr-block .powered-by {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 4px;
 }
 
-.pickleball-ratings-logo {
+.pbr-block .logo {
 	height: 16px;
 	width: auto;
 	vertical-align: middle;
 	margin-left: 2px;
 }
 
-.pickleball-ratings-note {
+.pbr-block .note {
 	font-size: 0.8em;
 	color: #888;
 	font-style: italic;
@@ -248,12 +253,8 @@
 	border-top: 1px solid #eee;
 }
 
-/* Editor-specific styles */
-.wp-block-pickleball-ratings-player-ratings .pickleball-ratings-block {
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.wp-block-pickleball-ratings-player-ratings .pickleball-ratings-placeholder {
+/* Editor-specific placeholder styling */
+.pbr-block .placeholder {
 	background: #f9f9f9;
 	border: 2px dashed #ddd;
 	border-radius: 4px;
@@ -262,17 +263,17 @@
 /* Responsive design */
 @media (max-width: 480px) {
 
-	.pickleball-ratings-block {
+	.pbr-block {
 		padding: 15px;
 	}
 
-	.pickleball-ratings-header {
+	.pbr-block .header {
 		flex-direction: column;
 		align-items: flex-start;
 		gap: 8px;
 	}
 
-	.pickleball-ratings-item {
+	.pbr-block .pbr-item {
 		flex-direction: column;
 		align-items: flex-start;
 		gap: 4px;

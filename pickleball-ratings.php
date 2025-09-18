@@ -248,12 +248,12 @@ function pickleball_ratings_render_block( $attributes ) {
 
 	// Basic validation.
 	if ( empty( $dupr_id ) ) {
-		return '<div class="pickleball-ratings-block pickleball-ratings-error">Please enter a valid DUPR ID.</div>';
+		return '<div class="pbr-block error">Please enter a valid DUPR ID.</div>';
 	}
 
 	// Validate 6-character alphanumeric format.
 	if ( ! preg_match( '/^[A-Z0-9]{6}$/', $dupr_id ) ) {
-		return '<div class="pickleball-ratings-block pickleball-ratings-error">Invalid DUPR ID format.</div>';
+		return '<div class="pbr-block error">Invalid DUPR ID format.</div>';
 	}
 
 	// Get player data from DUPR API.
@@ -269,7 +269,7 @@ function pickleball_ratings_render_block( $attributes ) {
 			$error_message = 'DUPR API not configured. Please contact the site administrator.';
 		}
 
-		return '<div class="pickleball-ratings-block pickleball-ratings-error">' . esc_html( $error_message ) . '.</div>';
+		return '<div class="pbr-block error">' . esc_html( $error_message ) . '.</div>';
 	}
 
 	// Build color classes and styles using WordPress functions.
@@ -315,12 +315,12 @@ function pickleball_ratings_render_block( $attributes ) {
 	$typography_class_string = ! empty( $typography_classes ) ? ' ' . implode( ' ', $typography_classes ) : '';
 
 	// Build the output.
-	$output  = '<div class="pickleball-ratings-block' . $color_class_string . $typography_class_string . '"' . $color_style_string . '>';
-	$output .= '<div class="pickleball-ratings-block-wrapper">';
+	$output  = '<div class="pbr-block pickleball-ratings-block' . $color_class_string . $typography_class_string . '"' . $color_style_string . '>';
+	$output .= '<div class="block-wrapper">';
 
 	// Add corner copy button for DUPR ID.
 	if ( ! empty( $dupr_id ) ) {
-		$output .= '<button class="pickleball-ratings-copy-id-corner" onclick="window.pbrCopyToClipboard(\'' . esc_js( $dupr_id ) . '\', this)" title="Copy DUPR ID: ' . esc_attr( $dupr_id ) . '">';
+		$output .= '<button class="copy-btn" onclick="window.pbrCopyToClipboard(\'' . esc_js( $dupr_id ) . '\', this)" title="Copy DUPR ID: ' . esc_attr( $dupr_id ) . '">';
 		$output .= '<span class="dashicons dashicons-clipboard"></span>';
 		$output .= '</button>';
 	}
@@ -332,14 +332,14 @@ function pickleball_ratings_render_block( $attributes ) {
 			? ' title="Last updated: ' . esc_attr( $player_data['last_updated'] ) . '"'
 			: '';
 
-		$output .= '<div class="pickleball-ratings-player-name"' . $title_attribute . '>';
+		$output .= '<div class="player-name"' . $title_attribute . '>';
 
 		// Add profile picture if enabled and available.
 		if ( $show_profile_pic ) {
 			if ( ! empty( $player_data['profile_image'] ) ) {
-				$output .= '<img src="' . esc_url( $player_data['profile_image'] ) . '" alt="' . esc_attr( $player_data['name'] ) . '" class="pickleball-ratings-profile-pic" />';
+				$output .= '<img src="' . esc_url( $player_data['profile_image'] ) . '" alt="' . esc_attr( $player_data['name'] ) . '" class="profile-pic" />';
 			} else {
-				$output .= '<span class="dashicons dashicons-admin-users pickleball-ratings-profile-pic-fallback"></span>';
+				$output .= '<span class="dashicons dashicons-admin-users profile-pic-fallback"></span>';
 			}
 		}
 
@@ -347,9 +347,9 @@ function pickleball_ratings_render_block( $attributes ) {
 		$output .= '</div>';
 	}
 
-	$output       .= '<div class="pickleball-ratings-content">';
-	$output       .= '<div class="pickleball-ratings-item">';
-	$output       .= '<span class="pickleball-ratings-label">';
+	$output       .= '<div class="rating-content">';
+	$output       .= '<div class="pbr-item">';
+	$output       .= '<span class="pbr-label">';
 	$output       .= '<span class="dashicons dashicons-admin-users pbr-icon pbr-doubles-back"></span>';
 	$output       .= '<span class="dashicons dashicons-admin-users pbr-icon pbr-doubles-front"></span>';
 	$output       .= 'Doubles';
@@ -362,10 +362,10 @@ function pickleball_ratings_render_block( $attributes ) {
 	} else {
 		$doubles_title = ' title="Doubles: ' . esc_attr( $player_data['doubles_rating'] ) . '"';
 	}
-	$output       .= '<span class="pickleball-ratings-value"' . $doubles_title . '>' . esc_html( $player_data['doubles_rating'] ) . '</span>';
+	$output       .= '<span class="pbr-value"' . $doubles_title . '>' . esc_html( $player_data['doubles_rating'] ) . '</span>';
 	$output       .= '</div>';
-	$output       .= '<div class="pickleball-ratings-item">';
-	$output       .= '<span class="pickleball-ratings-label">';
+	$output       .= '<div class="pbr-item">';
+	$output       .= '<span class="pbr-label">';
 	$output       .= '<span class="dashicons dashicons-admin-users pbr-icon"></span>';
 	$output       .= 'Singles';
 	$output       .= '</span>';
@@ -377,7 +377,7 @@ function pickleball_ratings_render_block( $attributes ) {
 	} else {
 		$singles_title = ' title="Singles: ' . esc_attr( $player_data['singles_rating'] ) . '"';
 	}
-	$output .= '<span class="pickleball-ratings-value"' . $singles_title . '>' . esc_html( $player_data['singles_rating'] ) . '</span>';
+	$output .= '<span class="pbr-value"' . $singles_title . '>' . esc_html( $player_data['singles_rating'] ) . '</span>';
 	$output .= '</div>';
 	$output .= '</div>';
 
@@ -386,10 +386,10 @@ function pickleball_ratings_render_block( $attributes ) {
 		$logo_file = $use_light_logo ? 'dupr-logo-white.png' : 'dupr-logo-blue.png';
 		$logo_url  = PICKLEBALL_RATINGS_PLUGIN_URL . 'images/' . $logo_file;
 
-		$output .= '<div class="pickleball-ratings-footer">';
-		$output .= '<span class="pickleball-ratings-powered-by">';
+		$output .= '<div class="footer">';
+		$output .= '<span class="powered-by">';
 		$output .= 'Powered by ';
-		$output .= '<img src="' . esc_url( $logo_url ) . '" alt="DUPR" class="pickleball-ratings-logo" />';
+		$output .= '<img src="' . esc_url( $logo_url ) . '" alt="DUPR" class="logo" />';
 		$output .= '</span>';
 		$output .= '</div>';
 	}
