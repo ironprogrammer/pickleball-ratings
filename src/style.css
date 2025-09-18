@@ -2,14 +2,21 @@
  * Pickleball Ratings Block Styles
  */
 
-/* Main block wrapper - all styles scoped within this */
+/* Main block wrapper and CSS vars - all styles scoped within this selector */
 .pbr-block {
-	/* CSS Variables scoped to our block */
 	--pbr-icon-size: 20px;
 	--pbr-icon-color: #187ae8;
 	--pbr-doubles-back-color: #1461c0;
 	--pbr-doubles-back-size: 15px;
 	--pbr-icon-stack-offset: -1rem;
+
+	position: relative;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	padding: 20px;
+	background: #fff;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-size: var(--wp--preset--font-size--large, 1.125rem);
 }
 
 /* Icon utility classes - scoped to our block */
@@ -31,21 +38,6 @@
 	position: relative;
 	z-index: 2;
 	margin-left: var(--pbr-icon-stack-offset);
-}
-
-/* Main block container styles */
-.pbr-block {
-	position: relative;
-	border: 1px solid #ddd;
-	border-radius: 8px;
-	padding: 20px;
-	background: #fff;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-	font-size: var(--wp--preset--font-size--large, 1.125rem);
-}
-
-.pbr-block .block-wrapper {
-	/* No positioning needed - wrapper is just for structure */
 }
 
 /* Copy button - corner positioned */
