@@ -21,6 +21,7 @@ Other development commands include:
 
 - `npm run build` - Build the plugin for production
 - `npm run start` - Start development mode with hot reloading
+- `npm run clean` - Remove build files for fresh start
 - `npm run lint` - Run all linters (PHP, CSS, and JS)
 - `npm run lint:js` - Lint JavaScript files
 - `npm run lint:css` - Lint CSS files
@@ -30,7 +31,7 @@ Other development commands include:
 - `npm run test:setup` - One-time WordPress test suite setup (creates test DB and installs WP tests)
 - `npm test` - Build assets and run PHPUnit tests
 - `npm run packages-update` - Update WordPress packages
-- `npm run plugin-zip` - Create a production-ready plugin ZIP file
+- `npm run plugin-zip` - Create production-ready plugin ZIP with full quality assurance (clean, lint, test, build, package, verify)
 
 ### Plugin Structure
 
