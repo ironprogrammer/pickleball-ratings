@@ -5,14 +5,14 @@
 
 class PBR_Render_Test extends WP_UnitTestCase {
 
-	public function test_render_empty_id_shows_error() {
+	public function test_render_empty_id_returns_empty() {
 		$html = pickleball_ratings_render_block( array( 'duprId' => '' ) );
-		$this->assertStringContainsString( 'Please enter a valid DUPR ID', $html );
+		$this->assertEmpty( $html, 'Empty DUPR ID should return empty string on frontend' );
 	}
 
-	public function test_render_invalid_id_format() {
+	public function test_render_invalid_id_format_returns_empty() {
 		$html = pickleball_ratings_render_block( array( 'duprId' => 'abc' ) );
-		$this->assertStringContainsString( 'Invalid DUPR ID format', $html );
+		$this->assertEmpty( $html, 'Invalid DUPR ID should return empty string on frontend' );
 	}
 
 	public function test_render_color_classes_and_styles() {
