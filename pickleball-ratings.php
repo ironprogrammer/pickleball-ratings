@@ -132,11 +132,11 @@ function pickleball_ratings_register_block() {
 		true
 	);
 
-	// Register block style (used for both frontend and editor).
+	// Register block style.
 	wp_register_style(
 		'pickleball-ratings-block-style',
 		PICKLEBALL_RATINGS_PLUGIN_URL . 'build/style-index.css',
-		array( 'wp-edit-blocks', 'dashicons' ),
+		array( 'dashicons' ),
 		$asset_file['version']
 	);
 
