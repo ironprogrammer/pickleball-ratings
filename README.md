@@ -18,7 +18,7 @@ Provide feedback through [the Issues page](https://github.com/ironprogrammer/pic
 
 ## Contributing
 
-Your contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Your contributions are welcome! See [CONTRIBUTING.md](https://github.com/ironprogrammer/pickleball-ratings?tab=contributing-ov-file#) for details.
 
 ## License
 
