@@ -1,12 +1,17 @@
 # Contributing to Pickleball Ratings
 
-Thanks for your interest in contributing! This project follows standard open-source workflows.
+Thanks for your interest in contributing! This project follows standard open source workflows.
 
 - Code style: follow WordPress coding standards (PHP, JS/CSS) and keep edits focused.
 - Issues: include steps to reproduce, expected/actual behavior, and environment details.
 - Pull requests: small, well-scoped changes with a clear description and screenshots when UI changes.
 - Security: do not open public issues for security reports; instead, contact the maintainer privately.
-- Local dev: WordPress + this plugin; `npm install` then `npm run build` for assets.
+
+## Planning and PRs
+
+In an ideal world, each contribution relates one or more associated [issues](https://github.com/ironprogrammer/pickleball-ratings/issues), where ideas and approaches can be discussed before the rubber hits the road.
+
+Once it's clear what changes should be made, please [open a PR](https://github.com/ironprogrammer/pickleball-ratings/pulls) with the suggested updates. If your contribution is not code-related, discuss how it can be addressed in the related issue.
 
 ## Development Setup
 
