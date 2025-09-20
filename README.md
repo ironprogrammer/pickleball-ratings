@@ -4,6 +4,14 @@ This plugin provides a customizable block to display player DUPR (Dynamic Univer
 
 In addition to the plugin itself, the `docs/` directory includes the requirements and agent implementation instructions that were used to assist the development of the plugin. See the `.cursor/rules` directory for additional Cursor-specific rules. This plugin was designed and built with the assistance of Claude, Cursor, and cursor-agent.
 
+## Feature Requests ⭐️ and Bug Reports 🪳
+
+Provide feedback through [the Issues page](https://github.com/ironprogrammer/pickleball-ratings/issues/new/choose), and use the appropriate template (bug or feature request).
+
+## Contributing
+
+Your contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
 ## Development
 
 1. Clone this repository.
@@ -70,4 +78,4 @@ To run tests locally:
 
 ## License
 
-GPL v2 or later.
+[As with all things WordPress](https://developer.wordpress.org/plugins/plugin-basics/including-a-software-license/), this plugin is licensed under GPL v2 or later.
