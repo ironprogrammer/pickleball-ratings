@@ -90,8 +90,11 @@
 }
 
 /* Frontend styles */
+.pbr-block--round-robin {
+	font-size: inherit; /* Override the large font-size from base .pbr-block */
+}
+
 .pbr-block--round-robin .round-robin-container {
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	background: #f8f9fa;
 	color: #212529;
 	border-radius: 8px;
@@ -103,7 +106,6 @@
 	border-radius: 12px;
 	padding: 24px;
 	margin-bottom: 24px;
-	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 	border: 1px solid #dee2e6;
 }
 
@@ -149,6 +151,38 @@
 	background: #0056b3;
 }
 
+.pbr-block--round-robin .pbr-new-matchups-btn {
+	background: #007bff;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	padding: 12px 24px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	margin-bottom: 16px;
+}
+
+.pbr-block--round-robin .pbr-new-matchups-btn:hover {
+	background: #0056b3;
+}
+
+.pbr-block--round-robin .pbr-cancel-btn {
+	background: #6c757d;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	padding: 10px 20px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	margin-left: 12px;
+}
+
+.pbr-block--round-robin .pbr-cancel-btn:hover {
+	background: #5a6268;
+}
+
 .pbr-block--round-robin .help-text {
 	margin: 0;
 	color: #6c757d;
@@ -157,6 +191,155 @@
 .pbr-block--round-robin .schedule-output,
 .pbr-block--round-robin .stats-output {
 	margin-top: 16px;
+}
+
+/* Schedule table styles */
+.pbr-block--round-robin .pbr-schedule-grid {
+	overflow-x: auto;
+	border-radius: 8px;
+	border: 1px solid #dee2e6;
+	margin-top: 16px;
+}
+
+.pbr-block--round-robin .pbr-schedule-grid table {
+	width: 100%;
+	border-collapse: collapse;
+	min-width: 700px;
+}
+
+.pbr-block--round-robin .pbr-schedule-grid th,
+.pbr-block--round-robin .pbr-schedule-grid td {
+	padding: 14px 10px;
+	text-align: center;
+	border: 1px solid #dee2e6;
+	vertical-align: middle;
+	font-size: 16px;
+}
+
+.pbr-block--round-robin .pbr-schedule-grid th {
+	background: #007bff;
+	color: white;
+	font-weight: 600;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+
+.pbr-block--round-robin .pbr-round-header {
+	position: relative;
+	padding: 8px 10px !important;
+}
+
+.pbr-block--round-robin .pbr-round-header div {
+	margin-bottom: 4px;
+}
+
+.pbr-block--round-robin .pbr-complete-btn {
+	background: #6c757d;
+	color: white;
+	border: none;
+	border-radius: 50%;
+	width: 24px;
+	height: 24px;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto;
+}
+
+.pbr-block--round-robin .pbr-complete-btn:hover {
+	background: #5a6268;
+}
+
+.pbr-block--round-robin .pbr-complete-btn.completed {
+	background: #28a745;
+}
+
+.pbr-block--round-robin .pbr-complete-btn.completed:hover {
+	background: #218838;
+}
+
+.pbr-block--round-robin .pbr-court-label {
+	background: #6c757d !important;
+	color: white !important;
+	font-weight: 600;
+}
+
+.pbr-block--round-robin .pbr-bye-row {
+	background: #e9ecef;
+}
+
+.pbr-block--round-robin .pbr-bye-row .pbr-court-label {
+	background: #6c757d !important;
+}
+
+.pbr-block--round-robin .pbr-completed-round {
+	background: #f8f9fa !important;
+	color: #6c757d !important;
+	opacity: 0.7;
+	position: relative;
+}
+
+.pbr-block--round-robin .pbr-completed-round::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: repeating-linear-gradient(
+		45deg,
+		transparent,
+		transparent 10px,
+		rgba(108, 117, 125, 0.1) 10px,
+		rgba(108, 117, 125, 0.1) 20px
+	);
+	pointer-events: none;
+}
+
+.pbr-block--round-robin .pbr-error {
+	color: #dc3545;
+	background: #f8d7da;
+	border: 1px solid #f5c6cb;
+	padding: 12px;
+	border-radius: 4px;
+	margin-top: 16px;
+}
+
+.pbr-block--round-robin .pbr-warning {
+	color: #856404;
+	background: #fff3cd;
+	border: 1px solid #ffeaa7;
+	padding: 12px;
+	border-radius: 4px;
+	margin-bottom: 16px;
+}
+
+.pbr-block--round-robin .pbr-stats {
+	background: #f8f9fa;
+	border: 1px solid #dee2e6;
+	border-radius: 8px;
+	padding: 16px;
+	margin-top: 16px;
+	font-size: var(--wp--preset--font-size--small, 0.875rem); /* Use small WP preset for stats */
+}
+
+.pbr-block--round-robin .pbr-stats h4 {
+	margin: 0 0 8px 0;
+	color: #495057;
+	/* Remove font-size override, let it inherit naturally */
+}
+
+.pbr-block--round-robin .pbr-stat-list {
+	margin: 0;
+	padding-left: 20px;
+}
+
+.pbr-block--round-robin .pbr-stat-list li {
+	margin-bottom: 4px;
 }
 
 /* Responsive adjustments */
@@ -176,5 +359,21 @@
 		flex-direction: column;
 		align-items: stretch;
 		gap: 12px;
+	}
+
+	.pbr-block--round-robin .pbr-schedule-grid th,
+	.pbr-block--round-robin .pbr-schedule-grid td {
+		font-size: 18px;
+		padding: 16px 8px;
+	}
+
+	.pbr-block--round-robin .pbr-complete-btn {
+		width: 28px;
+		height: 28px;
+		font-size: 14px;
+	}
+
+	.pbr-block--round-robin .pbr-stat-list {
+		padding-left: 16px;
 	}
 }

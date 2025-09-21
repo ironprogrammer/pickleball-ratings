@@ -453,8 +453,11 @@ function pickleball_ratings_render_round_robin_block( $attributes ) {
 	$output .= '<input type="number" id="pbr-courts" class="pbr-input" min="1" max="8" value="' . esc_attr( $courts ) . '">';
 	$output .= '</div>';
 	$output .= '<button class="pbr-generate-btn" type="button">' . esc_html__( 'Generate', 'pickleball-ratings' ) . '</button>';
+	$output .= '<button class="pbr-cancel-btn" type="button" style="display: none;">' . esc_html__( 'Cancel', 'pickleball-ratings' ) . '</button>';
 	$output .= '</div>';
 	$output .= '</div>';
+	
+	$output .= '<button class="pbr-new-matchups-btn" type="button" style="display: none;">' . esc_html__( 'New Matchups', 'pickleball-ratings' ) . '</button>';
 	
 	$output .= '<div id="pbr-schedule-output" class="schedule-output"></div>';
 	$output .= '<div id="pbr-stats-output" class="stats-output"></div>';
