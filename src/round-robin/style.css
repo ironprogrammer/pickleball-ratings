@@ -89,6 +89,76 @@
 	color: #333;
 }
 
+/* Frontend styles */
+.pbr-block--round-robin .round-robin-container {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	background: #f8f9fa;
+	color: #212529;
+	border-radius: 8px;
+	padding: 20px;
+}
+
+.pbr-block--round-robin .input-section {
+	background: white;
+	border-radius: 12px;
+	padding: 24px;
+	margin-bottom: 24px;
+	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+	border: 1px solid #dee2e6;
+}
+
+.pbr-block--round-robin .input-group {
+	display: flex;
+	gap: 20px;
+	align-items: end;
+	flex-wrap: wrap;
+	margin-bottom: 16px;
+}
+
+.pbr-block--round-robin .form-group {
+	display: flex;
+	flex-direction: column;
+}
+
+.pbr-block--round-robin .form-group label {
+	font-weight: 600;
+	margin-bottom: 4px;
+	color: #495057;
+}
+
+.pbr-block--round-robin .pbr-input {
+	padding: 8px 12px;
+	border: 1px solid #ced4da;
+	border-radius: 4px;
+	font-size: 16px;
+	width: 80px;
+}
+
+.pbr-block--round-robin .pbr-generate-btn {
+	background: #007bff;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	padding: 10px 20px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.pbr-block--round-robin .pbr-generate-btn:hover {
+	background: #0056b3;
+}
+
+.pbr-block--round-robin .help-text {
+	margin: 0;
+	color: #6c757d;
+}
+
+.pbr-block--round-robin .schedule-output,
+.pbr-block--round-robin .stats-output {
+	margin-top: 16px;
+}
+
 /* Responsive adjustments */
 @media ( max-width: 480px ) {
 	.pbr-block--round-robin .mini-header,
@@ -100,5 +170,11 @@
 	.pbr-block--round-robin .placeholder-header {
 		flex-direction: column;
 		gap: 4px;
+	}
+
+	.pbr-block--round-robin .input-group {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 12px;
 	}
 }
