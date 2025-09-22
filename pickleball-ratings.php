@@ -8,7 +8,7 @@
  * License:         GPLv2 or later
  * License URI:     https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:     pickleball-ratings
- * Version:         0.2.0
+ * Version:         0.3.0
  * Requires at least: 5.6
  * Tested up to: 6.8
  * Requires PHP: 7.4
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants.
-define( 'PICKLEBALL_RATINGS_VERSION', '0.2.0' );
+define( 'PICKLEBALL_RATINGS_VERSION', '0.3.0' );
 define( 'PICKLEBALL_RATINGS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PICKLEBALL_RATINGS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
