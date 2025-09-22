@@ -8,6 +8,18 @@ let pbrCurrentSchedule = null;
 let pbrCurrentCourts = 0;
 
 /**
+ * Fisher-Yates shuffle for proper randomization
+ */
+function fisherYatesShuffle( array ) {
+	const arr = [ ...array ]; // Don't mutate original
+	for ( let i = arr.length - 1; i > 0; i-- ) {
+		const j = Math.floor( Math.random() * ( i + 1 ) );
+		[ arr[ i ], arr[ j ] ] = [ arr[ j ], arr[ i ] ]; // Swap
+	}
+	return arr;
+}
+
+/**
  * Pickleball Round Robin Scheduler Class
  */
 class PbrPickleballScheduler {
@@ -105,7 +117,7 @@ class PbrPickleballScheduler {
 		}
 
 		// Subsequent rounds: RANDOMIZE then avoid recent partnerships
-		const shuffled = [ ...players ].sort( () => Math.random() - 0.5 );
+		const shuffled = fisherYatesShuffle( players );
 		const partnerships = [];
 		const remaining = [ ...shuffled ];
 
