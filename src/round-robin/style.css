@@ -1,0 +1,379 @@
+/**
+ * Round Robin Block Styles
+ */
+
+/* Editor placeholder styles */
+.pbr-block--round-robin .placeholder {
+	text-align: center;
+	padding: 24px;
+	border: 2px dashed #ddd;
+	border-radius: 8px;
+	background: #f9f9f9;
+}
+
+.pbr-block--round-robin .placeholder-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	margin-bottom: 20px;
+}
+
+.pbr-block--round-robin .placeholder-header .dashicons {
+	font-size: 24px;
+	color: #007bff;
+}
+
+.pbr-block--round-robin .placeholder-header h3 {
+	margin: 0;
+	font-size: 1.2em;
+	color: #333;
+}
+
+/* Mini preview grid */
+.pbr-block--round-robin .mini-preview {
+	margin: 20px 0;
+	background: white;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 12px;
+	font-size: 12px;
+}
+
+.pbr-block--round-robin .mini-grid {
+	display: grid;
+	gap: 4px;
+}
+
+.pbr-block--round-robin .mini-header {
+	display: grid;
+	grid-template-columns: 80px repeat(4, 1fr);
+	gap: 8px;
+	padding: 4px 0;
+	border-bottom: 1px solid #eee;
+	margin-bottom: 4px;
+	font-weight: 600;
+	color: #007bff;
+}
+
+.pbr-block--round-robin .mini-row {
+	display: grid;
+	grid-template-columns: 80px repeat(4, 1fr);
+	gap: 8px;
+	padding: 2px 0;
+	text-align: left;
+}
+
+.pbr-block--round-robin .mini-row strong {
+	font-size: 11px;
+	color: #666;
+}
+
+.pbr-block--round-robin .bye-row {
+	color: #999;
+	font-style: italic;
+}
+
+/* Placeholder footer */
+.pbr-block--round-robin .placeholder-footer {
+	color: #666;
+	font-size: 14px;
+	margin-top: 16px;
+}
+
+.pbr-block--round-robin .placeholder-footer p {
+	margin: 8px 0;
+}
+
+.pbr-block--round-robin .placeholder-footer strong {
+	color: #333;
+}
+
+/* Frontend styles */
+.pbr-block--round-robin {
+	font-size: inherit; /* Override the large font-size from base .pbr-block */
+}
+
+.pbr-block--round-robin .round-robin-container {
+	background: #f8f9fa;
+	color: #212529;
+	border-radius: 8px;
+	padding: 20px;
+}
+
+.pbr-block--round-robin .input-section {
+	background: white;
+	border-radius: 12px;
+	padding: 24px;
+	margin-bottom: 24px;
+	border: 1px solid #dee2e6;
+}
+
+.pbr-block--round-robin .input-group {
+	display: flex;
+	gap: 20px;
+	align-items: end;
+	flex-wrap: wrap;
+	margin-bottom: 16px;
+}
+
+.pbr-block--round-robin .form-group {
+	display: flex;
+	flex-direction: column;
+}
+
+.pbr-block--round-robin .form-group label {
+	font-weight: 600;
+	margin-bottom: 4px;
+	color: #495057;
+}
+
+.pbr-block--round-robin .pbr-input {
+	padding: 8px 12px;
+	border: 1px solid #ced4da;
+	border-radius: 4px;
+	font-size: 16px;
+	width: 80px;
+}
+
+.pbr-block--round-robin .pbr-generate-btn {
+	background: #007bff;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	padding: 10px 20px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.pbr-block--round-robin .pbr-generate-btn:hover {
+	background: #0056b3;
+}
+
+.pbr-block--round-robin .pbr-new-matchups-btn {
+	background: #007bff;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	padding: 12px 24px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	margin-bottom: 16px;
+}
+
+.pbr-block--round-robin .pbr-new-matchups-btn:hover {
+	background: #0056b3;
+}
+
+.pbr-block--round-robin .pbr-cancel-btn {
+	background: #6c757d;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	padding: 10px 20px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	margin-left: 12px;
+}
+
+.pbr-block--round-robin .pbr-cancel-btn:hover {
+	background: #5a6268;
+}
+
+.pbr-block--round-robin .help-text {
+	margin: 0;
+	color: #6c757d;
+}
+
+.pbr-block--round-robin .schedule-output,
+.pbr-block--round-robin .stats-output {
+	margin-top: 16px;
+}
+
+/* Schedule table styles */
+.pbr-block--round-robin .pbr-schedule-grid {
+	overflow-x: auto;
+	border-radius: 8px;
+	border: 1px solid #dee2e6;
+	margin-top: 16px;
+}
+
+.pbr-block--round-robin .pbr-schedule-grid table {
+	width: 100%;
+	border-collapse: collapse;
+	min-width: 700px;
+}
+
+.pbr-block--round-robin .pbr-schedule-grid th,
+.pbr-block--round-robin .pbr-schedule-grid td {
+	padding: 14px 10px;
+	text-align: center;
+	border: 1px solid #dee2e6;
+	vertical-align: middle;
+	font-size: 16px;
+}
+
+.pbr-block--round-robin .pbr-schedule-grid th {
+	background: #007bff;
+	color: white;
+	font-weight: 600;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+
+.pbr-block--round-robin .pbr-round-header {
+	position: relative;
+	padding: 8px 10px !important;
+}
+
+.pbr-block--round-robin .pbr-round-header div {
+	margin-bottom: 4px;
+}
+
+.pbr-block--round-robin .pbr-complete-btn {
+	background: #6c757d;
+	color: white;
+	border: none;
+	border-radius: 50%;
+	width: 24px;
+	height: 24px;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto;
+}
+
+.pbr-block--round-robin .pbr-complete-btn:hover {
+	background: #5a6268;
+}
+
+.pbr-block--round-robin .pbr-complete-btn.completed {
+	background: #28a745;
+}
+
+.pbr-block--round-robin .pbr-complete-btn.completed:hover {
+	background: #218838;
+}
+
+.pbr-block--round-robin .pbr-court-label {
+	background: #6c757d !important;
+	color: white !important;
+	font-weight: 600;
+}
+
+.pbr-block--round-robin .pbr-bye-row {
+	background: #e9ecef;
+}
+
+.pbr-block--round-robin .pbr-bye-row .pbr-court-label {
+	background: #6c757d !important;
+}
+
+.pbr-block--round-robin .pbr-completed-round {
+	background: #f8f9fa !important;
+	color: #6c757d !important;
+	opacity: 0.7;
+	position: relative;
+}
+
+.pbr-block--round-robin .pbr-completed-round::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: repeating-linear-gradient(
+		45deg,
+		transparent,
+		transparent 10px,
+		rgba(108, 117, 125, 0.1) 10px,
+		rgba(108, 117, 125, 0.1) 20px
+	);
+	pointer-events: none;
+}
+
+.pbr-block--round-robin .pbr-error {
+	color: #dc3545;
+	background: #f8d7da;
+	border: 1px solid #f5c6cb;
+	padding: 12px;
+	border-radius: 4px;
+	margin-top: 16px;
+}
+
+.pbr-block--round-robin .pbr-warning {
+	color: #856404;
+	background: #fff3cd;
+	border: 1px solid #ffeaa7;
+	padding: 12px;
+	border-radius: 4px;
+	margin-bottom: 16px;
+}
+
+.pbr-block--round-robin .pbr-stats {
+	background: #f8f9fa;
+	border: 1px solid #dee2e6;
+	border-radius: 8px;
+	padding: 16px;
+	margin-top: 16px;
+	font-size: var(--wp--preset--font-size--small, 0.875rem); /* Uses WP preset variable for small font size with fallback */
+}
+
+.pbr-block--round-robin .pbr-stats h4 {
+	margin: 0 0 8px 0;
+	color: #495057;
+	/* Remove font-size override, let it inherit naturally */
+}
+
+.pbr-block--round-robin .pbr-stat-list {
+	margin: 0;
+	padding-left: 20px;
+}
+
+.pbr-block--round-robin .pbr-stat-list li {
+	margin-bottom: 4px;
+}
+
+/* Responsive adjustments */
+@media ( max-width: 480px ) {
+	.pbr-block--round-robin .mini-header,
+	.pbr-block--round-robin .mini-row {
+		grid-template-columns: 60px 1fr 1fr 1fr 20px;
+		font-size: 11px;
+	}
+
+	.pbr-block--round-robin .placeholder-header {
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.pbr-block--round-robin .input-group {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 12px;
+	}
+
+	.pbr-block--round-robin .pbr-schedule-grid th,
+	.pbr-block--round-robin .pbr-schedule-grid td {
+		font-size: 18px;
+		padding: 16px 8px;
+	}
+
+	.pbr-block--round-robin .pbr-complete-btn {
+		width: 28px;
+		height: 28px;
+		font-size: 14px;
+	}
+
+	.pbr-block--round-robin .pbr-stat-list {
+		padding-left: 16px;
+	}
+}

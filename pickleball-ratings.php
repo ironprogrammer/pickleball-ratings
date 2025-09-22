@@ -216,6 +216,31 @@ function pickleball_ratings_register_block() {
 		)
 	);
 
+	// Register the round robin block.
+	register_block_type(
+		'pickleball-ratings/round-robin',
+		array(
+			'editor_script'   => 'pickleball-ratings-block',
+			'editor_style'    => 'pickleball-ratings-block-style',
+			'style'           => 'pickleball-ratings-block-style',
+			'script'          => 'pickleball-ratings-block-frontend',
+			'render_callback' => 'pickleball_ratings_render_round_robin_block',
+			'supports'        => array(
+				'align' => true,
+			),
+			'attributes'      => array(
+				'players' => array(
+					'type'    => 'number',
+					'default' => 8,
+				),
+				'courts'  => array(
+					'type'    => 'number',
+					'default' => 2,
+				),
+			),
+		)
+	);
+
 	// Localize script for AJAX.
 	wp_localize_script(
 		'pickleball-ratings-block',
@@ -396,6 +421,48 @@ function pickleball_ratings_render_block( $attributes ) {
 
 	$output .= '</div>';
 	$output .= '</div>'; // Close pickleball-ratings-block-wrapper.
+
+	return $output;
+}
+
+/**
+ * Render callback for the round robin block.
+ *
+ * @param array $attributes Block attributes.
+ * @return string Rendered HTML output.
+ */
+function pickleball_ratings_render_round_robin_block( $attributes ) {
+	$players = isset( $attributes['players'] ) ? (int) $attributes['players'] : 8;
+	$courts  = isset( $attributes['courts'] ) ? (int) $attributes['courts'] : 2;
+
+	// Sanitize inputs.
+	$players = max( 4, min( 32, $players ) );
+	$courts  = max( 1, min( 8, $courts ) );
+
+	// Build the output.
+	$output  = '<div class="pbr-block pbr-block--round-robin">';
+	$output .= '<div class="round-robin-container">';
+	$output .= '<div class="input-section">';
+	$output .= '<div class="input-group">';
+	$output .= '<div class="form-group">';
+	$output .= '<label for="pbr-players">' . esc_html__( 'Players', 'pickleball-ratings' ) . '</label>';
+	$output .= '<input type="number" id="pbr-players" class="pbr-input" min="4" max="32" value="' . esc_attr( $players ) . '">';
+	$output .= '</div>';
+	$output .= '<div class="form-group">';
+	$output .= '<label for="pbr-courts">' . esc_html__( 'Courts', 'pickleball-ratings' ) . '</label>';
+	$output .= '<input type="number" id="pbr-courts" class="pbr-input" min="1" max="8" value="' . esc_attr( $courts ) . '">';
+	$output .= '</div>';
+	$output .= '<button class="pbr-generate-btn" type="button">' . esc_html__( 'Generate', 'pickleball-ratings' ) . '</button>';
+	$output .= '<button class="pbr-cancel-btn" type="button" style="display: none;">' . esc_html__( 'Cancel', 'pickleball-ratings' ) . '</button>';
+	$output .= '</div>';
+	$output .= '</div>';
+	
+	$output .= '<button class="pbr-new-matchups-btn" type="button" style="display: none;">' . esc_html__( 'New Matchups', 'pickleball-ratings' ) . '</button>';
+	
+	$output .= '<div id="pbr-schedule-output" class="schedule-output"></div>';
+	$output .= '<div id="pbr-stats-output" class="stats-output"></div>';
+	$output .= '</div>';
+	$output .= '</div>';
 
 	return $output;
 }
