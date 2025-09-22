@@ -1,14 +1,17 @@
 /**
  * Round Robin Scheduler Frontend
  */
+/* global localStorage */
 
 // Global variables for completion tracking
 let pbrCompletedRounds = {};
-let pbrCurrentSchedule = null;
 let pbrCurrentCourts = 0;
 
 /**
  * Fisher-Yates shuffle for proper randomization
+ *
+ * @param {Array} array Array to shuffle
+ * @return {Array} Shuffled copy of the array
  */
 function fisherYatesShuffle( array ) {
 	const arr = [ ...array ]; // Don't mutate original
@@ -61,7 +64,11 @@ class PbrPickleballScheduler {
 		if ( byeCount > 0 ) {
 			if ( roundNum === 1 ) {
 				// Round 1: highest numbers sit out
-				for ( let i = this.players - byeCount + 1; i <= this.players; i++ ) {
+				for (
+					let i = this.players - byeCount + 1;
+					i <= this.players;
+					i++
+				) {
 					byePlayers.push( i );
 					this.byeCount[ i ]++;
 				}
@@ -88,7 +95,7 @@ class PbrPickleballScheduler {
 			const court = Math.floor( i / 2 ) + 1;
 			if ( court <= this.courts && partnerships[ i + 1 ] ) {
 				courtAssignments.push( {
-					court: court,
+					court,
 					team1: partnerships[ i ],
 					team2: partnerships[ i + 1 ],
 				} );
@@ -151,7 +158,10 @@ class PbrPickleballScheduler {
 	selectByePlayers( count ) {
 		// Find players with fewest byes
 		const byeCounts = Object.entries( this.byeCount )
-			.map( ( [ player, byes ] ) => ( { player: parseInt( player ), byes } ) )
+			.map( ( [ player, byes ] ) => ( {
+				player: parseInt( player ),
+				byes,
+			} ) )
 			.sort( ( a, b ) => a.byes - b.byes );
 
 		const minByes = byeCounts[ 0 ].byes;
@@ -188,7 +198,8 @@ class PbrPickleballScheduler {
 			for ( let j = i + 1; j <= this.players; j++ ) {
 				const count = this.partnerships[ i ][ j ];
 				if ( count > 0 ) {
-					if ( ! partnershipStats[ count ] ) partnershipStats[ count ] = 0;
+					if ( ! partnershipStats[ count ] )
+						partnershipStats[ count ] = 0;
 					partnershipStats[ count ]++;
 				}
 			}
@@ -209,20 +220,24 @@ class PbrPickleballScheduler {
  * Show/hide form and buttons
  */
 function pbrShowForm() {
-	const form = document.querySelector( '.pbr-block--round-robin .input-section' );
+	const form = document.querySelector(
+		'.pbr-block--round-robin .input-section'
+	);
 	const newMatchupsBtn = document.querySelector( '.pbr-new-matchups-btn' );
 	const cancelBtn = document.querySelector( '.pbr-cancel-btn' );
-	
+
 	if ( form ) form.style.display = 'block';
 	if ( newMatchupsBtn ) newMatchupsBtn.style.display = 'none';
 	if ( cancelBtn ) cancelBtn.style.display = 'inline-block';
 }
 
 function pbrHideForm() {
-	const form = document.querySelector( '.pbr-block--round-robin .input-section' );
+	const form = document.querySelector(
+		'.pbr-block--round-robin .input-section'
+	);
 	const newMatchupsBtn = document.querySelector( '.pbr-new-matchups-btn' );
 	const cancelBtn = document.querySelector( '.pbr-cancel-btn' );
-	
+
 	if ( form ) form.style.display = 'none';
 	if ( newMatchupsBtn ) newMatchupsBtn.style.display = 'inline-block';
 	if ( cancelBtn ) cancelBtn.style.display = 'none';
@@ -237,16 +252,16 @@ window.pbrGenerateSchedule = function () {
 	const scheduleOutput = document.getElementById( 'pbr-schedule-output' );
 	const statsOutput = document.getElementById( 'pbr-stats-output' );
 
-	if ( ! playersInput || ! courtsInput || ! scheduleOutput || ! statsOutput ) {
+	if (
+		! playersInput ||
+		! courtsInput ||
+		! scheduleOutput ||
+		! statsOutput
+	) {
 		return;
 	}
 
 	const players = parseInt( playersInput.value );
-	const courts = parseInt( courtsInput.value );
-
-	// Reset completion tracking when generating new schedule
-	pbrCompletedRounds = {};
-	localStorage.removeItem( 'pbr-round-robin-completed' );
 
 	// Validation
 	if ( players < 4 || players > 32 ) {
@@ -254,6 +269,12 @@ window.pbrGenerateSchedule = function () {
 			'<div class="pbr-error">Players must be between 4 and 32</div>';
 		return;
 	}
+
+	const courts = parseInt( courtsInput.value );
+
+	// Reset completion tracking when generating new schedule
+	pbrCompletedRounds = {};
+	localStorage.removeItem( 'pbr-round-robin-completed' );
 
 	if ( courts < 1 || courts > 8 ) {
 		scheduleOutput.innerHTML =
@@ -286,7 +307,7 @@ window.pbrGenerateSchedule = function () {
 	const stats = scheduler.getStats();
 
 	// Store current schedule and courts for completion tracking
-	pbrCurrentSchedule = schedule;
+	window.pbrCurrentSchedule = schedule;
 	pbrCurrentCourts = actualCourts;
 
 	// Display results
@@ -304,14 +325,21 @@ window.pbrGenerateSchedule = function () {
 		stats,
 		generated: Date.now(),
 	};
-	localStorage.setItem( 'pbr-round-robin-schedule', JSON.stringify( saveData ) );
-	
+	localStorage.setItem(
+		'pbr-round-robin-schedule',
+		JSON.stringify( saveData )
+	);
+
 	// Hide form and show New Matchups button
 	pbrHideForm();
 };
 
 /**
  * Render schedule table
+ *
+ * @param {Array}  schedule Generated schedule data
+ * @param {number} courts   Number of courts
+ * @return {string} HTML string for schedule table
  */
 function pbrRenderSchedule( schedule, courts ) {
 	let html = '<div class="pbr-schedule-grid"><table><thead><tr><th></th>';
@@ -321,7 +349,9 @@ function pbrRenderSchedule( schedule, courts ) {
 		const isCompleted = pbrCompletedRounds[ round ] || false;
 		html += `<th class="pbr-round-header">
 			<div>R ${ round }</div>
-			<button class="pbr-complete-btn ${ isCompleted ? 'completed' : '' }" data-round="${ round }">
+			<button class="pbr-complete-btn ${
+				isCompleted ? 'completed' : ''
+			}" data-round="${ round }">
 				${ isCompleted ? '✓' : '○' }
 			</button>
 		</th>`;
@@ -336,13 +366,17 @@ function pbrRenderSchedule( schedule, courts ) {
 			const roundData = schedule[ roundIndex ];
 			const roundNum = roundIndex + 1;
 			const isCompleted = pbrCompletedRounds[ roundNum ] || false;
-			const courtData = roundData.courts.find( ( c ) => c.court === court );
+			const courtData = roundData.courts.find(
+				( c ) => c.court === court
+			);
 
 			let cellClass = '';
 			if ( isCompleted ) cellClass = 'pbr-completed-round';
 
 			if ( courtData ) {
-				html += `<td class="${ cellClass }">${ courtData.team1.join( ' ' ) }<br><em>vs</em><br>${ courtData.team2.join( ' ' ) }</td>`;
+				html += `<td class="${ cellClass }">${ courtData.team1.join(
+					' '
+				) }<br><em>vs</em><br>${ courtData.team2.join( ' ' ) }</td>`;
 			} else {
 				html += `<td class="${ cellClass }">-</td>`;
 			}
@@ -356,7 +390,8 @@ function pbrRenderSchedule( schedule, courts ) {
 		const roundData = schedule[ roundIndex ];
 		const roundNum = roundIndex + 1;
 		const isCompleted = pbrCompletedRounds[ roundNum ] || false;
-		const byes = roundData.byes.length > 0 ? roundData.byes.join( ' ' ) : '-';
+		const byes =
+			roundData.byes.length > 0 ? roundData.byes.join( ' ' ) : '-';
 
 		let cellClass = '';
 		if ( isCompleted ) cellClass = 'pbr-completed-round';
@@ -382,6 +417,8 @@ function pbrAddCompletionListeners() {
 
 /**
  * Toggle round completion
+ *
+ * @param {number} roundNum Round number to toggle
  */
 function pbrToggleRoundCompletion( roundNum ) {
 	// Toggle completion status
@@ -405,22 +442,29 @@ function pbrToggleRoundCompletion( roundNum ) {
 
 	// Update cells in that round column
 	const columnIndex = roundNum + 1; // +1 because first column is court labels
-	document.querySelectorAll( `td:nth-child(${ columnIndex })` ).forEach( ( cell ) => {
-		if ( ! cell.classList.contains( 'pbr-court-label' ) ) {
-			if ( pbrCompletedRounds[ roundNum ] ) {
-				cell.classList.add( 'pbr-completed-round' );
-			} else {
-				cell.classList.remove( 'pbr-completed-round' );
+	document
+		.querySelectorAll( `td:nth-child(${ columnIndex })` )
+		.forEach( ( cell ) => {
+			if ( ! cell.classList.contains( 'pbr-court-label' ) ) {
+				if ( pbrCompletedRounds[ roundNum ] ) {
+					cell.classList.add( 'pbr-completed-round' );
+				} else {
+					cell.classList.remove( 'pbr-completed-round' );
+				}
 			}
-		}
-	} );
+		} );
 }
 
 /**
  * Render stats
+ *
+ * @param {Object} stats   Statistics object
+ * @param {number} players Number of players
+ * @return {string} HTML string for stats section
  */
 function pbrRenderStats( stats, players ) {
-	let html = '<div class="pbr-stats"><h4>Schedule Statistics</h4><ul class="pbr-stat-list">';
+	let html =
+		'<div class="pbr-stats"><h4>Schedule Statistics</h4><ul class="pbr-stat-list">';
 
 	html += `<li><strong>Players:</strong> ${ players }</li>`;
 	html += `<li><strong>Courts:</strong> ${ pbrCurrentCourts }</li>`;
@@ -429,7 +473,10 @@ function pbrRenderStats( stats, players ) {
 
 	// Partnership distribution
 	const partnerDist = Object.entries( stats.partnershipDistribution )
-		.map( ( [ times, count ] ) => `${ count } partnerships occur ${ times } time(s)` )
+		.map(
+			( [ times, count ] ) =>
+				`${ count } partnerships occur ${ times } time(s)`
+		)
 		.join( ', ' );
 	html += `<li><strong>Partnership Distribution:</strong> ${ partnerDist }</li>`;
 
@@ -444,7 +491,12 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	const scheduleOutput = document.getElementById( 'pbr-schedule-output' );
 	const statsOutput = document.getElementById( 'pbr-stats-output' );
 
-	if ( ! playersInput || ! courtsInput || ! scheduleOutput || ! statsOutput ) {
+	if (
+		! playersInput ||
+		! courtsInput ||
+		! scheduleOutput ||
+		! statsOutput
+	) {
 		return;
 	}
 
@@ -453,12 +505,12 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	if ( generateBtn ) {
 		generateBtn.addEventListener( 'click', window.pbrGenerateSchedule );
 	}
-	
+
 	const newMatchupsBtn = document.querySelector( '.pbr-new-matchups-btn' );
 	if ( newMatchupsBtn ) {
 		newMatchupsBtn.addEventListener( 'click', pbrShowForm );
 	}
-	
+
 	const cancelBtn = document.querySelector( '.pbr-cancel-btn' );
 	if ( cancelBtn ) {
 		cancelBtn.addEventListener( 'click', pbrHideForm );
@@ -479,19 +531,22 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	if ( savedSchedule ) {
 		try {
 			const data = JSON.parse( savedSchedule );
-			
+
 			// Always restore the saved player/court settings and schedule
 			// This maintains consistency regardless of editor defaults
 			playersInput.value = data.players;
 			courtsInput.value = data.courts;
-			
-			pbrCurrentSchedule = data.schedule;
+
+			window.pbrCurrentSchedule = data.schedule;
 			pbrCurrentCourts = data.courts;
 
-			scheduleOutput.innerHTML = pbrRenderSchedule( data.schedule, data.courts );
+			scheduleOutput.innerHTML = pbrRenderSchedule(
+				data.schedule,
+				data.courts
+			);
 			statsOutput.innerHTML = pbrRenderStats( data.stats, data.players );
 			pbrAddCompletionListeners();
-			
+
 			// Hide form since we have saved data
 			pbrHideForm();
 		} catch ( e ) {

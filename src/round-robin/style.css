@@ -33,7 +33,7 @@
 /* Mini preview grid */
 .pbr-block--round-robin .mini-preview {
 	margin: 20px 0;
-	background: white;
+	background: #fff;
 	border: 1px solid #ddd;
 	border-radius: 4px;
 	padding: 12px;
@@ -102,7 +102,7 @@
 }
 
 .pbr-block--round-robin .input-section {
-	background: white;
+	background: #fff;
 	border-radius: 12px;
 	padding: 24px;
 	margin-bottom: 24px;
@@ -138,7 +138,7 @@
 
 .pbr-block--round-robin .pbr-generate-btn {
 	background: #007bff;
-	color: white;
+	color: #fff;
 	border: none;
 	border-radius: 6px;
 	padding: 10px 20px;
@@ -153,7 +153,7 @@
 
 .pbr-block--round-robin .pbr-new-matchups-btn {
 	background: #007bff;
-	color: white;
+	color: #fff;
 	border: none;
 	border-radius: 6px;
 	padding: 12px 24px;
@@ -169,7 +169,7 @@
 
 .pbr-block--round-robin .pbr-cancel-btn {
 	background: #6c757d;
-	color: white;
+	color: #fff;
 	border: none;
 	border-radius: 6px;
 	padding: 10px 20px;
@@ -218,7 +218,7 @@
 
 .pbr-block--round-robin .pbr-schedule-grid th {
 	background: #007bff;
-	color: white;
+	color: #fff;
 	font-weight: 600;
 	position: sticky;
 	top: 0;
@@ -236,7 +236,7 @@
 
 .pbr-block--round-robin .pbr-complete-btn {
 	background: #6c757d;
-	color: white;
+	color: #fff;
 	border: none;
 	border-radius: 50%;
 	width: 24px;
@@ -264,7 +264,7 @@
 
 .pbr-block--round-robin .pbr-court-label {
 	background: #6c757d !important;
-	color: white !important;
+	color: #fff !important;
 	font-weight: 600;
 }
 
@@ -284,19 +284,13 @@
 }
 
 .pbr-block--round-robin .pbr-completed-round::after {
-	content: '';
+	content: "";
 	position: absolute;
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: repeating-linear-gradient(
-		45deg,
-		transparent,
-		transparent 10px,
-		rgba(108, 117, 125, 0.1) 10px,
-		rgba(108, 117, 125, 0.1) 20px
-	);
+	background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(108, 117, 125, 0.1) 10px, rgba(108, 117, 125, 0.1) 20px);
 	pointer-events: none;
 }
 
@@ -330,6 +324,7 @@
 .pbr-block--round-robin .pbr-stats h4 {
 	margin: 0 0 8px 0;
 	color: #495057;
+
 	/* Remove font-size override, let it inherit naturally */
 }
 
@@ -343,7 +338,9 @@
 }
 
 /* Responsive adjustments */
-@media ( max-width: 480px ) {
+
+@media (max-width: 480px) {
+
 	.pbr-block--round-robin .mini-header,
 	.pbr-block--round-robin .mini-row {
 		grid-template-columns: 60px 1fr 1fr 1fr 20px;

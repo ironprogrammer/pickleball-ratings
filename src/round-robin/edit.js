@@ -6,13 +6,21 @@ export default function Edit( { attributes, setAttributes } ) {
 	const { players, courts } = attributes;
 
 	return (
-		<div { ...useBlockProps( { className: 'pbr-block pbr-block--round-robin' } ) }>
+		<div
+			{ ...useBlockProps( {
+				className: 'pbr-block pbr-block--round-robin',
+			} ) }
+		>
 			<InspectorControls>
-				<PanelBody title={ __( 'Round Robin Settings', 'pickleball-ratings' ) }>
+				<PanelBody
+					title={ __( 'Round Robin Settings', 'pickleball-ratings' ) }
+				>
 					<RangeControl
 						label={ __( 'Default Players', 'pickleball-ratings' ) }
 						value={ players }
-						onChange={ ( value ) => setAttributes( { players: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { players: value } )
+						}
 						min={ 4 }
 						max={ 32 }
 						help={ __(
@@ -25,7 +33,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					<RangeControl
 						label={ __( 'Default Courts', 'pickleball-ratings' ) }
 						value={ courts }
-						onChange={ ( value ) => setAttributes( { courts: value } ) }
+						onChange={ ( value ) =>
+							setAttributes( { courts: value } )
+						}
 						min={ 1 }
 						max={ 8 }
 						help={ __(
@@ -41,7 +51,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div className="placeholder">
 				<div className="placeholder-header">
 					<span className="dashicons dashicons-editor-table"></span>
-					<h3>{ __( 'Pickleball Round Robin', 'pickleball-ratings' ) }</h3>
+					<h3>
+						{ __( 'Pickleball Round Robin', 'pickleball-ratings' ) }
+					</h3>
 				</div>
 
 				<div className="mini-preview">
@@ -88,10 +100,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ __( 'Settings:', 'pickleball-ratings' ) }{ ' ' }
 							{ players }{ ' ' }
 							{ __( 'players', 'pickleball-ratings' ) },{ ' ' }
-							{ courts }{ ' ' }
-							{ __( 'courts', 'pickleball-ratings' ) },{ ' ' }
-							8{ ' ' }
-							{ __( 'rounds', 'pickleball-ratings' ) }
+							{ courts } { __( 'courts', 'pickleball-ratings' ) },{ ' ' }
+							8 { __( 'rounds', 'pickleball-ratings' ) }
 						</strong>
 					</p>
 				</div>
