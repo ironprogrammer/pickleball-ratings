@@ -324,7 +324,7 @@
 	border-radius: 8px;
 	padding: 16px;
 	margin-top: 16px;
-	font-size: var(--wp--preset--font-size--small, 0.875rem); /* Use small WP preset for stats */
+	font-size: var(--wp--preset--font-size--small, 0.875rem); /* Uses WP preset variable for small font size with fallback */
 }
 
 .pbr-block--round-robin .pbr-stats h4 {
