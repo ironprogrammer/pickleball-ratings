@@ -92,13 +92,9 @@
 /* Frontend styles */
 .pbr-block--round-robin {
 	font-size: inherit; /* Override the large font-size from base .pbr-block */
-}
-
-.pbr-block--round-robin .round-robin-container {
-	background: #f8f9fa;
-	color: #212529;
-	border-radius: 8px;
-	padding: 20px;
+	border: none; /* Remove border constraint */
+	padding: 0; /* Remove padding constraint */
+	background: transparent; /* Remove background constraint */
 }
 
 .pbr-block--round-robin .input-section {
@@ -340,6 +336,10 @@
 /* Responsive adjustments */
 
 @media (max-width: 480px) {
+
+	.pbr-block--round-robin .input-section {
+		padding: 16px;
+	}
 
 	.pbr-block--round-robin .mini-header,
 	.pbr-block--round-robin .mini-row {
