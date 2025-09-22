@@ -437,7 +437,7 @@ function pbrRenderStats( stats, players ) {
 	return html;
 }
 
-// Load saved state on page load
+// Initialize everything on page load
 document.addEventListener( 'DOMContentLoaded', function () {
 	const playersInput = document.getElementById( 'pbr-players' );
 	const courtsInput = document.getElementById( 'pbr-courts' );
@@ -446,6 +446,22 @@ document.addEventListener( 'DOMContentLoaded', function () {
 
 	if ( ! playersInput || ! courtsInput || ! scheduleOutput || ! statsOutput ) {
 		return;
+	}
+
+	// Attach button event listeners
+	const generateBtn = document.querySelector( '.pbr-generate-btn' );
+	if ( generateBtn ) {
+		generateBtn.addEventListener( 'click', window.pbrGenerateSchedule );
+	}
+	
+	const newMatchupsBtn = document.querySelector( '.pbr-new-matchups-btn' );
+	if ( newMatchupsBtn ) {
+		newMatchupsBtn.addEventListener( 'click', pbrShowForm );
+	}
+	
+	const cancelBtn = document.querySelector( '.pbr-cancel-btn' );
+	if ( cancelBtn ) {
+		cancelBtn.addEventListener( 'click', pbrHideForm );
 	}
 
 	// Load completion state
@@ -484,23 +500,5 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	} else {
 		// No saved data, show form by default
 		pbrShowForm();
-	}
-} );
-
-// Attach button event listeners
-document.addEventListener( 'DOMContentLoaded', function () {
-	const generateBtn = document.querySelector( '.pbr-generate-btn' );
-	if ( generateBtn ) {
-		generateBtn.addEventListener( 'click', window.pbrGenerateSchedule );
-	}
-	
-	const newMatchupsBtn = document.querySelector( '.pbr-new-matchups-btn' );
-	if ( newMatchupsBtn ) {
-		newMatchupsBtn.addEventListener( 'click', pbrShowForm );
-	}
-	
-	const cancelBtn = document.querySelector( '.pbr-cancel-btn' );
-	if ( cancelBtn ) {
-		cancelBtn.addEventListener( 'click', pbrHideForm );
 	}
 } );
