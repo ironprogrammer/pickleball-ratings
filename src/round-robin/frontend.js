@@ -211,7 +211,6 @@ class PbrPickleballScheduler {
 function pbrShowForm() {
 	const form = document.querySelector( '.pbr-block--round-robin .input-section' );
 	const newMatchupsBtn = document.querySelector( '.pbr-new-matchups-btn' );
-	const generateBtn = document.querySelector( '.pbr-generate-btn' );
 	const cancelBtn = document.querySelector( '.pbr-cancel-btn' );
 	
 	if ( form ) form.style.display = 'block';
