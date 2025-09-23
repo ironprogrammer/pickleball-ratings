@@ -26,6 +26,9 @@ define( 'PICKLEBALL_RATINGS_VERSION', '0.4.0' );
 define( 'PICKLEBALL_RATINGS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PICKLEBALL_RATINGS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
+// Feature flags.
+define( 'PICKLEBALL_RATINGS_ENABLE_DUPR_BRANDING', false );
+
 /**
  * Plugin debug logger.
  *
@@ -246,8 +249,9 @@ function pickleball_ratings_register_block() {
 		'pickleball-ratings-block',
 		'duprRatingAjax',
 		array(
-			'nonce'     => wp_create_nonce( 'pickleball_ratings_get_player_data' ),
-			'pluginUrl' => PICKLEBALL_RATINGS_PLUGIN_URL,
+			'nonce'              => wp_create_nonce( 'pickleball_ratings_get_player_data' ),
+			'pluginUrl'          => PICKLEBALL_RATINGS_PLUGIN_URL,
+			'enableDuprBranding' => PICKLEBALL_RATINGS_ENABLE_DUPR_BRANDING,
 		)
 	);
 }
@@ -259,9 +263,14 @@ function pickleball_ratings_register_block() {
  * @return string Rendered HTML output.
  */
 function pickleball_ratings_render_block( $attributes ) {
-	$dupr_id                 = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
-	$show_profile_pic        = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
-	$show_powered_by         = isset( $attributes['showPoweredBy'] ) ? (bool) $attributes['showPoweredBy'] : false;
+	$dupr_id          = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
+	$show_profile_pic = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
+	$show_powered_by  = isset( $attributes['showPoweredBy'] ) ? (bool) $attributes['showPoweredBy'] : false;
+
+	// Override powered by setting if DUPR branding feature is disabled.
+	if ( ! PICKLEBALL_RATINGS_ENABLE_DUPR_BRANDING ) {
+		$show_powered_by = false;
+	}
 	$use_light_logo          = isset( $attributes['useLightLogo'] ) ? (bool) $attributes['useLightLogo'] : false;
 	$background_color        = isset( $attributes['backgroundColor'] ) ? sanitize_text_field( $attributes['backgroundColor'] ) : '';
 	$text_color              = isset( $attributes['textColor'] ) ? sanitize_text_field( $attributes['textColor'] ) : '';

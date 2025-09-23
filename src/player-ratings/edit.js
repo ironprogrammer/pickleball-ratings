@@ -167,22 +167,24 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom={ true }
 					/>
 
-					<ToggleControl
-						label={ __(
-							'Show Powered by DUPR',
-							'pickleball-ratings'
-						) }
-						checked={ showPoweredBy }
-						onChange={ ( value ) =>
-							setAttributes( { showPoweredBy: value } )
-						}
-						help={ __(
-							'Display a "Powered by DUPR®" footer at the bottom of the block.',
-							'pickleball-ratings'
-						) }
-						__nextHasNoMarginBottom={ true }
-					/>
-					{ showPoweredBy && (
+					{ duprRatingAjax?.enableDuprBranding && (
+						<ToggleControl
+							label={ __(
+								'Show Powered by DUPR',
+								'pickleball-ratings'
+							) }
+							checked={ showPoweredBy }
+							onChange={ ( value ) =>
+								setAttributes( { showPoweredBy: value } )
+							}
+							help={ __(
+								'Display a "Powered by DUPR®" footer at the bottom of the block.',
+								'pickleball-ratings'
+							) }
+							__nextHasNoMarginBottom={ true }
+						/>
+					) }
+					{ duprRatingAjax?.enableDuprBranding && showPoweredBy && (
 						<ToggleControl
 							label={ __(
 								'Use Light Logo',
@@ -343,23 +345,24 @@ export default function Edit( { attributes, setAttributes } ) {
 									</span>
 								</div>
 							</div>
-							{ showPoweredBy && (
-								<div className="footer">
-									<span className="powered-by">
-										Powered by{ ' ' }
-										<img
-											src={
-												duprRatingAjax.pluginUrl +
-												( useLightLogo
-													? 'images/dupr-logo-white.png'
-													: 'images/dupr-logo-blue.png' )
-											}
-											alt="DUPR"
-											className="logo"
-										/>
-									</span>
-								</div>
-							) }
+							{ duprRatingAjax?.enableDuprBranding &&
+								showPoweredBy && (
+									<div className="footer">
+										<span className="powered-by">
+											Powered by{ ' ' }
+											<img
+												src={
+													duprRatingAjax.pluginUrl +
+													( useLightLogo
+														? 'images/dupr-logo-white.png'
+														: 'images/dupr-logo-blue.png' )
+												}
+												alt="DUPR"
+												className="logo"
+											/>
+										</span>
+									</div>
+								) }
 						</div>
 					);
 				}
