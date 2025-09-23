@@ -15,7 +15,6 @@
 	border-radius: 8px;
 	padding: 20px;
 	background: #fff;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: var(--wp--preset--font-size--large, 1.125rem);
 }
 
@@ -80,7 +79,7 @@
 }
 
 .pbr-block .copy-btn .dashicons {
-	font-size: 14px;
+	font-size: 0.875em;
 	width: 14px;
 	height: 14px;
 	color: #666;
@@ -117,7 +116,7 @@
 }
 
 .pbr-block .copy-id-btn .dashicons {
-	font-size: 16px;
+	font-size: 1em;
 	width: 16px;
 	height: 16px;
 }
@@ -151,7 +150,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 25px;
+	font-size: 1.5em;
 	color: #666;
 }
 
