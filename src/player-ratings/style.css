@@ -90,11 +90,18 @@
 	opacity: 1;
 }
 
-.pbr-block .copy-btn .dashicons {
-	font-size: 0.875em;
-	width: 14px;
-	height: 14px;
-	color: #666;
+.pbr-block .copy-btn .copy-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 16px;
+	height: 16px;
+}
+
+.pbr-block .copy-btn .copy-icon svg {
+	width: 16px;
+	height: 16px;
+	fill: currentColor;
 }
 
 /* Header section */
