@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { useState, useEffect, useCallback } from '@wordpress/element';
+import { ReactComponent as UserProfileIcon } from '../../images/user-profile.svg';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -285,7 +286,9 @@ export default function Edit( { attributes, setAttributes } ) {
 													className="profile-pic"
 												/>
 											) : (
-												<span className="dashicons dashicons-admin-users profile-pic-fallback"></span>
+												<div className="profile-pic-fallback">
+													<UserProfileIcon width="30" height="30" style={{ color: '#666' }} />
+												</div>
 											) }
 										</>
 									) }
