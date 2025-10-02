@@ -354,9 +354,9 @@ function pickleball_ratings_render_block( $attributes ) {
 
 	// Add corner copy button for DUPR ID.
 	if ( ! empty( $dupr_id ) ) {
-		$copy_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/copy-to-clipboard.svg' );
+		$copy_svg  = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/copy-to-clipboard.svg' );
 		$check_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/check-circle.svg' );
-		
+
 		$output .= '<button class="copy-btn" onclick="window.pbrCopyToClipboard(\'' . esc_js( $dupr_id ) . '\', this)" title="Copy DUPR ID: ' . esc_attr( $dupr_id ) . '">';
 		$output .= '<span class="copy-icon">' . $copy_svg . '</span>';
 		$output .= '<span class="check-icon" style="display: none;">' . $check_svg . '</span>';
@@ -378,7 +378,7 @@ function pickleball_ratings_render_block( $attributes ) {
 				$output .= '<img src="' . esc_url( $player_data['profile_image'] ) . '" alt="' . esc_attr( $player_data['name'] ) . '" class="profile-pic" />';
 			} else {
 				$user_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/user-profile.svg' );
-				
+
 				// Use WordPress HTML Tag Processor to modify SVG attributes
 				$processor = new WP_HTML_Tag_Processor( $user_svg );
 				if ( $processor->next_tag( 'svg' ) ) {
@@ -387,7 +387,7 @@ function pickleball_ratings_render_block( $attributes ) {
 					$processor->set_attribute( 'style', 'color: #666;' );
 					$user_svg = $processor->get_updated_html();
 				}
-				
+
 				$output .= '<div class="profile-pic-fallback">' . $user_svg . '</div>';
 			}
 		}
@@ -399,7 +399,7 @@ function pickleball_ratings_render_block( $attributes ) {
 	$output       .= '<div class="rating-content">';
 	$output       .= '<div class="pbr-item">';
 	$output       .= '<span class="pbr-label">';
-	$paddles_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/pickleball-paddles-crossed.svg' );
+	$paddles_svg   = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/pickleball-paddles-crossed.svg' );
 	$output       .= '<span class="pbr-icon pbr-icon-doubles">' . $paddles_svg . '</span>';
 	$output       .= 'Doubles';
 	$output       .= '</span>';
@@ -415,7 +415,7 @@ function pickleball_ratings_render_block( $attributes ) {
 	$output       .= '</div>';
 	$output       .= '<div class="pbr-item">';
 	$output       .= '<span class="pbr-label">';
-	$paddle_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/pickleball-paddle.svg' );
+	$paddle_svg    = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/pickleball-paddle.svg' );
 	$output       .= '<span class="pbr-icon pbr-icon-singles">' . $paddle_svg . '</span>';
 	$output       .= 'Singles';
 	$output       .= '</span>';

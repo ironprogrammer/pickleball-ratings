@@ -267,24 +267,42 @@ export default function Edit( { attributes, setAttributes } ) {
 									onClick={ async () => {
 										try {
 											// Copy to clipboard
-											await navigator.clipboard.writeText( duprId );
-											
+											await navigator.clipboard.writeText(
+												duprId
+											);
+
 											// Update copied state
-											setCopiedStates( prev => ({ ...prev, [duprId]: true }));
-											
+											setCopiedStates( ( prev ) => ( {
+												...prev,
+												[ duprId ]: true,
+											} ) );
+
 											// Reset after 2 seconds
 											setTimeout( () => {
-												setCopiedStates( prev => ({ ...prev, [duprId]: false }));
+												setCopiedStates( ( prev ) => ( {
+													...prev,
+													[ duprId ]: false,
+												} ) );
 											}, 2000 );
 										} catch ( error ) {
-											console.error( 'Failed to copy to clipboard:', error );
+											console.error(
+												'Failed to copy to clipboard:',
+												error
+											);
 										}
 									} }
-									title={ copiedStates[duprId] ? 'Copied!' : `Copy DUPR ID: ${ duprId }` }
+									title={
+										copiedStates[ duprId ]
+											? 'Copied!'
+											: `Copy DUPR ID: ${ duprId }`
+									}
 								>
-									{ copiedStates[duprId] ? (
+									{ copiedStates[ duprId ] ? (
 										<span className="check-icon">
-											<CheckCircleIcon width="16" height="16" />
+											<CheckCircleIcon
+												width="16"
+												height="16"
+											/>
 										</span>
 									) : (
 										<span className="copy-icon">
@@ -310,7 +328,13 @@ export default function Edit( { attributes, setAttributes } ) {
 												/>
 											) : (
 												<div className="profile-pic-fallback">
-													<UserProfileIcon width="30" height="30" style={{ color: '#666' }} />
+													<UserProfileIcon
+														width="30"
+														height="30"
+														style={ {
+															color: '#666',
+														} }
+													/>
 												</div>
 											) }
 										</>
