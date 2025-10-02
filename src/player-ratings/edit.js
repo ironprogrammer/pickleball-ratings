@@ -283,9 +283,13 @@ export default function Edit( { attributes, setAttributes } ) {
 									title={ copiedStates[duprId] ? 'Copied!' : `Copy DUPR ID: ${ duprId }` }
 								>
 									{ copiedStates[duprId] ? (
-										<CheckCircleIcon width="16" height="16" />
+										<span className="check-icon">
+											<CheckCircleIcon width="16" height="16" />
+										</span>
 									) : (
-										<CopyIcon width="16" height="16" />
+										<span className="copy-icon">
+											<CopyIcon width="16" height="16" />
+										</span>
 									) }
 								</button>
 							) }
