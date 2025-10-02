@@ -379,7 +379,7 @@ function pickleball_ratings_render_block( $attributes ) {
 			} else {
 				$user_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/user-profile.svg' );
 
-				// Use WordPress HTML Tag Processor to modify SVG attributes
+				// Use WordPress HTML Tag Processor to modify SVG attributes.
 				$processor = new WP_HTML_Tag_Processor( $user_svg );
 				if ( $processor->next_tag( 'svg' ) ) {
 					$processor->set_attribute( 'width', '30' );
