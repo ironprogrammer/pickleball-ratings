@@ -374,8 +374,16 @@ function pickleball_ratings_render_block( $attributes ) {
 				$output .= '<img src="' . esc_url( $player_data['profile_image'] ) . '" alt="' . esc_attr( $player_data['name'] ) . '" class="profile-pic" />';
 			} else {
 				$user_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/user-profile.svg' );
-				// Add explicit sizing to match React version
-				$user_svg = str_replace( '<svg', '<svg width="30" height="30" style="color: #666;"', $user_svg );
+				
+				// Use WordPress HTML Tag Processor to modify SVG attributes
+				$processor = new WP_HTML_Tag_Processor( $user_svg );
+				if ( $processor->next_tag( 'svg' ) ) {
+					$processor->set_attribute( 'width', '30' );
+					$processor->set_attribute( 'height', '30' );
+					$processor->set_attribute( 'style', 'color: #666;' );
+					$user_svg = $processor->get_updated_html();
+				}
+				
 				$output .= '<div class="profile-pic-fallback">' . $user_svg . '</div>';
 			}
 		}
