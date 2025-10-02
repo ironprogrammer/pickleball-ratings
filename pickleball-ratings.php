@@ -384,8 +384,8 @@ function pickleball_ratings_render_block( $attributes ) {
 	$output       .= '<div class="rating-content">';
 	$output       .= '<div class="pbr-item">';
 	$output       .= '<span class="pbr-label">';
-	$output       .= '<span class="dashicons dashicons-admin-users pbr-icon pbr-doubles-back"></span>';
-	$output       .= '<span class="dashicons dashicons-admin-users pbr-icon pbr-doubles-front"></span>';
+	$paddles_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/pickleball-paddles-crossed.svg' );
+	$output       .= '<span class="pbr-icon pbr-icon-doubles">' . $paddles_svg . '</span>';
 	$output       .= 'Doubles';
 	$output       .= '</span>';
 	$doubles_title = '';
@@ -400,7 +400,8 @@ function pickleball_ratings_render_block( $attributes ) {
 	$output       .= '</div>';
 	$output       .= '<div class="pbr-item">';
 	$output       .= '<span class="pbr-label">';
-	$output       .= '<span class="dashicons dashicons-admin-users pbr-icon"></span>';
+	$paddle_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/pickleball-paddle.svg' );
+	$output       .= '<span class="pbr-icon pbr-icon-singles">' . $paddle_svg . '</span>';
 	$output       .= 'Singles';
 	$output       .= '</span>';
 	$singles_title = '';
