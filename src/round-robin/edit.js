@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, RangeControl } from '@wordpress/components';
+import { ReactComponent as RoundRobinGridIcon } from '../../images/round-robin-grid.svg';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { players, courts } = attributes;
@@ -50,7 +51,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<div className="placeholder">
 				<div className="placeholder-header">
-					<span className="dashicons dashicons-editor-table"></span>
+					<RoundRobinGridIcon width="24" height="24" />
 					<h3>
 						{ __( 'Pickleball Round Robin', 'pickleball-ratings' ) }
 					</h3>
