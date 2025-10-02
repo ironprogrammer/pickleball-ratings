@@ -6,6 +6,8 @@ import { useState, useEffect, useCallback } from '@wordpress/element';
 import { ReactComponent as CopyIcon } from '../../images/copy-to-clipboard.svg';
 import { ReactComponent as CheckCircleIcon } from '../../images/check-circle.svg';
 import { ReactComponent as UserProfileIcon } from '../../images/user-profile.svg';
+import { ReactComponent as PickleballPaddlesCrossedIcon } from '../../images/pickleball-paddles-crossed.svg';
+import { ReactComponent as PickleballPaddleIcon } from '../../images/pickleball-paddle.svg';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -315,8 +317,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							<div className="rating-content">
 								<div className="pbr-item">
 									<span className="pbr-label">
-										<span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-back"></span>
-										<span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-front"></span>
+										<PickleballPaddlesCrossedIcon className="pbr-icon pbr-icon-doubles" />
 										Doubles
 									</span>
 									<span
@@ -341,7 +342,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								</div>
 								<div className="pbr-item">
 									<span className="pbr-label">
-										<span className="dashicons dashicons-admin-users pbr-icon"></span>
+										<PickleballPaddleIcon className="pbr-icon pbr-icon-singles" />
 										Singles
 									</span>
 									<span
