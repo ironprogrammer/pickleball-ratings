@@ -355,9 +355,11 @@ function pickleball_ratings_render_block( $attributes ) {
 	// Add corner copy button for DUPR ID.
 	if ( ! empty( $dupr_id ) ) {
 		$copy_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/copy-to-clipboard.svg' );
+		$check_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/check-circle.svg' );
 		
 		$output .= '<button class="copy-btn" onclick="window.pbrCopyToClipboard(\'' . esc_js( $dupr_id ) . '\', this)" title="Copy DUPR ID: ' . esc_attr( $dupr_id ) . '">';
 		$output .= '<span class="copy-icon">' . $copy_svg . '</span>';
+		$output .= '<span class="check-icon" style="display: none;">' . $check_svg . '</span>';
 		$output .= '</button>';
 	}
 

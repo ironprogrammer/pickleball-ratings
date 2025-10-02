@@ -90,7 +90,8 @@
 	opacity: 1;
 }
 
-.pbr-block .copy-btn .copy-icon {
+.pbr-block .copy-btn .copy-icon,
+.pbr-block .copy-btn .check-icon {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -98,7 +99,8 @@
 	height: 16px;
 }
 
-.pbr-block .copy-btn .copy-icon svg {
+.pbr-block .copy-btn .copy-icon svg,
+.pbr-block .copy-btn .check-icon svg {
 	width: 16px;
 	height: 16px;
 	fill: currentColor;
