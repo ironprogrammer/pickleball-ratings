@@ -373,7 +373,10 @@ function pickleball_ratings_render_block( $attributes ) {
 			if ( ! empty( $player_data['profile_image'] ) ) {
 				$output .= '<img src="' . esc_url( $player_data['profile_image'] ) . '" alt="' . esc_attr( $player_data['name'] ) . '" class="profile-pic" />';
 			} else {
-				$output .= '<span class="dashicons dashicons-admin-users profile-pic-fallback"></span>';
+				$user_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/user-profile.svg' );
+				// Add explicit sizing to match React version
+				$user_svg = str_replace( '<svg', '<svg width="30" height="30" style="color: #666;"', $user_svg );
+				$output .= '<div class="profile-pic-fallback">' . $user_svg . '</div>';
 			}
 		}
 
