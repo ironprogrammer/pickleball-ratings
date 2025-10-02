@@ -1,6 +1,7 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
 import Edit from './edit';
+import { ReactComponent as RoundRobinIcon } from '../../images/round-robin-grid.svg';
 import './style.css';
 
 registerBlockType( 'pickleball-ratings/round-robin', {
@@ -11,7 +12,7 @@ registerBlockType( 'pickleball-ratings/round-robin', {
 		'pickleball-ratings'
 	),
 	category: 'widgets',
-	icon: 'editor-table',
+	icon: RoundRobinIcon,
 	keywords: [
 		__( 'pickleball', 'pickleball-ratings' ),
 		__( 'round robin', 'pickleball-ratings' ),
