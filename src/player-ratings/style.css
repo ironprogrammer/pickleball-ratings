@@ -20,8 +20,20 @@
 
 /* Icon utility classes - scoped to our block */
 .pbr-block .pbr-icon {
-	font-size: var(--pbr-icon-size);
 	color: var(--pbr-icon-color);
+	width: 1em;
+	height: 1em;
+}
+
+.pbr-block .pbr-icon-doubles {
+	width: 1.6em;
+	height: 1.6em;
+}
+
+.pbr-block .pbr-icon-singles {
+	width: 1em;
+	height: 1em;
+	align-self: center;
 }
 
 .pbr-block .pbr-doubles-back {
@@ -177,6 +189,7 @@
 	display: flex;
 	align-items: center;
 	gap: 4px;
+	height: 1.6em;
 }
 
 .pbr-block .pbr-value {
