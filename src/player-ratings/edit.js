@@ -3,6 +3,8 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { useState, useEffect, useCallback } from '@wordpress/element';
+import { ReactComponent as CopyIcon } from '../../images/copy-to-clipboard.svg';
+import { ReactComponent as CheckCircleIcon } from '../../images/check-circle.svg';
 import { ReactComponent as UserProfileIcon } from '../../images/user-profile.svg';
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -23,6 +25,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const [ isLoading, setIsLoading ] = useState( false );
 	const [ playerData, setPlayerData ] = useState( null );
 	const [ apiError, setApiError ] = useState( '' );
+	const [ copiedStates, setCopiedStates ] = useState( {} );
 
 	// Validate DUPR ID format
 	const validateDuprId = ( id ) => {
@@ -259,15 +262,29 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ duprId && (
 								<button
 									className="copy-btn"
-									onClick={ ( event ) => {
-										window.pbrCopyToClipboard(
-											duprId,
-											event.target.closest( '.copy-btn' )
-										);
+									onClick={ async () => {
+										try {
+											// Copy to clipboard
+											await navigator.clipboard.writeText( duprId );
+											
+											// Update copied state
+											setCopiedStates( prev => ({ ...prev, [duprId]: true }));
+											
+											// Reset after 2 seconds
+											setTimeout( () => {
+												setCopiedStates( prev => ({ ...prev, [duprId]: false }));
+											}, 2000 );
+										} catch ( error ) {
+											console.error( 'Failed to copy to clipboard:', error );
+										}
 									} }
-									title={ `Copy DUPR ID: ${ duprId }` }
+									title={ copiedStates[duprId] ? 'Copied!' : `Copy DUPR ID: ${ duprId }` }
 								>
-									<span className="dashicons dashicons-clipboard"></span>
+									{ copiedStates[duprId] ? (
+										<CheckCircleIcon width="16" height="16" />
+									) : (
+										<CopyIcon width="16" height="16" />
+									) }
 								</button>
 							) }
 							{ playerData.name && (
