@@ -267,6 +267,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									onClick={ async () => {
 										try {
 											// Copy to clipboard
+											// eslint-disable-next-line no-undef
 											await navigator.clipboard.writeText(
 												duprId
 											);
@@ -285,6 +286,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												} ) );
 											}, 2000 );
 										} catch ( error ) {
+											// eslint-disable-next-line no-console
 											console.error(
 												'Failed to copy to clipboard:',
 												error

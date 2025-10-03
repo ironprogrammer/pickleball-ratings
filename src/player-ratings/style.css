@@ -103,13 +103,25 @@
 .pbr-block .copy-btn .check-icon svg {
 	width: 16px;
 	height: 16px;
-	fill: currentColor;
+	fill: currentcolor;
 }
 
 @keyframes copy-success {
-	0% { transform: scale(1); color: currentColor; }
-	30% { transform: scale(1.3); color: #28a745; }
-	100% { transform: scale(1); color: currentColor; }
+
+	0% {
+		transform: scale(1);
+		color: currentcolor;
+	}
+
+	30% {
+		transform: scale(1.3);
+		color: #28a745;
+	}
+
+	100% {
+		transform: scale(1);
+		color: currentcolor;
+	}
 }
 
 .pbr-block .copy-btn .check-icon {
