@@ -4,7 +4,7 @@
 	"description": "Display pickleball player ratings using a customizable block.",
 	"main": "build/index.js",
 	"scripts": {
-		"build": "wp-scripts build",
+		"build": "wp-scripts build && php bin/build-svg-assets.php",
 		"format": "wp-scripts format && npm run format:php",
 		"format:php": "composer run phpcbf",
 		"lint": "npm run lint:php && npm run lint:css && npm run lint:js",
