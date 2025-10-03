@@ -34,7 +34,7 @@ Icons used in this project are attributed to:
 - "Grid" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/grid/) (CC BY 3.0)
 - "Copy" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/copy/) (CC BY 3.0)
 - "Like" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/like/) (CC BY 3.0)
-- "Disike" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/dislike/) (CC BY 3.0)
+- "Dislike" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/dislike/) (CC BY 3.0)
 - "User" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/user/) (CC BY 3.0)
 - "Success" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/success/) (CC BY 3.0)
 
