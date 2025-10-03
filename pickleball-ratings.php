@@ -267,6 +267,9 @@ function pickleball_ratings_render_block( $attributes ) {
 	$show_profile_pic = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
 	$show_powered_by  = isset( $attributes['showPoweredBy'] ) ? (bool) $attributes['showPoweredBy'] : false;
 
+	// Load SVG assets once for the entire function.
+	$svg_assets = require PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/svg-assets.php';
+
 	// Override powered by setting if DUPR branding feature is disabled.
 	if ( ! PICKLEBALL_RATINGS_ENABLE_DUPR_BRANDING ) {
 		$show_powered_by = false;
@@ -354,12 +357,10 @@ function pickleball_ratings_render_block( $attributes ) {
 
 	// Add corner copy button for DUPR ID.
 	if ( ! empty( $dupr_id ) ) {
-		$copy_svg  = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/copy-to-clipboard.svg' );
-		$check_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/check-circle.svg' );
 
 		$output .= '<button class="copy-btn" onclick="window.pbrCopyToClipboard(\'' . esc_js( $dupr_id ) . '\', this)" title="Copy DUPR ID: ' . esc_attr( $dupr_id ) . '">';
-		$output .= '<span class="copy-icon">' . $copy_svg . '</span>';
-		$output .= '<span class="check-icon" style="display: none;">' . $check_svg . '</span>';
+		$output .= '<span class="copy-icon">' . $svg_assets['copy-to-clipboard'] . '</span>';
+		$output .= '<span class="check-icon" style="display: none;">' . $svg_assets['check-circle'] . '</span>';
 		$output .= '</button>';
 	}
 
@@ -377,10 +378,9 @@ function pickleball_ratings_render_block( $attributes ) {
 			if ( ! empty( $player_data['profile_image'] ) ) {
 				$output .= '<img src="' . esc_url( $player_data['profile_image'] ) . '" alt="' . esc_attr( $player_data['name'] ) . '" class="profile-pic" />';
 			} else {
-				$user_svg = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/user-profile.svg' );
 
 				// Use WordPress HTML Tag Processor to modify SVG attributes.
-				$processor = new WP_HTML_Tag_Processor( $user_svg );
+				$processor = new WP_HTML_Tag_Processor( $svg_assets['user-profile'] );
 				if ( $processor->next_tag( 'svg' ) ) {
 					$processor->set_attribute( 'width', '30' );
 					$processor->set_attribute( 'height', '30' );
@@ -399,8 +399,7 @@ function pickleball_ratings_render_block( $attributes ) {
 	$output       .= '<div class="rating-content">';
 	$output       .= '<div class="pbr-item">';
 	$output       .= '<span class="pbr-label">';
-	$paddles_svg   = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/pickleball-paddles-crossed.svg' );
-	$output       .= '<span class="pbr-icon pbr-icon-doubles">' . $paddles_svg . '</span>';
+	$output       .= '<span class="pbr-icon pbr-icon-doubles">' . $svg_assets['pickleball-paddles-crossed'] . '</span>';
 	$output       .= 'Doubles';
 	$output       .= '</span>';
 	$doubles_title = '';
@@ -415,8 +414,7 @@ function pickleball_ratings_render_block( $attributes ) {
 	$output       .= '</div>';
 	$output       .= '<div class="pbr-item">';
 	$output       .= '<span class="pbr-label">';
-	$paddle_svg    = file_get_contents( PICKLEBALL_RATINGS_PLUGIN_DIR . 'images/pickleball-paddle.svg' );
-	$output       .= '<span class="pbr-icon pbr-icon-singles">' . $paddle_svg . '</span>';
+	$output       .= '<span class="pbr-icon pbr-icon-singles">' . $svg_assets['pickleball-paddle'] . '</span>';
 	$output       .= 'Singles';
 	$output       .= '</span>';
 	$singles_title = '';
