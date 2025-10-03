@@ -24,6 +24,20 @@ Provide feedback through [the Issues page](https://github.com/ironprogrammer/pic
 
 Your contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
+## Credits
+
+Icons used in this project are attributed to:
+
+- "Pickleball" by Patrick from [Noun Project](https://thenounproject.com/browse/icons/term/pickleball/) (public domain)
+- "Pickleball" by Aether Io from [Noun Project](https://thenounproject.com/browse/icons/term/pickleball/) (CC BY 3.0)
+- "Line Chart" by Barracuda from [Noun Project](https://thenounproject.com/browse/icons/term/line-chart/) (CC BY 3.0)
+- "Grid" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/grid/) (CC BY 3.0)
+- "Copy" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/copy/) (CC BY 3.0)
+- "Like" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/like/) (CC BY 3.0)
+- "Disike" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/dislike/) (CC BY 3.0)
+- "User" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/user/) (CC BY 3.0)
+- "Success" by Saepul Nahwan from [Noun Project](https://thenounproject.com/browse/icons/term/success/) (CC BY 3.0)
+
 ## License
 
 [As with all things WordPress](https://developer.wordpress.org/plugins/plugin-basics/including-a-software-license/), this plugin is licensed under GPL v2 or later.
