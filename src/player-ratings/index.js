@@ -1,6 +1,7 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
 import Edit from './edit';
+import { ReactComponent as RatingsChartIcon } from '../../images/ratings-chart.svg';
 import './style.css';
 
 registerBlockType( 'pickleball-ratings/player-ratings', {
@@ -11,7 +12,7 @@ registerBlockType( 'pickleball-ratings/player-ratings', {
 		'pickleball-ratings'
 	),
 	category: 'widgets',
-	icon: 'chart-line',
+	icon: RatingsChartIcon,
 	supports: {
 		html: false,
 		align: true,

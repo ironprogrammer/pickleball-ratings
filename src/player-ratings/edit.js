@@ -3,6 +3,11 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { useState, useEffect, useCallback } from '@wordpress/element';
+import { ReactComponent as CopyIcon } from '../../images/copy-to-clipboard.svg';
+import { ReactComponent as CheckCircleIcon } from '../../images/check-circle.svg';
+import { ReactComponent as UserProfileIcon } from '../../images/user-profile.svg';
+import { ReactComponent as PickleballPaddlesCrossedIcon } from '../../images/pickleball-paddles-crossed.svg';
+import { ReactComponent as PickleballPaddleIcon } from '../../images/pickleball-paddle.svg';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -22,6 +27,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const [ isLoading, setIsLoading ] = useState( false );
 	const [ playerData, setPlayerData ] = useState( null );
 	const [ apiError, setApiError ] = useState( '' );
+	const [ copiedStates, setCopiedStates ] = useState( {} );
 
 	// Validate DUPR ID format
 	const validateDuprId = ( id ) => {
@@ -258,15 +264,53 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ duprId && (
 								<button
 									className="copy-btn"
-									onClick={ ( event ) => {
-										window.pbrCopyToClipboard(
-											duprId,
-											event.target.closest( '.copy-btn' )
-										);
+									onClick={ async () => {
+										try {
+											// Copy to clipboard
+											// eslint-disable-next-line no-undef
+											await navigator.clipboard.writeText(
+												duprId
+											);
+
+											// Update copied state
+											setCopiedStates( ( prev ) => ( {
+												...prev,
+												[ duprId ]: true,
+											} ) );
+
+											// Reset after 2 seconds
+											setTimeout( () => {
+												setCopiedStates( ( prev ) => ( {
+													...prev,
+													[ duprId ]: false,
+												} ) );
+											}, 2000 );
+										} catch ( error ) {
+											// eslint-disable-next-line no-console
+											console.error(
+												'Failed to copy to clipboard:',
+												error
+											);
+										}
 									} }
-									title={ `Copy DUPR ID: ${ duprId }` }
+									title={
+										copiedStates[ duprId ]
+											? 'Copied!'
+											: `Copy DUPR ID: ${ duprId }`
+									}
 								>
-									<span className="dashicons dashicons-clipboard"></span>
+									{ copiedStates[ duprId ] ? (
+										<span className="check-icon">
+											<CheckCircleIcon
+												width="16"
+												height="16"
+											/>
+										</span>
+									) : (
+										<span className="copy-icon">
+											<CopyIcon width="16" height="16" />
+										</span>
+									) }
 								</button>
 							) }
 							{ playerData.name && (
@@ -285,7 +329,15 @@ export default function Edit( { attributes, setAttributes } ) {
 													className="profile-pic"
 												/>
 											) : (
-												<span className="dashicons dashicons-admin-users profile-pic-fallback"></span>
+												<div className="profile-pic-fallback">
+													<UserProfileIcon
+														width="30"
+														height="30"
+														style={ {
+															color: '#666',
+														} }
+													/>
+												</div>
 											) }
 										</>
 									) }
@@ -295,8 +347,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							<div className="rating-content">
 								<div className="pbr-item">
 									<span className="pbr-label">
-										<span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-back"></span>
-										<span className="dashicons dashicons-admin-users pbr-icon pbr-doubles-front"></span>
+										<PickleballPaddlesCrossedIcon className="pbr-icon pbr-icon-doubles" />
 										Doubles
 									</span>
 									<span
@@ -321,7 +372,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								</div>
 								<div className="pbr-item">
 									<span className="pbr-label">
-										<span className="dashicons dashicons-admin-users pbr-icon"></span>
+										<PickleballPaddleIcon className="pbr-icon pbr-icon-singles" />
 										Singles
 									</span>
 									<span

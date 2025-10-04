@@ -20,8 +20,20 @@
 
 /* Icon utility classes - scoped to our block */
 .pbr-block .pbr-icon {
-	font-size: var(--pbr-icon-size);
 	color: var(--pbr-icon-color);
+	width: 1em;
+	height: 1em;
+}
+
+.pbr-block .pbr-icon-doubles {
+	width: 1.6em;
+	height: 1.6em;
+}
+
+.pbr-block .pbr-icon-singles {
+	width: 1em;
+	height: 1em;
+	align-self: center;
 }
 
 .pbr-block .pbr-doubles-back {
@@ -78,11 +90,42 @@
 	opacity: 1;
 }
 
-.pbr-block .copy-btn .dashicons {
-	font-size: 0.875em;
-	width: 14px;
-	height: 14px;
-	color: #666;
+.pbr-block .copy-btn .copy-icon,
+.pbr-block .copy-btn .check-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 16px;
+	height: 16px;
+}
+
+.pbr-block .copy-btn .copy-icon svg,
+.pbr-block .copy-btn .check-icon svg {
+	width: 16px;
+	height: 16px;
+	fill: currentcolor;
+}
+
+@keyframes copy-success {
+
+	0% {
+		transform: scale(1);
+		color: currentcolor;
+	}
+
+	30% {
+		transform: scale(1.3);
+		color: #28a745;
+	}
+
+	100% {
+		transform: scale(1);
+		color: currentcolor;
+	}
+}
+
+.pbr-block .copy-btn .check-icon {
+	animation: copy-success 0.7s ease-out;
 }
 
 /* Header section */
@@ -115,11 +158,6 @@
 	background-color: rgba(0, 0, 0, 0.1);
 }
 
-.pbr-block .copy-id-btn .dashicons {
-	font-size: 1em;
-	width: 16px;
-	height: 16px;
-}
 
 /* Player information section */
 .pbr-block .player-name {
@@ -177,6 +215,7 @@
 	display: flex;
 	align-items: center;
 	gap: 4px;
+	height: 1.6em;
 }
 
 .pbr-block .pbr-value {
