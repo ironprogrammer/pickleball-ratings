@@ -380,7 +380,7 @@ function pickleball_ratings_render_block( $attributes ) {
 			} else {
 
 				// Use WordPress HTML Tag Processor to modify SVG attributes.
-				$user_svg = $svg_assets['user-profile']; // fallback to original
+				$user_svg  = $svg_assets['user-profile'];
 				$processor = new WP_HTML_Tag_Processor( $svg_assets['user-profile'] );
 				if ( $processor->next_tag( 'svg' ) ) {
 					$processor->set_attribute( 'width', '30' );
