@@ -1,0 +1,78 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "pickleball-ratings/player-ratings",
+	"version": "0.4.0",
+	"title": "Pickleball Player Ratings",
+	"category": "widgets",
+	"description": "Display DUPR ratings for a specific player.",
+	"keywords": [
+		"pickleball",
+		"ratings",
+		"dupr",
+		"player"
+	],
+	"textdomain": "pickleball-ratings",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./style-index.css",
+	"style": "file:./style-index.css",
+	"viewScript": "file:./frontend.js",
+	"supports": {
+		"html": false,
+		"align": true,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true
+		},
+		"typography": {
+			"fontSize": true
+		}
+	},
+	"attributes": {
+		"duprId": {
+			"type": "string",
+			"default": ""
+		},
+		"showProfilePic": {
+			"type": "boolean",
+			"default": true
+		},
+		"showPoweredBy": {
+			"type": "boolean",
+			"default": false
+		},
+		"useLightLogo": {
+			"type": "boolean",
+			"default": false
+		},
+		"backgroundColor": {
+			"type": "string",
+			"default": ""
+		},
+		"textColor": {
+			"type": "string",
+			"default": ""
+		},
+		"customBackgroundColor": {
+			"type": "string",
+			"default": ""
+		},
+		"customTextColor": {
+			"type": "string",
+			"default": ""
+		},
+		"gradient": {
+			"type": "string",
+			"default": ""
+		},
+		"customGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"fontSize": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}
