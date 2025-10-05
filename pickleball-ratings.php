@@ -131,28 +131,11 @@ function pickleball_ratings_register_block() {
 		)
 	);
 
-	// Register the round robin block.
+	// Register the round-robin block using block.json metadata.
 	register_block_type(
-		'pickleball-ratings/round-robin',
+		PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/round-robin',
 		array(
-			'editor_script'   => 'pickleball-ratings-block',
-			'editor_style'    => 'pickleball-ratings-block-style',
-			'style'           => 'pickleball-ratings-block-style',
-			'script'          => 'pickleball-ratings-block-frontend',
 			'render_callback' => 'pickleball_ratings_render_round_robin_block',
-			'supports'        => array(
-				'align' => true,
-			),
-			'attributes'      => array(
-				'players' => array(
-					'type'    => 'number',
-					'default' => 8,
-				),
-				'courts'  => array(
-					'type'    => 'number',
-					'default' => 2,
-				),
-			),
 		)
 	);
 
