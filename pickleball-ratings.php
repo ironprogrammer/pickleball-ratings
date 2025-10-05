@@ -123,99 +123,11 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'pickleball_ra
  * Register the Gutenberg block.
  */
 function pickleball_ratings_register_block() {
-	// Get asset file for dependencies and version.
-	$asset_file = include PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/index.asset.php';
-
-	// Register block script.
-	wp_register_script(
-		'pickleball-ratings-block',
-		PICKLEBALL_RATINGS_PLUGIN_URL . 'build/index.js',
-		$asset_file['dependencies'],
-		$asset_file['version'],
-		true
-	);
-
-	// Register block style.
-	wp_register_style(
-		'pickleball-ratings-block-style',
-		PICKLEBALL_RATINGS_PLUGIN_URL . 'build/style-index.css',
-		array( 'dashicons' ),
-		$asset_file['version']
-	);
-
-	// Register frontend script.
-	wp_register_script(
-		'pickleball-ratings-block-frontend',
-		PICKLEBALL_RATINGS_PLUGIN_URL . 'build/frontend.js',
-		array(),
-		$asset_file['version'],
-		true // Load in footer.
-	);
-
-	// Register the block.
+	// Register the player-ratings block using block.json metadata.
 	register_block_type(
-		'pickleball-ratings/player-ratings',
+		PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/player-ratings',
 		array(
-			'editor_script'   => 'pickleball-ratings-block',
-			'editor_style'    => 'pickleball-ratings-block-style',
-			'style'           => 'pickleball-ratings-block-style',
-			'script'          => 'pickleball-ratings-block-frontend',
 			'render_callback' => 'pickleball_ratings_render_block',
-			'supports'        => array(
-				'color' => array(
-					'background' => true,
-					'text'       => true,
-					'gradients'  => true,
-				),
-			),
-			'attributes'      => array(
-				'duprId'                => array(
-					'type'    => 'string',
-					'default' => '',
-				),
-				'showProfilePic'        => array(
-					'type'    => 'boolean',
-					'default' => true,
-				),
-
-				'showPoweredBy'         => array(
-					'type'    => 'boolean',
-					'default' => false,
-				),
-				'useLightLogo'          => array(
-					'type'    => 'boolean',
-					'default' => false,
-				),
-				'backgroundColor'       => array(
-					'type'    => 'string',
-					'default' => '',
-				),
-				'textColor'             => array(
-					'type'    => 'string',
-					'default' => '',
-				),
-				'customBackgroundColor' => array(
-					'type'    => 'string',
-					'default' => '',
-				),
-				'customTextColor'       => array(
-					'type'    => 'string',
-					'default' => '',
-				),
-				'gradient'              => array(
-					'type'    => 'string',
-					'default' => '',
-				),
-				'customGradient'        => array(
-					'type'    => 'string',
-					'default' => '',
-				),
-				'fontSize'              => array(
-					'type'    => 'string',
-					'default' => '',
-				),
-
-			),
 		)
 	);
 
