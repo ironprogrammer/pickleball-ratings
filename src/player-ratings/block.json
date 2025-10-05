@@ -17,6 +17,7 @@
 	"editorStyle": "file:./style-index.css",
 	"style": "file:./style-index.css",
 	"viewScript": "file:./frontend.js",
+	"render": "file:./render.php",
 	"supports": {
 		"html": false,
 		"align": true,
