@@ -158,7 +158,7 @@ function pickleball_ratings_register_block() {
 
 	// Localize script for AJAX.
 	wp_localize_script(
-		'pickleball-ratings-block',
+		'pickleball-ratings-player-ratings-editor-script',
 		'duprRatingAjax',
 		array(
 			'nonce'              => wp_create_nonce( 'pickleball_ratings_get_player_data' ),
