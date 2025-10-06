@@ -102,22 +102,21 @@ if ( ! empty( $font_size ) ) {
 $typography_class_string = ! empty( $typography_classes ) ? ' ' . implode( ' ', $typography_classes ) : '';
 ?>
 
-<div class="pbr-block pickleball-ratings-block<?php echo $color_class_string . $typography_class_string; ?>"<?php echo $color_style_string; ?>>
+<div class="pbr-block pickleball-ratings-block<?php echo esc_attr( $color_class_string . $typography_class_string ); ?>"<?php echo esc_attr( $color_style_string ); ?>>
 	<div class="block-wrapper">
 		<?php if ( ! empty( $dupr_id ) ) : ?>
 			<button class="copy-btn" onclick="window.pbrCopyToClipboard('<?php echo esc_js( $dupr_id ); ?>', this)" title="Copy DUPR ID: <?php echo esc_attr( $dupr_id ); ?>">
-				<span class="copy-icon"><?php echo $svg_assets['copy-to-clipboard']; ?></span>
-				<span class="check-icon" style="display: none;"><?php echo $svg_assets['check-circle']; ?></span>
+				<span class="copy-icon"><?php echo wp_kses( $svg_assets['copy-to-clipboard'], pbr_get_allowed_svg_tags() ); ?></span>
+				<span class="check-icon" style="display: none;"><?php echo wp_kses( $svg_assets['check-circle'], pbr_get_allowed_svg_tags() ); ?></span>
 			</button>
 		<?php endif; ?>
 
 		<?php if ( ! empty( $player_data['name'] ) ) : ?>
+			<div class="player-name"
 			<?php
-			$title_attribute = ! empty( $player_data['last_updated'] )
-				? ' title="Last updated: ' . esc_attr( $player_data['last_updated'] ) . '"'
-				: '';
-			?>
-			<div class="player-name"<?php echo $title_attribute; ?>>
+			if ( ! empty( $player_data['last_updated'] ) ) :
+				?>
+				title="<?php echo esc_attr( 'Last updated: ' . $player_data['last_updated'] ); ?>"<?php endif; ?>>
 				<?php if ( $show_profile_pic ) : ?>
 					<?php if ( ! empty( $player_data['profile_image'] ) ) : ?>
 						<img src="<?php echo esc_url( $player_data['profile_image'] ); ?>" alt="<?php echo esc_attr( $player_data['name'] ); ?>" class="profile-pic" />
@@ -133,7 +132,7 @@ $typography_class_string = ! empty( $typography_classes ) ? ' ' . implode( ' ', 
 							$user_svg = $processor->get_updated_html();
 						}
 						?>
-						<div class="profile-pic-fallback"><?php echo $user_svg; ?></div>
+						<div class="profile-pic-fallback"><?php echo wp_kses( $user_svg, pbr_get_allowed_svg_tags() ); ?></div>
 					<?php endif; ?>
 				<?php endif; ?>
 				<?php echo esc_html( $player_data['name'] ); ?>
@@ -143,37 +142,49 @@ $typography_class_string = ! empty( $typography_classes ) ? ' ' . implode( ' ', 
 		<div class="rating-content">
 			<div class="pbr-item">
 				<span class="pbr-label">
-					<span class="pbr-icon pbr-icon-doubles"><?php echo $svg_assets['pickleball-paddles-crossed']; ?></span>
+					<span class="pbr-icon pbr-icon-doubles"><?php echo wp_kses( $svg_assets['pickleball-paddles-crossed'], pbr_get_allowed_svg_tags() ); ?></span>
 					Doubles
 				</span>
+				<span class="pbr-value"
 				<?php
-				$doubles_title = '';
-				if ( 'NR' === $player_data['doubles_rating'] ) {
-					$doubles_title = ' title="Not Rated"';
-				} elseif ( isset( $player_data['doubles_reliability'] ) && $player_data['doubles_reliability'] > 0 ) {
-					$doubles_title = ' title="Doubles: ' . esc_attr( $player_data['doubles_rating'] ) . ' (Reliability: ' . esc_attr( $player_data['doubles_reliability'] ) . '%)"';
-				} else {
-					$doubles_title = ' title="Doubles: ' . esc_attr( $player_data['doubles_rating'] ) . '"';
-				}
+				if ( 'NR' === $player_data['doubles_rating'] ) :
+					?>
+					title="<?php esc_attr_e( 'Not Rated', 'pickleball-ratings' ); ?>"
+					<?php
+				elseif ( isset( $player_data['doubles_reliability'] ) && $player_data['doubles_reliability'] > 0 ) :
+					?>
+					title="<?php echo esc_attr( 'Doubles: ' . $player_data['doubles_rating'] . ' (Reliability: ' . $player_data['doubles_reliability'] . '%)' ); ?>"
+					<?php
+				else :
+					?>
+					title="<?php echo esc_attr( 'Doubles: ' . $player_data['doubles_rating'] ); ?>"
+					<?php
+				endif;
 				?>
-				<span class="pbr-value"<?php echo $doubles_title; ?>><?php echo esc_html( $player_data['doubles_rating'] ); ?></span>
+				><?php echo esc_html( $player_data['doubles_rating'] ); ?></span>
 			</div>
 			<div class="pbr-item">
 				<span class="pbr-label">
-					<span class="pbr-icon pbr-icon-singles"><?php echo $svg_assets['pickleball-paddle']; ?></span>
+					<span class="pbr-icon pbr-icon-singles"><?php echo wp_kses( $svg_assets['pickleball-paddle'], pbr_get_allowed_svg_tags() ); ?></span>
 					Singles
 				</span>
+				<span class="pbr-value"
 				<?php
-				$singles_title = '';
-				if ( 'NR' === $player_data['singles_rating'] ) {
-					$singles_title = ' title="Not Rated"';
-				} elseif ( isset( $player_data['singles_reliability'] ) && $player_data['singles_reliability'] > 0 ) {
-					$singles_title = ' title="Singles: ' . esc_attr( $player_data['singles_rating'] ) . ' (Reliability: ' . esc_attr( $player_data['singles_reliability'] ) . '%)"';
-				} else {
-					$singles_title = ' title="Singles: ' . esc_attr( $player_data['singles_rating'] ) . '"';
-				}
+				if ( 'NR' === $player_data['singles_rating'] ) :
+					?>
+					title="<?php esc_attr_e( 'Not Rated', 'pickleball-ratings' ); ?>"
+					<?php
+				elseif ( isset( $player_data['singles_reliability'] ) && $player_data['singles_reliability'] > 0 ) :
+					?>
+					title="<?php echo esc_attr( 'Singles: ' . $player_data['singles_rating'] . ' (Reliability: ' . $player_data['singles_reliability'] . '%)' ); ?>"
+					<?php
+				else :
+					?>
+					title="<?php echo esc_attr( 'Singles: ' . $player_data['singles_rating'] ); ?>"
+					<?php
+				endif;
 				?>
-				<span class="pbr-value"<?php echo $singles_title; ?>><?php echo esc_html( $player_data['singles_rating'] ); ?></span>
+				><?php echo esc_html( $player_data['singles_rating'] ); ?></span>
 			</div>
 		</div>
 
