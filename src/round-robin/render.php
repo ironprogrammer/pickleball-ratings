@@ -2,6 +2,12 @@
 /**
  * Render template for the round robin block.
  *
+ * @package Pickleball_Ratings
+ */
+
+/**
+ * Variables available to the renderer.
+ *
  * @var array $attributes Block attributes.
  * @var string $content Block default content.
  * @var WP_Block $block Block instance.
