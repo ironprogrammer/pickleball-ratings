@@ -1,6 +1,6 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 2,
+	"apiVersion": 3,
 	"name": "pickleball-ratings/player-ratings",
 	"version": "0.4.0",
 	"title": "Pickleball Player Ratings",

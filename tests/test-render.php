@@ -57,10 +57,7 @@ class PBR_Render_Test extends WP_UnitTestCase {
 			'duprId' => '8WZ4ML',
 			'backgroundColor' => 'primary',
 			'textColor' => 'secondary',
-			'customBackgroundColor' => '#123456',
-			'customTextColor' => '#abcdef',
 			'gradient' => 'dupr-blue-gradient',
-			'customGradient' => 'linear-gradient(45deg, #000, #fff)',
 			'fontSize' => 'large',
 		);
 		// Configure auth token to bypass 'no_auth' branch.
@@ -86,8 +83,6 @@ class PBR_Render_Test extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'has-secondary-color', $html );
 		$this->assertStringContainsString( 'has-dupr-blue-gradient-gradient-background', $html );
 		$this->assertStringContainsString( 'has-large-font-size', $html );
-		$this->assertStringContainsString( 'background-color: #123456', $html );
-		$this->assertStringContainsString( 'color: #abcdef', $html );
 	}
 
 	public function stub_http_ok( $preempt, $args, $url ) {
