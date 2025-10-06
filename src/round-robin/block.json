@@ -1,0 +1,35 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "pickleball-ratings/round-robin",
+	"version": "0.4.0",
+	"title": "Pickleball Round Robin",
+	"category": "widgets",
+	"description": "Generate and track doubles round robin schedules for pickleball games.",
+	"keywords": [
+		"pickleball",
+		"round robin",
+		"doubles",
+		"scheduler"
+	],
+	"textdomain": "pickleball-ratings",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./style-index.css",
+	"style": "file:./style-index.css",
+	"viewScript": "file:./frontend.js",
+	"supports": {
+		"html": false,
+		"align": true
+	},
+	"render": "file:./render.php",
+	"attributes": {
+		"players": {
+			"type": "number",
+			"default": 8
+		},
+		"courts": {
+			"type": "number",
+			"default": 2
+		}
+	}
+}

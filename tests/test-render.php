@@ -5,14 +5,51 @@
 
 class PBR_Render_Test extends WP_UnitTestCase {
 
-	public function test_render_empty_id_returns_empty() {
-		$html = pickleball_ratings_render_block( array( 'duprId' => '' ) );
-		$this->assertEmpty( $html, 'Empty DUPR ID should return empty string on frontend' );
+	/**
+	 * Test that blocks with empty or invalid DUPR IDs return empty strings.
+	 *
+	 * @dataProvider data_empty_or_invalid_dupr_ids
+	 * @param string $dupr_id The DUPR ID to test.
+	 * @param string $test_name The name of the test case.
+	 * @param string $error_message The error message to display if test fails.
+	 */
+	public function test_render_empty_or_invalid_id_returns_empty( $dupr_id, $test_name, $error_message ) {
+		// Create block attributes with the test DUPR ID.
+		$attributes = array( 'duprId' => $dupr_id );
+		
+		// Create a block instance.
+		$block = new WP_Block(
+			array(
+				'blockName' => 'pickleball-ratings/player-ratings',
+				'attrs'      => $attributes,
+			)
+		);
+		
+		// Render the block.
+		$html = $block->render();
+		
+		// Assert that the block returns empty string.
+		$this->assertEmpty( $html, $error_message );
 	}
 
-	public function test_render_invalid_id_format_returns_empty() {
-		$html = pickleball_ratings_render_block( array( 'duprId' => 'abc' ) );
-		$this->assertEmpty( $html, 'Invalid DUPR ID should return empty string on frontend' );
+	/**
+	 * Data provider for empty or invalid DUPR ID tests.
+	 *
+	 * @return array Array of test cases with DUPR ID, test name, and error message.
+	 */
+	public function data_empty_or_invalid_dupr_ids() {
+		return array(
+			'empty_dupr_id' => array(
+				'dupr_id'      => '',
+				'test_name'    => 'Empty DUPR ID',
+				'error_message' => 'Block should return empty string when no DUPR ID is provided',
+			),
+			'invalid_dupr_id_format' => array(
+				'dupr_id'      => 'abc',
+				'test_name'    => 'Invalid DUPR ID format',
+				'error_message' => 'Block should return empty string when DUPR ID format is invalid',
+			),
+		);
 	}
 
 	public function test_render_color_classes_and_styles() {
@@ -30,7 +67,18 @@ class PBR_Render_Test extends WP_UnitTestCase {
 		update_option( 'pickleball_ratings_dupr_auth_token', 'test-token' );
 		// Stub API to avoid external calls by filtering before render.
 		add_filter( 'pre_http_request', array( $this, 'stub_http_ok' ), 10, 3 );
-		$html = pickleball_ratings_render_block( $attrs );
+		
+		// Create a block instance.
+		$block = new WP_Block(
+			array(
+				'blockName' => 'pickleball-ratings/player-ratings',
+				'attrs'      => $attrs,
+			)
+		);
+		
+		// Render the block.
+		$html = $block->render();
+		
 		remove_filter( 'pre_http_request', array( $this, 'stub_http_ok' ), 10 );
 
 		$this->assertStringContainsString( 'has-background', $html );

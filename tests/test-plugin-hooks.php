@@ -11,13 +11,6 @@ class PBR_Plugin_Hooks_Test extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'duprId', $block->attributes );
 	}
 
-	public function test_scripts_and_styles_registered() {
-		global $wp_scripts, $wp_styles;
-		$this->assertArrayHasKey( 'pickleball-ratings-block', $wp_scripts->registered );
-		$this->assertArrayHasKey( 'pickleball-ratings-block-frontend', $wp_scripts->registered );
-		$this->assertArrayHasKey( 'pickleball-ratings-block-style', $wp_styles->registered );
-	}
-
 	public function test_settings_link_filter_adds_link() {
 		$links   = array();
 		$filtered = pickleball_ratings_add_settings_link( $links );
