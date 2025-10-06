@@ -25,13 +25,7 @@ if ( ! PICKLEBALL_RATINGS_ENABLE_DUPR_BRANDING ) {
 	$show_powered_by = false;
 }
 $use_light_logo          = isset( $attributes['useLightLogo'] ) ? (bool) $attributes['useLightLogo'] : false;
-$background_color        = isset( $attributes['backgroundColor'] ) ? sanitize_text_field( $attributes['backgroundColor'] ) : '';
-$text_color              = isset( $attributes['textColor'] ) ? sanitize_text_field( $attributes['textColor'] ) : '';
-$custom_background_color = isset( $attributes['customBackgroundColor'] ) ? sanitize_text_field( $attributes['customBackgroundColor'] ) : '';
-$custom_text_color       = isset( $attributes['customTextColor'] ) ? sanitize_text_field( $attributes['customTextColor'] ) : '';
-$gradient                = isset( $attributes['gradient'] ) ? sanitize_text_field( $attributes['gradient'] ) : '';
-$custom_gradient         = isset( $attributes['customGradient'] ) ? sanitize_text_field( $attributes['customGradient'] ) : '';
-$font_size               = isset( $attributes['fontSize'] ) ? sanitize_text_field( $attributes['fontSize'] ) : '';
+
 
 // Basic validation.
 if ( empty( $dupr_id ) ) {
@@ -59,50 +53,9 @@ if ( is_wp_error( $player_data ) ) {
 	return; // Hide block on frontend when API errors occur.
 }
 
-// Build color classes and styles using WordPress functions.
-$color_classes = array();
-$color_styles  = array();
-
-// Handle background color.
-if ( ! empty( $background_color ) ) {
-	$color_classes[] = 'has-background';
-	$color_classes[] = 'has-' . $background_color . '-background-color';
-}
-if ( ! empty( $custom_background_color ) ) {
-	$color_styles[] = 'background-color: ' . esc_attr( $custom_background_color );
-}
-
-// Handle gradient.
-if ( ! empty( $gradient ) ) {
-	$color_classes[] = 'has-background';
-	$color_classes[] = 'has-' . $gradient . '-gradient-background';
-}
-if ( ! empty( $custom_gradient ) ) {
-	$color_styles[] = 'background: ' . esc_attr( $custom_gradient );
-}
-
-// Handle text color.
-if ( ! empty( $text_color ) ) {
-	$color_classes[] = 'has-text-color';
-	$color_classes[] = 'has-' . $text_color . '-color';
-}
-if ( ! empty( $custom_text_color ) ) {
-	$color_styles[] = 'color: ' . esc_attr( $custom_text_color );
-}
-
-$color_class_string = ! empty( $color_classes ) ? ' ' . implode( ' ', $color_classes ) : '';
-$color_style_string = ! empty( $color_styles ) ? ' style="' . implode( '; ', $color_styles ) . '"' : '';
-
-// Build typography classes.
-$typography_classes = array();
-if ( ! empty( $font_size ) ) {
-	$typography_classes[] = 'has-' . $font_size . '-font-size';
-}
-
-$typography_class_string = ! empty( $typography_classes ) ? ' ' . implode( ' ', $typography_classes ) : '';
 ?>
 
-<div class="pbr-block pickleball-ratings-block<?php echo esc_attr( $color_class_string . $typography_class_string ); ?>"<?php echo esc_attr( $color_style_string ); ?>>
+<div <?php echo get_block_wrapper_attributes( array( 'class' => 'pbr-block pickleball-ratings-block' ) ); ?>>
 	<div class="block-wrapper">
 		<?php if ( ! empty( $dupr_id ) ) : ?>
 			<button class="copy-btn" onclick="window.pbrCopyToClipboard('<?php echo esc_js( $dupr_id ); ?>', this)" title="Copy DUPR ID: <?php echo esc_attr( $dupr_id ); ?>">
