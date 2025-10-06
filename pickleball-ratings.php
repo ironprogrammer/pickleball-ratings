@@ -30,6 +30,62 @@ define( 'PICKLEBALL_RATINGS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PICKLEBALL_RATINGS_ENABLE_DUPR_BRANDING', false );
 
 /**
+ * Get allowed SVG tags and attributes for sanitization.
+ *
+ * This whitelist explicitly defines what is permitted, removing potential
+ * malicious code such as scripts or data URIs.
+ *
+ * @return array Allowed SVG tags and attributes.
+ */
+function pbr_get_allowed_svg_tags() {
+	return array(
+		'svg'    => array(
+			'xmlns'       => true,
+			'viewbox'     => true,
+			'width'       => true,
+			'height'      => true,
+			'aria-hidden' => true,
+			'role'        => true,
+			'fill'        => true,
+			'stroke'      => true,
+			'class'       => true,
+			'style'       => true,
+			'data-name'   => true,
+			'overflow'    => true,
+			'transform'   => true,
+		),
+		'path'   => array(
+			'd'         => true,
+			'fill'      => true,
+			'stroke'    => true,
+			'data-name' => true,
+		),
+		'g'      => array(
+			'fill'      => true,
+			'stroke'    => true,
+			'data-name' => true,
+		),
+		'title'  => array(),
+		'circle' => array(
+			'cx'     => true,
+			'cy'     => true,
+			'r'      => true,
+			'fill'   => true,
+			'stroke' => true,
+		),
+		'rect'   => array(
+			'x'      => true,
+			'y'      => true,
+			'width'  => true,
+			'height' => true,
+			'fill'   => true,
+			'stroke' => true,
+		),
+	);
+}
+
+
+/**
  * Plugin debug logger.
  *
  * Logs messages when:
