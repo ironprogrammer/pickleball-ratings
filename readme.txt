@@ -2,7 +2,7 @@
 Contributors: ironprogrammer
 Donate link: https://github.com/ironprogrammer/pickleball-ratings
 Tags: pickleball, ratings, sports, blocks
-Requires at least: 5.6
+Requires at least: 6.1
 Tested up to: 6.8
 Requires PHP: 7.4
 Stable tag: 0.4.0
