@@ -55,7 +55,12 @@ if ( is_wp_error( $player_data ) ) {
 
 ?>
 
-<div <?php echo get_block_wrapper_attributes( array( 'class' => 'pbr-block pickleball-ratings-block' ) ); ?>>
+<div 
+<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns escaped attributes
+	echo get_block_wrapper_attributes( array( 'class' => 'pbr-block pickleball-ratings-block' ) );
+?>
+	>
 	<div class="block-wrapper">
 		<?php if ( ! empty( $dupr_id ) ) : ?>
 			<button class="copy-btn" onclick="window.pbrCopyToClipboard('<?php echo esc_js( $dupr_id ); ?>', this)" title="Copy DUPR ID: <?php echo esc_attr( $dupr_id ); ?>">

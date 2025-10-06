@@ -21,7 +21,12 @@ $players = max( 4, min( 32, $players ) );
 $courts  = max( 1, min( 8, $courts ) );
 ?>
 
-<div <?php echo get_block_wrapper_attributes( array( 'class' => 'pbr-block pbr-block--round-robin' ) ); ?>>
+<div 
+<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns escaped attributes
+	echo get_block_wrapper_attributes( array( 'class' => 'pbr-block pbr-block--round-robin' ) );
+?>
+	>
 	<div class="round-robin-container">
 		<div class="input-section">
 			<div class="input-group">
