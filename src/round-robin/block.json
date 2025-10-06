@@ -21,6 +21,7 @@
 		"html": false,
 		"align": true
 	},
+	"render": "file:./render.php",
 	"attributes": {
 		"players": {
 			"type": "number",
