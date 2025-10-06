@@ -26,7 +26,6 @@ if ( ! PICKLEBALL_RATINGS_ENABLE_DUPR_BRANDING ) {
 }
 $use_light_logo = isset( $attributes['useLightLogo'] ) ? (bool) $attributes['useLightLogo'] : false;
 
-
 // Basic validation.
 if ( empty( $dupr_id ) ) {
 	return; // Hide block on frontend when no DUPR ID provided.
