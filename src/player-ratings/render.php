@@ -24,7 +24,7 @@ $svg_assets = require PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/svg-assets.php';
 if ( ! PICKLEBALL_RATINGS_ENABLE_DUPR_BRANDING ) {
 	$show_powered_by = false;
 }
-$use_light_logo          = isset( $attributes['useLightLogo'] ) ? (bool) $attributes['useLightLogo'] : false;
+$use_light_logo = isset( $attributes['useLightLogo'] ) ? (bool) $attributes['useLightLogo'] : false;
 
 
 // Basic validation.
