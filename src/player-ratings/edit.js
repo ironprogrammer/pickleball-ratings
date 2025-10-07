@@ -1,4 +1,4 @@
-/* global duprRatingAjax */
+/* global pbrBlockEditor */
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
@@ -70,28 +70,28 @@ export default function Edit( { attributes, setAttributes } ) {
 			setApiError( '' );
 
 			try {
-				const response = await fetch( '/wp-admin/admin-ajax.php', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded',
-					},
-					body: new URLSearchParams( {
-						action: 'pickleball_ratings_get_player_data',
-						dupr_id: id,
-						nonce: duprRatingAjax.nonce,
-					} ),
-				} );
+				const response = await fetch(
+					`${ pbrBlockEditor.rest_url }/player/${ id }`,
+					{
+						method: 'GET',
+						headers: {
+							'X-WP-Nonce': pbrBlockEditor.nonce,
+						},
+					}
+				);
 
 				const result = await response.json();
 
-				if ( result.success ) {
-					setPlayerData( result.data );
+				if ( response.ok ) {
+					setPlayerData( result );
 				} else {
-					setApiError( result.data );
+					setApiError(
+						result.message || 'An unknown error occurred.'
+					);
 					setPlayerData( null );
 				}
 			} catch ( error ) {
-				setApiError( 'Failed to fetch player data' );
+				setApiError( 'Failed to fetch player data.' );
 				setPlayerData( null );
 			} finally {
 				setIsLoading( false );
@@ -173,7 +173,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom={ true }
 					/>
 
-					{ duprRatingAjax?.enableDuprBranding && (
+					{ pbrBlockEditor?.enableDuprBranding && (
 						<ToggleControl
 							label={ __(
 								'Show Powered by DUPR',
@@ -190,7 +190,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom={ true }
 						/>
 					) }
-					{ duprRatingAjax?.enableDuprBranding && showPoweredBy && (
+					{ pbrBlockEditor?.enableDuprBranding && showPoweredBy && (
 						<ToggleControl
 							label={ __(
 								'Use Light Logo',
@@ -396,14 +396,14 @@ export default function Edit( { attributes, setAttributes } ) {
 									</span>
 								</div>
 							</div>
-							{ duprRatingAjax?.enableDuprBranding &&
+							{ pbrBlockEditor?.enableDuprBranding &&
 								showPoweredBy && (
 									<div className="footer">
 										<span className="powered-by">
 											Powered by{ ' ' }
 											<img
 												src={
-													duprRatingAjax.pluginUrl +
+													pbrBlockEditor.pluginUrl +
 													( useLightLogo
 														? 'images/dupr-logo-white.png'
 														: 'images/dupr-logo-blue.png' )
