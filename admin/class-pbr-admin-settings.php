@@ -316,7 +316,6 @@ class PBR_Admin_Settings {
 				var button = $(this);
 				var resultSpan = $('#test-result');
 				var successNotice = $('#test-success-notice');
-				var testDetails = $('#test-details');
 				
 				console.log('DUPR: Test connection button clicked');
 				
@@ -325,31 +324,26 @@ class PBR_Admin_Settings {
 				successNotice.hide();
 				
 				$.ajax({
-					url: ajaxurl,
-					type: 'POST',
-					data: {
-						action: 'pickleball_ratings_test_dupr_connection',
-						nonce: '<?php echo esc_js( wp_create_nonce( 'pickleball_ratings_test_dupr_connection' ) ); ?>'
+					url: '<?php echo esc_url_raw( rest_url( 'pickleball-ratings/v1/test-connection' ) ); ?>',
+					type: 'GET',
+					headers: {
+						'X-WP-Nonce': '<?php echo esc_js( wp_create_nonce( 'wp_rest' ) ); ?>'
 					},
 					success: function(response) {
-						console.log('DUPR: AJAX success response:', response);
-						if (response.success) {
-							// Show dismissible success notice (like WordPress settings pages)
-							successNotice.show();
-						} else {
-							resultSpan.html('<span style="color: red;">✗ ' + response.data + '</span>');
-						}
+						console.log('DUPR: REST API success response:', response);
+						// Show dismissible success notice (like WordPress settings pages)
+						successNotice.show();
 					},
 					error: function(xhr, status, error) {
-						console.log('DUPR: AJAX error:', xhr, status, error);
-						var errorMessage = '<?php echo esc_js( __( 'Connection test failed', 'pickleball-ratings' ) ); ?>';
-						if (xhr.responseJSON && xhr.responseJSON.data) {
-							errorMessage = xhr.responseJSON.data;
+						console.log('DUPR: REST API error:', xhr, status, error);
+						var errorMessage = '<?php echo esc_js( __( 'DUPR connection test failed', 'pickleball-ratings' ) ); ?>';
+						if (xhr.responseJSON && xhr.responseJSON.message) {
+							errorMessage = xhr.responseJSON.message;
 						}
 						resultSpan.html('<span style="color: red;">✗ ' + errorMessage + '</span>');
 					},
 					complete: function() {
-						console.log('DUPR: AJAX complete');
+						console.log('DUPR: REST API complete');
 						button.prop('disabled', false).text('<?php echo esc_js( __( 'Test Connection', 'pickleball-ratings' ) ); ?>');
 					}
 				});
