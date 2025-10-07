@@ -35,10 +35,10 @@ class PBR_REST_Controller {
 				'permission_callback' => array( $this, 'get_player_permissions_check' ),
 				'args'                => array(
 					'dupr_id' => array(
-						'description' => __( 'The DUPR ID of the player.', 'pickleball-ratings' ),
-						'type'        => 'string',
-						'required'    => true,
-						'validate_callback' => function( $param ) {
+						'description'       => __( 'The DUPR ID of the player.', 'pickleball-ratings' ),
+						'type'              => 'string',
+						'required'          => true,
+						'validate_callback' => function ( $param ) {
 							return preg_match( '/^[A-Z0-9]{6}$/', $param );
 						},
 					),
