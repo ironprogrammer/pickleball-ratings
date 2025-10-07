@@ -117,6 +117,7 @@ function pbr_log( $message, $context = array() ) {
 // Include required files.
 require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-dupr-api.php';
 require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-ajax-handler.php';
+require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-rest-controller.php';
 require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'admin/class-pbr-admin-settings.php';
 
 /**
@@ -163,6 +164,15 @@ function pickleball_ratings_ajax_init() {
 add_action( 'wp_loaded', 'pickleball_ratings_ajax_init' );
 
 /**
+ * Initialize the REST API.
+ */
+function pickleball_ratings_rest_api_init() {
+	$controller = new PBR_REST_Controller();
+	$controller->register_routes();
+}
+add_action( 'rest_api_init', 'pickleball_ratings_rest_api_init' );
+
+/**
  * Add settings link to plugin list.
  *
  * @param array $links Existing plugin action links.
@@ -192,9 +202,10 @@ function pickleball_ratings_register_block() {
 	// Localize script for AJAX.
 	wp_localize_script(
 		'pickleball-ratings-player-ratings-editor-script',
-		'duprRatingAjax',
+		'pbrBlockEditor',
 		array(
-			'nonce'              => wp_create_nonce( 'pickleball_ratings_get_player_data' ),
+			'rest_url'           => esc_url_raw( rest_url( 'pickleball-ratings/v1' ) ),
+			'nonce'              => wp_create_nonce( 'wp_rest' ),
 			'pluginUrl'          => PICKLEBALL_RATINGS_PLUGIN_URL,
 			'enableDuprBranding' => PICKLEBALL_RATINGS_ENABLE_DUPR_BRANDING,
 		)
