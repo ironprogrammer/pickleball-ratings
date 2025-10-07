@@ -71,7 +71,7 @@ class PBR_REST_Controller {
 	 * @param WP_REST_Request $request Full details about the request.
 	 * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
 	 */
-	public function get_player_permissions_check( $request ) {
+	public function get_player_permissions_check( $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			return new WP_Error( 'rest_forbidden', esc_html__( 'You do not have permissions to view player data.', 'pickleball-ratings' ), array( 'status' => 401 ) );
 		}
