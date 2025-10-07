@@ -63,7 +63,7 @@ class PBR_REST_Controller {
 	 * @param WP_REST_Request $request Full details about the request.
 	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
 	 */
-	public function test_connection( $request ) {
+	public function test_connection( $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		$api    = new PBR_DUPR_API();
 		$result = $api->test_connection();
 
