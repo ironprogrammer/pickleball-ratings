@@ -121,11 +121,14 @@ npm run format
 The project uses PHPUnit for unit testing with WordPress test utilities:
 
 ```bash
-# Set up WordPress test environment (first time only)
+# Set up WordPress test environment (first time, or when test env is causing issues)
 npm run test:setup
 
 # Run all tests
 npm run test
+
+# Run a single test, e.g. using `--filter <pattern>`
+npm run test -- --filter test_authenticate_success
 ```
 
 ### Pre-commit Checklist
