@@ -136,28 +136,28 @@ class PBR_Player_REST_Controller extends WP_REST_Controller {
 			'title'      => 'player',
 			'type'       => 'object',
 			'properties' => array(
-				'dupr_id' => array(
+				'dupr_id'             => array(
 					'description' => __( 'The DUPR ID of the player.', 'pickleball-ratings' ),
 					'type'        => 'string',
 					'readonly'    => true,
 				),
-				'name' => array(
+				'name'                => array(
 					'description' => __( 'The name of the player.', 'pickleball-ratings' ),
 					'type'        => 'string',
 					'readonly'    => true,
 				),
-				'profile_image' => array(
+				'profile_image'       => array(
 					'description' => __( 'The URL of the player\'s profile image.', 'pickleball-ratings' ),
 					'type'        => 'string',
 					'format'      => 'uri',
 					'readonly'    => true,
 				),
-				'doubles_rating' => array(
+				'doubles_rating'      => array(
 					'description' => __( 'The player\'s doubles rating.', 'pickleball-ratings' ),
 					'type'        => 'string',
 					'readonly'    => true,
 				),
-				'singles_rating' => array(
+				'singles_rating'      => array(
 					'description' => __( 'The player\'s singles rating.', 'pickleball-ratings' ),
 					'type'        => 'string',
 					'readonly'    => true,
@@ -172,7 +172,7 @@ class PBR_Player_REST_Controller extends WP_REST_Controller {
 					'type'        => array( 'integer', 'null' ),
 					'readonly'    => true,
 				),
-				'last_updated' => array(
+				'last_updated'        => array(
 					'description' => __( 'The date and time the player data was last updated.', 'pickleball-ratings' ),
 					'type'        => 'string',
 					'format'      => 'date-time',

@@ -116,7 +116,7 @@ function pbr_log( $message, $context = array() ) {
 
 // Include required files.
 require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-dupr-api.php';
-require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-rest-controller.php';
+require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-player-rest-controller.php';
 require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'admin/class-pbr-admin-settings.php';
 
 /**
