@@ -116,7 +116,7 @@ function pbr_log( $message, $context = array() ) {
 
 // Include required files.
 require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-dupr-api.php';
-require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-rest-controller.php';
+require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-player-rest-controller.php';
 require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'admin/class-pbr-admin-settings.php';
 
 /**
@@ -154,7 +154,7 @@ add_action( 'init', 'pickleball_ratings_admin_init' );
  * Initialize the REST API.
  */
 function pickleball_ratings_rest_api_init() {
-	$controller = new PBR_REST_Controller();
+	$controller = new PBR_Player_REST_Controller();
 	$controller->register_routes();
 }
 add_action( 'rest_api_init', 'pickleball_ratings_rest_api_init' );
