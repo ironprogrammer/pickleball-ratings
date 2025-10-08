@@ -23,18 +23,25 @@ class PBR_REST_Controller {
 	protected $namespace = 'pickleball-ratings/v1';
 
 	/**
+	 * The base of this controller's route.
+	 *
+	 * @var string
+	 */
+	protected $rest_base = 'player';
+
+	/**
 	 * Register the routes for the objects of the controller.
 	 */
 	public function register_routes() {
 		register_rest_route(
 			$this->namespace,
-			'/player/(?P<dupr_id>[\w-]+)',
+			'/' . $this->rest_base . '/(?P<id>[\w-]+)',
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_item' ),
 				'permission_callback' => array( $this, 'get_item_permissions_check' ),
 				'args'                => array(
-					'dupr_id' => array(
+					'id' => array(
 						'description'       => __( 'The DUPR ID of the player.', 'pickleball-ratings' ),
 						'type'              => 'string',
 						'required'          => true,
@@ -93,8 +100,8 @@ class PBR_REST_Controller {
 	 * @param WP_REST_Request $request Full details about the request.
 	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
 	 */
-		$dupr_id = $request->get_param( 'dupr_id' );
 	public function get_item( $request ) {
+		$dupr_id = $request->get_param( 'id' );
 		$api     = new PBR_DUPR_API();
 		$data    = $api->get_player_data( $dupr_id );
 
