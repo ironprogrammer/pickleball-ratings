@@ -154,7 +154,7 @@ add_action( 'init', 'pickleball_ratings_admin_init' );
  * Initialize the REST API.
  */
 function pickleball_ratings_rest_api_init() {
-	$controller = new PBR_REST_Controller();
+	$controller = new PBR_Player_REST_Controller();
 	$controller->register_routes();
 }
 add_action( 'rest_api_init', 'pickleball_ratings_rest_api_init' );
