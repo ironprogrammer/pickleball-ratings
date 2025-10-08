@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class PBR_REST_Controller.
  */
-class PBR_REST_Controller {
+class PBR_REST_Controller extends WP_REST_Controller {
 
 	/**
 	 * The namespace for the REST API.
