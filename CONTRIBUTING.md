@@ -139,20 +139,3 @@ Before committing your changes, ensure you've run:
 2. **Formatting:** `npm run format` (if needed)
 3. **Testing:** `npm run test`
 4. **Build:** `npm run build` (if you modified assets)
-
-## Releases
-
-Here's a checklist to go through on every release:
-
-- Before the release:
-   - Bump the version numbers in:
-      - `pickleball-ratings.php`
-      - `readme.txt`
-   - Confirm the metadata in `pickleball-ratings.php` is still up to date:
-      - `Requires at least:`
-      - `Requires PHP:`
-   - Update the changelog in `readme.txt`, including a `== Upgrade Notice ==` remark if appropriate.
-- Create a new tag and push it to the repo.
-- Create a new release with the version of the plugin on GitHub. The title should be “Version x.y.z” and a summary of the changed content as the description.
-
-Releases are finally approved via the [release management](https://wordpress.org/plugins/developers/releases/) page in the plugin directory.
