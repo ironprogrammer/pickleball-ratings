@@ -30,10 +30,15 @@ class PBR_API_Refresh_Test extends WP_UnitTestCase {
 				}
 				if ( false !== strpos( $url, '/auth/v3/refresh' ) ) {
 					$calls['refresh']++;
+					// Verify GET request with x-refresh-token header.
+					$this->assertSame( 'GET', $args['method'] ?? 'GET' );
+					$this->assertArrayHasKey( 'x-refresh-token', $args['headers'] );
+					$this->assertSame( 'refresh123', $args['headers']['x-refresh-token'] );
+					// Return actual DUPR API response format.
 					return array(
 						'response' => array( 'code' => 200 ),
 						'headers'  => array(),
-						'body'     => json_encode( array( 'result' => array( 'accessToken' => 'new', 'refreshToken' => 'newrefresh' ) ) ),
+						'body'     => json_encode( array( 'status' => 'SUCCESS', 'result' => 'new_access_token' ) ),
 					);
 				}
 				if ( false !== strpos( $url, '/player/v3/' ) ) {
@@ -52,8 +57,10 @@ class PBR_API_Refresh_Test extends WP_UnitTestCase {
 
 		$result = $api->get_player_data( '8WZ4ML' );
 		$this->assertIsArray( $result );
-		$this->assertSame( 'new', get_option( 'pickleball_ratings_dupr_auth_token' ) );
-		$this->assertSame( 'newrefresh', get_option( 'pickleball_ratings_dupr_auth_refresh_token' ) );
+		// Verify new access token was saved.
+		$this->assertSame( 'new_access_token', get_option( 'pickleball_ratings_dupr_auth_token' ) );
+		// Verify refresh token remains unchanged (non-rotating pattern).
+		$this->assertSame( 'refresh123', get_option( 'pickleball_ratings_dupr_auth_refresh_token' ) );
 		$this->assertSame( 2, $calls['search'] );
 		$this->assertSame( 1, $calls['refresh'] );
 		$this->assertSame( 1, $calls['player'] );
@@ -76,10 +83,15 @@ class PBR_API_Refresh_Test extends WP_UnitTestCase {
 				}
 				if ( false !== strpos( $url, '/auth/v3/refresh' ) ) {
 					$calls['refresh']++;
+					// Verify GET request with x-refresh-token header.
+					$this->assertSame( 'GET', $args['method'] ?? 'GET' );
+					$this->assertArrayHasKey( 'x-refresh-token', $args['headers'] );
+					$this->assertSame( 'refresh123', $args['headers']['x-refresh-token'] );
+					// Return actual DUPR API response format.
 					return array(
 						'response' => array( 'code' => 200 ),
 						'headers'  => array(),
-						'body'     => json_encode( array( 'result' => array( 'accessToken' => 'new2', 'refreshToken' => 'newrefresh2' ) ) ),
+						'body'     => json_encode( array( 'status' => 'SUCCESS', 'result' => 'new_access_token_2' ) ),
 					);
 				}
 				if ( false !== strpos( $url, '/player/v3/' ) ) {
@@ -101,8 +113,10 @@ class PBR_API_Refresh_Test extends WP_UnitTestCase {
 
 		$result = $api->get_player_data( '8WZ4ML' );
 		$this->assertIsArray( $result );
-		$this->assertSame( 'new2', get_option( 'pickleball_ratings_dupr_auth_token' ) );
-		$this->assertSame( 'newrefresh2', get_option( 'pickleball_ratings_dupr_auth_refresh_token' ) );
+		// Verify new access token was saved.
+		$this->assertSame( 'new_access_token_2', get_option( 'pickleball_ratings_dupr_auth_token' ) );
+		// Verify refresh token remains unchanged (non-rotating pattern).
+		$this->assertSame( 'refresh123', get_option( 'pickleball_ratings_dupr_auth_refresh_token' ) );
 		$this->assertSame( 1, $calls['search'] );
 		$this->assertSame( 1, $calls['refresh'] );
 		$this->assertSame( 2, $calls['player'] );

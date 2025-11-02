@@ -483,16 +483,11 @@ class PBR_DUPR_API {
 
 		$url = $this->api_base_url . '/auth/v3/refresh';
 
-		$response = wp_remote_post(
+		$response = wp_remote_get(
 			$url,
 			array(
 				'headers' => array(
-					'Content-Type' => 'application/json',
-				),
-				'body'    => wp_json_encode(
-					array(
-						'refreshToken' => $this->refresh_token,
-					)
+					'x-refresh-token' => $this->refresh_token,
 				),
 				'timeout' => 30,
 			)
@@ -506,21 +501,30 @@ class PBR_DUPR_API {
 		$body        = wp_remote_retrieve_body( $response );
 
 		if ( 200 !== $status_code ) {
+			if ( function_exists( 'pbr_log' ) ) {
+				pbr_log( 'API: token refresh failed', array( 'status' => $status_code ) );
+			}
 			return new WP_Error( 'refresh_error', 'Token refresh failed with status ' . $status_code );
 		}
 
 		$data = json_decode( $body, true );
-		if ( ! $data || ! isset( $data['result']['accessToken'] ) ) {
+		if ( ! $data || ! isset( $data['result'] ) || 'SUCCESS' !== $data['status'] ) {
+			if ( function_exists( 'pbr_log' ) ) {
+				pbr_log( 'API: invalid refresh response', array( 'data' => $data ) );
+			}
 			return new WP_Error( 'refresh_error', 'Invalid refresh response' );
 		}
 
-		// Update tokens.
-		$this->auth_token    = $data['result']['accessToken'];
-		$this->refresh_token = $data['result']['refreshToken'];
+		// Update access token with the new token from the result field.
+		$this->auth_token = $data['result'];
 
-		// Save to database.
+		// Save new access token to database.
+		// Note: refresh token remains the same and is reused until it expires.
 		update_option( 'pickleball_ratings_dupr_auth_token', $this->auth_token );
-		update_option( 'pickleball_ratings_dupr_auth_refresh_token', $this->refresh_token );
+
+		if ( function_exists( 'pbr_log' ) ) {
+			pbr_log( 'API: token refresh successful' );
+		}
 
 		return true;
 	}
