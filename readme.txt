@@ -57,10 +57,9 @@ On the DUPR site, navigate to the Players page and search for a player by name. 
 == Changelog ==
 
 = 0.4.0 =
-* Enhancement: Replaced Dashicons with SVGs for better performance and scalability.
+* Enhancement: Replaced Dashicons with new pickleball icon SVGs for better looks, performance, and scalability.
 * Enhancement: Migrated all AJAX functionality to the WordPress REST API for improved reliability and performance.
 * Enhancement: Updated block to API version 3 and migrated rendering to `block.json` conventions.
-* Fix: Extended `WP_REST_Controller` for better compatibility.
 
 = 0.3.0 =
 * Feature: Added a new "Round Robin" block for displaying tournament brackets.
