@@ -28,17 +28,6 @@ class PBR_API_Test extends WP_UnitTestCase {
 		$this->assertSame( 'no_auth', $result->get_error_code() );
 	}
 
-	public function test_cache_salt_bump_on_clear_cache() {
-		$api = new PBR_DUPR_API();
-		$reflection = new ReflectionClass( $api );
-		$method = $reflection->getMethod( 'get_cache_salt' );
-		$method->setAccessible( true );
-		$first = $method->invoke( $api );
-		$api->clear_cache();
-		$second = $method->invoke( $api );
-		$this->assertNotSame( $first, $second );
-	}
-
 	public function test_authenticate_missing_credentials() {
 		$api = new PBR_DUPR_API();
 		

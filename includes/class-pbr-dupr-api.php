@@ -355,7 +355,7 @@ class PBR_DUPR_API {
 	 * @return array|false Cached data or false if not found/expired.
 	 */
 	private function get_cached_player_data( $dupr_id ) {
-		$cache_key = 'pbr_dupr_player_' . $this->get_cache_salt() . '_' . $dupr_id;
+		$cache_key = 'pbr_dupr_player_' . $dupr_id;
 		$cached    = get_transient( $cache_key );
 
 		if ( false === $cached ) {
@@ -379,7 +379,7 @@ class PBR_DUPR_API {
 	 * @param array  $data    Player data to cache.
 	 */
 	private function cache_player_data( $dupr_id, $data ) {
-		$cache_key = 'pbr_dupr_player_' . $this->get_cache_salt() . '_' . $dupr_id;
+		$cache_key = 'pbr_dupr_player_' . $dupr_id;
 		set_transient( $cache_key, $data, $this->cache_ttl );
 	}
 
@@ -433,43 +433,15 @@ class PBR_DUPR_API {
 
 	/**
 	 * Clear all cached data.
+	 *
+	 * Note: This method is deprecated and will be removed in a future version.
+	 * Cached data now uses stable keys and will refresh automatically when stale.
 	 */
 	public function clear_cache() {
-		// Invalidate all cached entries by bumping the salt; old keys will expire naturally.
-		$this->bump_cache_salt();
+		// Method retained for backward compatibility but no longer performs any action.
+		// Cache clearing functionality will be removed entirely in Phase 3.
 	}
 
-	/**
-	 * Get the current cache salt used to namespace transients.
-	 *
-	 * @return string Cache salt value.
-	 */
-	private function get_cache_salt() {
-		$salt = get_option( 'pickleball_ratings_cache_salt', '' );
-		if ( empty( $salt ) ) {
-			$salt = $this->generate_new_salt();
-			update_option( 'pickleball_ratings_cache_salt', $salt, false );
-		}
-		return $salt;
-	}
-
-	/**
-	 * Bump the cache salt to invalidate existing transients.
-	 *
-	 * @return void
-	 */
-	private function bump_cache_salt() {
-		update_option( 'pickleball_ratings_cache_salt', $this->generate_new_salt(), false );
-	}
-
-	/**
-	 * Generate a new cache salt string.
-	 *
-	 * @return string New cache salt.
-	 */
-	private function generate_new_salt() {
-		return 'v' . wp_generate_password( 8, false, false );
-	}
 
 	/**
 	 * Refresh access token using refresh token.
