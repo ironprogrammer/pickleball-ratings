@@ -2,6 +2,8 @@
 
 This plugin provides a customizable block to display player DUPR (Dynamic Universal Pickleball Rating) ratings information. It uses the official DUPR API and requires a DUPR account to authenticate API requests.
 
+![Sample screenshot of four blocks](assets/screenshot-1.png)
+
 In addition to the plugin itself, the `docs/` directory includes the requirements and agent implementation instructions that were used to assist the development of the plugin. See the `.cursor/rules` directory for additional Cursor-specific rules. This plugin was designed and built with the assistance of Claude, Cursor, and cursor-agent.
 
 ## Installation
