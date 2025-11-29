@@ -82,6 +82,9 @@ class PBR_DUPR_API {
 	/**
 	 * Get player data by DUPR ID.
 	 *
+	 * Implements stale-while-revalidate pattern: returns cached data if fresh,
+	 * attempts to refresh stale data, and falls back to stale data if API fails.
+	 *
 	 * @param string $dupr_id The DUPR player ID.
 	 * @return array|WP_Error Player data or error.
 	 */
@@ -95,8 +98,55 @@ class PBR_DUPR_API {
 
 		// Check cache first.
 		$cached_data = $this->get_cached_player_data( $dupr_id );
+
 		if ( false !== $cached_data ) {
+			// Calculate cache age using last_updated timestamp.
+			$last_updated_timestamp = strtotime( $cached_data['last_updated'] );
+			$cache_age              = time() - $last_updated_timestamp;
+			$is_fresh               = $cache_age < $this->cache_ttl;
+
+			if ( $is_fresh ) {
+				// Cache is fresh, return it.
+				if ( function_exists( 'pbr_log' ) ) {
+					pbr_log( 'Cache: fresh hit for DUPR ID ' . $dupr_id );
+				}
+				return $cached_data;
+			}
+
+			// Cache is stale, try to refresh from API.
+			if ( function_exists( 'pbr_log' ) ) {
+				pbr_log( 'Cache: stale data for DUPR ID ' . $dupr_id . ', attempting refresh' );
+			}
+
+			// Check if we have authentication before attempting refresh.
+			if ( ! empty( $this->auth_token ) ) {
+				$player_data = $this->fetch_player_data( $dupr_id );
+
+				if ( ! is_wp_error( $player_data ) ) {
+					// Successfully refreshed, cache and return new data.
+					$this->cache_player_data( $dupr_id, $player_data );
+					if ( function_exists( 'pbr_log' ) ) {
+						pbr_log( 'Cache: successfully refreshed stale data for DUPR ID ' . $dupr_id );
+					}
+					return $player_data;
+				}
+
+				// API fetch failed, fall back to stale data.
+				if ( function_exists( 'pbr_log' ) ) {
+					pbr_log(
+						'Cache: API refresh failed for DUPR ID ' . $dupr_id . ', using stale cache as fallback',
+						array( 'error' => $player_data->get_error_message() )
+					);
+				}
+			}
+
+			// Return stale data as fallback.
 			return $cached_data;
+		}
+
+		// No cached data, must fetch from API.
+		if ( function_exists( 'pbr_log' ) ) {
+			pbr_log( 'Cache: miss for DUPR ID ' . $dupr_id );
 		}
 
 		// Check if we have authentication.
@@ -352,20 +402,17 @@ class PBR_DUPR_API {
 	 * Get cached player data.
 	 *
 	 * @param string $dupr_id The DUPR player ID.
-	 * @return array|false Cached data or false if not found/expired.
+	 * @return array|false Cached data or false if not found.
 	 */
 	private function get_cached_player_data( $dupr_id ) {
 		$cache_key = 'pbr_dupr_player_' . $dupr_id;
-		$cached    = get_transient( $cache_key );
+		$cached    = get_option( $cache_key, false );
 
-		if ( false === $cached ) {
-			return false;
-		}
-
-		// Check if cache is expired.
-		$cache_time = get_option( '_transient_timeout_' . $cache_key, 0 );
-		if ( $cache_time < time() ) {
-			delete_transient( $cache_key );
+		// Defensive check: ensure cached data is valid.
+		if ( ! is_array( $cached ) || ! isset( $cached['last_updated'] ) ) {
+			if ( function_exists( 'pbr_log' ) && false !== $cached ) {
+				pbr_log( 'Cache: invalid cached data structure for DUPR ID ' . $dupr_id );
+			}
 			return false;
 		}
 
@@ -380,7 +427,7 @@ class PBR_DUPR_API {
 	 */
 	private function cache_player_data( $dupr_id, $data ) {
 		$cache_key = 'pbr_dupr_player_' . $dupr_id;
-		set_transient( $cache_key, $data, $this->cache_ttl );
+		update_option( $cache_key, $data, false ); // autoload=false for performance.
 	}
 
 	/**

@@ -12,6 +12,10 @@ class PBR_API_Test extends WP_UnitTestCase {
 		delete_option( 'pickleball_ratings_dupr_auth_user_name' );
 		delete_option( 'pickleball_ratings_dupr_auth_id' );
 		delete_option( 'pickleball_ratings_dupr_auth_email' );
+
+		// Clean up any cached player data from previous tests.
+		global $wpdb;
+		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE 'pbr_dupr_player_%'" );
 	}
 
 	public function test_invalid_dupr_id_errors() {
@@ -175,5 +179,219 @@ class PBR_API_Test extends WP_UnitTestCase {
 		$this->assertSame( 'Jane Smith', $api->get_auth_user_name() );
 		$this->assertSame( 'XYZ789', $api->get_auth_dupr_id() );
 		$this->assertSame( 'jane@example.com', $api->get_auth_user_email() );
+	}
+
+	public function test_cache_fresh_hit_returns_cached_data() {
+		// Set up authentication.
+		update_option( 'pickleball_ratings_dupr_auth_token', 'test_token' );
+
+		// Create fresh cached data (recently updated).
+		$fresh_cached_data = array(
+			'dupr_id'             => 'ABC123',
+			'name'                => 'Test Player',
+			'profile_image'       => '',
+			'doubles_rating'      => '4.5',
+			'singles_rating'      => 'NR',
+			'doubles_reliability' => 95,
+			'singles_reliability' => null,
+			'last_updated'        => current_time( 'mysql' ), // Just updated.
+		);
+
+		update_option( 'pbr_dupr_player_ABC123', $fresh_cached_data, false );
+
+		$api = new PBR_DUPR_API();
+
+		// Stub API to fail if called - it shouldn't be called for fresh cache.
+		add_filter(
+			'pre_http_request',
+			function () {
+				$this->fail( 'API should not be called for fresh cache hit' );
+			},
+			10,
+			3
+		);
+
+		$result = $api->get_player_data( 'ABC123' );
+
+		// Should return cached data.
+		$this->assertIsArray( $result );
+		$this->assertSame( 'Test Player', $result['name'] );
+		$this->assertSame( '4.5', $result['doubles_rating'] );
+	}
+
+	public function test_cache_stale_with_successful_refresh() {
+		// Set up authentication.
+		update_option( 'pickleball_ratings_dupr_auth_token', 'test_token' );
+
+		// Create stale cached data (updated 25 hours ago, default TTL is 24 hours).
+		$stale_time = gmdate( 'Y-m-d H:i:s', time() - ( 25 * HOUR_IN_SECONDS ) );
+		$stale_cached_data = array(
+			'dupr_id'             => 'XYZ789',
+			'name'                => 'Stale Player',
+			'profile_image'       => '',
+			'doubles_rating'      => '3.0',
+			'singles_rating'      => 'NR',
+			'doubles_reliability' => 80,
+			'singles_reliability' => null,
+			'last_updated'        => $stale_time,
+		);
+
+		update_option( 'pbr_dupr_player_XYZ789', $stale_cached_data, false );
+
+		$api = new PBR_DUPR_API();
+
+		// Stub API to return fresh data.
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) {
+				if ( false !== strpos( $url, '/player/search/byDuprId' ) ) {
+					return array(
+						'response' => array( 'code' => 200 ),
+						'headers'  => array(),
+						'body'     => json_encode( array(
+							'results' => array(
+								array( 'userId' => '12345' ),
+							),
+						) ),
+					);
+				}
+				if ( false !== strpos( $url, '/player/v3/12345' ) ) {
+					return array(
+						'response' => array( 'code' => 200 ),
+						'headers'  => array(),
+						'body'     => json_encode( array(
+							'result' => array(
+								'duprId'   => 'XYZ789',
+								'fullName' => 'Fresh Player',
+								'ratings'  => array(
+									'doubles' => '4.0', // Updated rating.
+									'singles' => 'NR',
+									'doublesReliabilityScore' => 90,
+								),
+							),
+						) ),
+					);
+				}
+				return $preempt;
+			},
+			10,
+			3
+		);
+
+		$result = $api->get_player_data( 'XYZ789' );
+
+		// Should return fresh data from API.
+		$this->assertIsArray( $result );
+		$this->assertSame( 'Fresh Player', $result['name'] );
+		$this->assertSame( '4.0', $result['doubles_rating'] );
+	}
+
+	public function test_cache_stale_with_failed_refresh_returns_stale_data() {
+		// Set up authentication.
+		update_option( 'pickleball_ratings_dupr_auth_token', 'test_token' );
+
+		// Create stale cached data (updated 25 hours ago).
+		$stale_time = gmdate( 'Y-m-d H:i:s', time() - ( 25 * HOUR_IN_SECONDS ) );
+		$stale_cached_data = array(
+			'dupr_id'             => 'DEF456',
+			'name'                => 'Stale Fallback Player',
+			'profile_image'       => '',
+			'doubles_rating'      => '3.5',
+			'singles_rating'      => 'NR',
+			'doubles_reliability' => 85,
+			'singles_reliability' => null,
+			'last_updated'        => $stale_time,
+		);
+
+		update_option( 'pbr_dupr_player_DEF456', $stale_cached_data, false );
+
+		$api = new PBR_DUPR_API();
+
+		// Stub API to fail.
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) {
+				if ( false !== strpos( $url, '/player/search/byDuprId' ) ) {
+					return array(
+						'response' => array( 'code' => 500 ),
+						'headers'  => array(),
+						'body'     => '{"error": "Server error"}',
+					);
+				}
+				return $preempt;
+			},
+			10,
+			3
+		);
+
+		$result = $api->get_player_data( 'DEF456' );
+
+		// Should return stale cached data as fallback.
+		$this->assertIsArray( $result );
+		$this->assertSame( 'Stale Fallback Player', $result['name'] );
+		$this->assertSame( '3.5', $result['doubles_rating'] );
+		$this->assertSame( $stale_time, $result['last_updated'] );
+	}
+
+	public function test_cache_invalid_structure_is_ignored() {
+		// Set up authentication.
+		update_option( 'pickleball_ratings_dupr_auth_token', 'test_token' );
+
+		// Create invalid cached data (missing last_updated field).
+		$invalid_cached_data = array(
+			'dupr_id'        => 'GHI789',
+			'name'           => 'Invalid Cache Player',
+			'doubles_rating' => '4.0',
+			// Missing last_updated field.
+		);
+
+		update_option( 'pbr_dupr_player_GHI789', $invalid_cached_data, false );
+
+		$api = new PBR_DUPR_API();
+
+		// Stub API to return fresh data.
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) {
+				if ( false !== strpos( $url, '/player/search/byDuprId' ) ) {
+					return array(
+						'response' => array( 'code' => 200 ),
+						'headers'  => array(),
+						'body'     => json_encode( array(
+							'results' => array(
+								array( 'userId' => '99999' ),
+							),
+						) ),
+					);
+				}
+				if ( false !== strpos( $url, '/player/v3/99999' ) ) {
+					return array(
+						'response' => array( 'code' => 200 ),
+						'headers'  => array(),
+						'body'     => json_encode( array(
+							'result' => array(
+								'duprId'   => 'GHI789',
+								'fullName' => 'Valid Fresh Player',
+								'ratings'  => array(
+									'doubles' => '4.5',
+									'singles' => 'NR',
+								),
+							),
+						) ),
+					);
+				}
+				return $preempt;
+			},
+			10,
+			3
+		);
+
+		$result = $api->get_player_data( 'GHI789' );
+
+		// Should fetch from API because cached data was invalid.
+		$this->assertIsArray( $result );
+		$this->assertSame( 'Valid Fresh Player', $result['name'] );
+		$this->assertSame( '4.5', $result['doubles_rating'] );
+		$this->assertArrayHasKey( 'last_updated', $result );
 	}
 }
