@@ -107,16 +107,12 @@ class PBR_DUPR_API {
 
 			if ( $is_fresh ) {
 				// Cache is fresh, return it.
-				if ( function_exists( 'pbr_log' ) ) {
-					pbr_log( 'Cache: fresh hit for DUPR ID ' . $dupr_id );
-				}
+				pbr_log( 'Cache: fresh hit for DUPR ID ' . $dupr_id );
 				return $cached_data;
 			}
 
 			// Cache is stale, try to refresh from API.
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'Cache: stale data for DUPR ID ' . $dupr_id . ', attempting refresh' );
-			}
+			pbr_log( 'Cache: stale data for DUPR ID ' . $dupr_id . ', attempting refresh' );
 
 			// Check if we have authentication before attempting refresh.
 			if ( ! empty( $this->auth_token ) ) {
@@ -125,19 +121,15 @@ class PBR_DUPR_API {
 				if ( ! is_wp_error( $player_data ) ) {
 					// Successfully refreshed, cache and return new data.
 					$this->cache_player_data( $dupr_id, $player_data );
-					if ( function_exists( 'pbr_log' ) ) {
-						pbr_log( 'Cache: successfully refreshed stale data for DUPR ID ' . $dupr_id );
-					}
+					pbr_log( 'Cache: successfully refreshed stale data for DUPR ID ' . $dupr_id );
 					return $player_data;
 				}
 
 				// API fetch failed, fall back to stale data.
-				if ( function_exists( 'pbr_log' ) ) {
-					pbr_log(
-						'Cache: API refresh failed for DUPR ID ' . $dupr_id . ', using stale cache as fallback',
-						array( 'error' => $player_data->get_error_message() )
-					);
-				}
+				pbr_log(
+					'Cache: API refresh failed for DUPR ID ' . $dupr_id . ', using stale cache as fallback',
+					array( 'error' => $player_data->get_error_message() )
+				);
 			}
 
 			// Return stale data as fallback.
@@ -145,9 +137,7 @@ class PBR_DUPR_API {
 		}
 
 		// No cached data, must fetch from API.
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Cache: miss for DUPR ID ' . $dupr_id );
-		}
+		pbr_log( 'Cache: miss for DUPR ID ' . $dupr_id );
 
 		// Check if we have authentication.
 		if ( empty( $this->auth_token ) ) {
@@ -203,9 +193,7 @@ class PBR_DUPR_API {
 		if ( 200 !== $search_status ) {
 			// Check if token is expired (401 status).
 			if ( 401 === $search_status && ! empty( $this->refresh_token ) ) {
-				if ( function_exists( 'pbr_log' ) ) {
-					pbr_log( 'API: token expired during search; attempting refresh' );
-				}
+				pbr_log( 'API: token expired during search; attempting refresh' );
 				$refresh_result = $this->refresh_access_token();
 
 				if ( ! is_wp_error( $refresh_result ) ) {
@@ -279,9 +267,7 @@ class PBR_DUPR_API {
 		if ( 200 !== $status_code ) {
 			// Check if token is expired (401 status).
 			if ( 401 === $status_code && ! empty( $this->refresh_token ) ) {
-				if ( function_exists( 'pbr_log' ) ) {
-					pbr_log( 'API: token expired during player fetch; attempting refresh' );
-				}
+				pbr_log( 'API: token expired during player fetch; attempting refresh' );
 				$refresh_result = $this->refresh_access_token();
 
 				if ( ! is_wp_error( $refresh_result ) ) {
@@ -410,7 +396,7 @@ class PBR_DUPR_API {
 
 		// Defensive check: ensure cached data is valid.
 		if ( ! is_array( $cached ) || ! isset( $cached['last_updated'] ) ) {
-			if ( function_exists( 'pbr_log' ) && false !== $cached ) {
+			if ( false !== $cached ) {
 				pbr_log( 'Cache: invalid cached data structure for DUPR ID ' . $dupr_id );
 			}
 			return false;
@@ -520,17 +506,13 @@ class PBR_DUPR_API {
 		$body        = wp_remote_retrieve_body( $response );
 
 		if ( 200 !== $status_code ) {
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'API: token refresh failed', array( 'status' => $status_code ) );
-			}
+			pbr_log( 'API: token refresh failed', array( 'status' => $status_code ) );
 			return new WP_Error( 'refresh_error', 'Token refresh failed with status ' . $status_code );
 		}
 
 		$data = json_decode( $body, true );
 		if ( ! $data || ! isset( $data['result'] ) || 'SUCCESS' !== $data['status'] ) {
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'API: invalid refresh response', array( 'data' => $data ) );
-			}
+			pbr_log( 'API: invalid refresh response', array( 'data' => $data ) );
 			return new WP_Error( 'refresh_error', 'Invalid refresh response' );
 		}
 
@@ -541,9 +523,7 @@ class PBR_DUPR_API {
 		// Note: refresh token remains the same and is reused until it expires.
 		update_option( 'pickleball_ratings_dupr_auth_token', $this->auth_token );
 
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'API: token refresh successful' );
-		}
+		pbr_log( 'API: token refresh successful' );
 
 		return true;
 	}
@@ -556,32 +536,24 @@ class PBR_DUPR_API {
 	 * @return array|WP_Error Auth data array on success, WP_Error on failure.
 	 */
 	public function authenticate( $email, $password ) {
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Auth: attempt started' );
-		}
+		pbr_log( 'Auth: attempt started' );
 
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log(
-				'Auth: received credentials',
-				array(
-					'email_present'    => ! empty( $email ),
-					'password_present' => ! empty( $password ),
-				)
-			);
-		}
+		pbr_log(
+			'Auth: received credentials',
+			array(
+				'email_present'    => ! empty( $email ),
+				'password_present' => ! empty( $password ),
+			)
+		);
 
 		if ( empty( $email ) || empty( $password ) ) {
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'Auth: missing email or password' );
-			}
+			pbr_log( 'Auth: missing email or password' );
 			return new WP_Error( 'missing_credentials', 'Email and password are required.' );
 		}
 
 		$api_url = $this->api_base_url . '/auth/v3/login';
 
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Auth: making request', array( 'endpoint' => $api_url ) );
-		}
+		pbr_log( 'Auth: making request', array( 'endpoint' => $api_url ) );
 
 		$request_body = array(
 			'email'    => $email,
@@ -600,32 +572,24 @@ class PBR_DUPR_API {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'Auth: request error', array( 'error' => $response->get_error_message() ) );
-			}
+			pbr_log( 'Auth: request error', array( 'error' => $response->get_error_message() ) );
 			return new WP_Error( 'api_error', 'Failed to connect to DUPR API: ' . $response->get_error_message() );
 		}
 
 		$status_code = wp_remote_retrieve_response_code( $response );
 		$body        = wp_remote_retrieve_body( $response );
 
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Auth: response received', array( 'status' => $status_code ) );
-		}
+		pbr_log( 'Auth: response received', array( 'status' => $status_code ) );
 
 		if ( 200 !== $status_code ) {
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'Auth: authentication failed with status', array( 'status' => $status_code ) );
-			}
+			pbr_log( 'Auth: authentication failed with status', array( 'status' => $status_code ) );
 			return new WP_Error( 'auth_failed', 'Authentication failed. Please check your email and password.' );
 		}
 
 		$data = json_decode( $body, true );
 
 		if ( ! $data || ! isset( $data['result']['accessToken'] ) ) {
-			if ( function_exists( 'pbr_log' ) ) {
-				pbr_log( 'Auth: invalid response shape' );
-			}
+			pbr_log( 'Auth: invalid response shape' );
 			return new WP_Error( 'invalid_response', 'Invalid authentication response from DUPR API.' );
 		}
 
@@ -645,9 +609,7 @@ class PBR_DUPR_API {
 		// Save authentication data.
 		$this->save_auth_data( $auth_data );
 
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Auth: authentication successful' );
-		}
+		pbr_log( 'Auth: authentication successful' );
 
 		return $auth_data;
 	}
@@ -660,16 +622,12 @@ class PBR_DUPR_API {
 	 * @return bool True on success.
 	 */
 	public function disconnect() {
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Auth: disconnect requested' );
-		}
+		pbr_log( 'Auth: disconnect requested' );
 
 		// Clear all authentication data.
 		$this->clear_auth_data();
 
-		if ( function_exists( 'pbr_log' ) ) {
-			pbr_log( 'Auth: disconnected from DUPR API' );
-		}
+		pbr_log( 'Auth: disconnected from DUPR API' );
 
 		return true;
 	}
@@ -817,9 +775,7 @@ class PBR_DUPR_API {
 		if ( 200 !== $status_code ) {
 			// Check if token is expired (401 status).
 			if ( 401 === $status_code && ! empty( $this->refresh_token ) ) {
-				if ( function_exists( 'pbr_log' ) ) {
-					pbr_log( 'API: token expired during test; attempting refresh' );
-				}
+				pbr_log( 'API: token expired during test; attempting refresh' );
 				$refresh_result = $this->refresh_access_token();
 
 				if ( ! is_wp_error( $refresh_result ) ) {
