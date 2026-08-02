@@ -255,10 +255,31 @@ class PBR_Admin_Settings {
 				<?php else : ?>
 					<!-- Connected Status Display -->
 					<div class="pbr-connection-status" style="margin-bottom: 20px;">
+						<?php if ( $auth_status['session_expired'] ) : ?>
+						<h4 style="margin: 0 0 8px 0; color: #b32d2e;">
+							<span class="dashicons dashicons-warning" style="font-size: 16px; margin-right: 5px; color: #b32d2e;"></span>
+							<?php esc_html_e( 'DUPR session expired', 'pickleball-ratings' ); ?>
+						</h4>
+						<p style="margin: 0 0 8px 21px;">
+							<?php esc_html_e( 'Ratings are no longer updating. Disconnect and reconnect to start a new session.', 'pickleball-ratings' ); ?>
+						</p>
+						<?php elseif ( $auth_status['session_expiring_soon'] ) : ?>
+						<h4 style="margin: 0 0 8px 0; color: #996800;">
+							<span class="dashicons dashicons-clock" style="font-size: 16px; margin-right: 5px; color: #996800;"></span>
+							<?php
+							printf(
+								/* translators: %s: human readable time until expiry, for example "6 days". */
+								esc_html__( 'Connected to DUPR - session expires in %s', 'pickleball-ratings' ),
+								esc_html( $auth_status['session_expires_in'] )
+							);
+							?>
+						</h4>
+						<?php else : ?>
 						<h4 style="margin: 0 0 8px 0; color: #135e96;">
 							<span class="dashicons dashicons-yes-alt" style="font-size: 16px; margin-right: 5px; color: #00a32a;"></span>
 							<?php esc_html_e( 'Connected to DUPR', 'pickleball-ratings' ); ?>
 						</h4>
+						<?php endif; ?>
 						<div style="margin-left: 21px; font-size: 13px; line-height: 1.6;">
 							<div>
 								<strong><?php esc_html_e( 'User:', 'pickleball-ratings' ); ?></strong> <?php echo esc_html( $auth_status['user_info']['user_name'] ); ?>
@@ -271,6 +292,18 @@ class PBR_Admin_Settings {
 							<?php if ( ! empty( $auth_status['user_info']['email'] ) ) : ?>
 							<div>
 								<strong><?php esc_html_e( 'Email:', 'pickleball-ratings' ); ?></strong> <?php echo esc_html( $auth_status['user_info']['email'] ); ?>
+							</div>
+							<?php endif; ?>
+							<?php if ( $auth_status['session_expiry_known'] ) : ?>
+							<div>
+								<strong><?php esc_html_e( 'Session expires:', 'pickleball-ratings' ); ?></strong>
+								<?php
+								echo esc_html(
+									$auth_status['session_expired']
+										? __( 'expired', 'pickleball-ratings' )
+										: mysql2date( get_option( 'date_format' ), $auth_status['session_expires_at'] )
+								);
+								?>
 							</div>
 							<?php endif; ?>
 						</div>
@@ -554,5 +587,55 @@ class PBR_Admin_Settings {
 	 */
 	public function admin_notices() {
 		settings_errors( 'pickleball_ratings_settings' );
+		$this->session_expiry_notice();
+	}
+
+	/**
+	 * Warn administrators before and after the DUPR session lapses.
+	 *
+	 * Shown on every admin screen rather than only the settings page: a
+	 * lapsed session stops ratings updating silently, and an administrator
+	 * who never opens the settings page would otherwise never find out.
+	 */
+	private function session_expiry_notice() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// The settings page states the session status inline, so the notice
+		// would only repeat it there.
+		$screen = get_current_screen();
+		if ( $screen && 'settings_page_pickleball-ratings-settings' === $screen->id ) {
+			return;
+		}
+
+		$status = $this->api->get_session_status();
+
+		if ( ! $status['session_expiry_known'] || ! $this->api->is_authenticated() ) {
+			return;
+		}
+
+		if ( $status['session_expired'] ) {
+			$class   = 'notice-error';
+			$message = __( 'Your DUPR session has expired, so player ratings are no longer updating. Reconnect to resume updates.', 'pickleball-ratings' );
+		} elseif ( $status['session_expiring_soon'] ) {
+			$class   = 'notice-warning';
+			$message = sprintf(
+				/* translators: %s: human readable time until expiry, for example "6 days". */
+				__( 'Your DUPR session expires in %s. Reconnect before then to keep player ratings updating.', 'pickleball-ratings' ),
+				$status['session_expires_in']
+			);
+		} else {
+			return;
+		}
+
+		printf(
+			'<div class="notice %1$s"><p><strong>%2$s</strong> %3$s <a href="%4$s">%5$s</a></p></div>',
+			esc_attr( $class ),
+			esc_html__( 'Pickleball Ratings:', 'pickleball-ratings' ),
+			esc_html( $message ),
+			esc_url( admin_url( 'options-general.php?page=pickleball-ratings-settings' ) ),
+			esc_html__( 'Go to settings', 'pickleball-ratings' )
+		);
 	}
 }
