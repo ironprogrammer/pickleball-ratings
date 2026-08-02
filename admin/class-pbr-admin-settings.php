@@ -294,6 +294,38 @@ class PBR_Admin_Settings {
 					</div>
 				<?php endif; ?>
 
+				<?php $diagnostics = $this->api->get_diagnostics(); ?>
+			<details class="pbr-diagnostics" style="margin: 20px 0; padding: 12px; border: 1px solid #c3c4c7; background: #fff;">
+				<summary style="cursor: pointer; font-weight: 600;"><?php esc_html_e( 'Diagnostics', 'pickleball-ratings' ); ?></summary>
+
+				<p class="description" style="margin-top: 10px;">
+					<?php esc_html_e( 'Details about the stored DUPR tokens and the most recent token refresh attempt. Token values are excluded unless you opt in below; JWT claims are shown because they are readable metadata, not credentials.', 'pickleball-ratings' ); ?>
+				</p>
+
+				<p>
+					<button type="button" class="button" id="pbr-refresh-diagnostics"><?php esc_html_e( 'Refresh Diagnostics', 'pickleball-ratings' ); ?></button>
+					<button type="button" class="button" id="pbr-probe-refresh"><?php esc_html_e( 'Probe Refresh Endpoint', 'pickleball-ratings' ); ?></button>
+					<button type="button" class="button button-primary" id="pbr-copy-diagnostics"><?php esc_html_e( 'Copy', 'pickleball-ratings' ); ?></button>
+					<span id="pbr-diagnostics-status" style="margin-left: 10px;"></span>
+				</p>
+
+				<p>
+					<label for="pbr-include-raw-tokens">
+						<input type="checkbox" id="pbr-include-raw-tokens" />
+						<?php esc_html_e( 'Include raw token values', 'pickleball-ratings' ); ?>
+					</label>
+					<span class="description" style="display: block; margin-left: 24px;">
+						<?php esc_html_e( 'Raw tokens are live credentials for your DUPR account. Only enable this if you intend to share them, and reconnect afterwards to replace them.', 'pickleball-ratings' ); ?>
+					</span>
+				</p>
+
+				<p class="description">
+					<?php esc_html_e( 'Probe Refresh Endpoint sends several differently-shaped requests to the DUPR refresh endpoint to determine which shape it accepts. It is read-only and stores nothing.', 'pickleball-ratings' ); ?>
+				</p>
+
+				<textarea id="pbr-diagnostics-json" readonly rows="20" class="large-text code" style="font-family: monospace; white-space: pre;"><?php echo esc_textarea( wp_json_encode( $diagnostics, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ); ?></textarea>
+			</details>
+
 			<hr>
 
 			<!-- Settings Section -->
@@ -311,6 +343,99 @@ class PBR_Admin_Settings {
 
 		<script>
 		jQuery(document).ready(function($) {
+			var restBase = '<?php echo esc_url_raw( rest_url( 'pickleball-ratings/v1' ) ); ?>';
+			var restNonce = '<?php echo esc_js( wp_create_nonce( 'wp_rest' ) ); ?>';
+
+			// Diagnostics helpers
+			function includeRawTokens() {
+				return $('#pbr-include-raw-tokens').is(':checked');
+			}
+
+			function setDiagnostics(data) {
+				if (!data) {
+					return;
+				}
+				$('#pbr-diagnostics-json').val(JSON.stringify(data, null, 2));
+			}
+
+			function setDiagnosticsStatus(message, isError) {
+				$('#pbr-diagnostics-status')
+					.css('color', isError ? '#d63638' : '#00a32a')
+					.text(message);
+			}
+
+			function loadDiagnostics() {
+				setDiagnosticsStatus('<?php echo esc_js( __( 'Loading…', 'pickleball-ratings' ) ); ?>', false);
+				return $.ajax({
+					url: restBase + '/diagnostics',
+					type: 'GET',
+					data: { include_raw_tokens: includeRawTokens() },
+					headers: { 'X-WP-Nonce': restNonce }
+				}).done(function(response) {
+					setDiagnostics(response);
+					setDiagnosticsStatus('<?php echo esc_js( __( 'Updated.', 'pickleball-ratings' ) ); ?>', false);
+				}).fail(function(xhr) {
+					setDiagnosticsStatus(
+						(xhr.responseJSON && xhr.responseJSON.message)
+							? xhr.responseJSON.message
+							: '<?php echo esc_js( __( 'Could not load diagnostics.', 'pickleball-ratings' ) ); ?>',
+						true
+					);
+				});
+			}
+
+			$('#pbr-refresh-diagnostics').on('click', loadDiagnostics);
+			$('#pbr-include-raw-tokens').on('change', loadDiagnostics);
+
+			$('#pbr-probe-refresh').on('click', function() {
+				var button = $(this);
+				button.prop('disabled', true);
+				setDiagnosticsStatus('<?php echo esc_js( __( 'Probing refresh endpoint…', 'pickleball-ratings' ) ); ?>', false);
+
+				$.ajax({
+					url: restBase + '/probe-refresh',
+					type: 'POST',
+					headers: { 'X-WP-Nonce': restNonce }
+				}).done(function(response) {
+					setDiagnostics(response);
+					setDiagnosticsStatus('<?php echo esc_js( __( 'Probe complete. Copy the results below.', 'pickleball-ratings' ) ); ?>', false);
+				}).fail(function(xhr) {
+					setDiagnosticsStatus(
+						(xhr.responseJSON && xhr.responseJSON.message)
+							? xhr.responseJSON.message
+							: '<?php echo esc_js( __( 'Probe failed.', 'pickleball-ratings' ) ); ?>',
+						true
+					);
+				}).always(function() {
+					button.prop('disabled', false);
+				});
+			});
+
+			$('#pbr-copy-diagnostics').on('click', function() {
+				var field = $('#pbr-diagnostics-json');
+				var text = field.val();
+
+				function copied() {
+					setDiagnosticsStatus('<?php echo esc_js( __( 'Copied to clipboard.', 'pickleball-ratings' ) ); ?>', false);
+				}
+
+				if (navigator.clipboard && window.isSecureContext) {
+					navigator.clipboard.writeText(text).then(copied, function() {
+						setDiagnosticsStatus('<?php echo esc_js( __( 'Copy failed — select the text manually.', 'pickleball-ratings' ) ); ?>', true);
+					});
+					return;
+				}
+
+				// Fallback for non-secure contexts where the clipboard API is unavailable.
+				field.get(0).select();
+				try {
+					document.execCommand('copy');
+					copied();
+				} catch (e) {
+					setDiagnosticsStatus('<?php echo esc_js( __( 'Copy failed — select the text manually.', 'pickleball-ratings' ) ); ?>', true);
+				}
+			});
+
 			// Handle test connection
 			$('#test-connection').on('click', function() {
 				var button = $(this);
@@ -324,13 +449,15 @@ class PBR_Admin_Settings {
 				successNotice.hide();
 				
 				$.ajax({
-					url: '<?php echo esc_url_raw( rest_url( 'pickleball-ratings/v1/test-connection' ) ); ?>',
+					url: restBase + '/test-connection',
 					type: 'GET',
+					data: { include_raw_tokens: includeRawTokens() },
 					headers: {
-						'X-WP-Nonce': '<?php echo esc_js( wp_create_nonce( 'wp_rest' ) ); ?>'
+						'X-WP-Nonce': restNonce
 					},
 					success: function(response) {
 						console.log('DUPR: REST API success response:', response);
+						setDiagnostics(response.diagnostics);
 						// Show dismissible success notice (like WordPress settings pages)
 						successNotice.show();
 					},
@@ -339,6 +466,10 @@ class PBR_Admin_Settings {
 						var errorMessage = '<?php echo esc_js( __( 'DUPR connection test failed', 'pickleball-ratings' ) ); ?>';
 						if (xhr.responseJSON && xhr.responseJSON.message) {
 							errorMessage = xhr.responseJSON.message;
+						}
+						if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.diagnostics) {
+							setDiagnostics(xhr.responseJSON.data.diagnostics);
+							errorMessage += ' — <?php echo esc_js( __( 'see Diagnostics below', 'pickleball-ratings' ) ); ?>';
 						}
 						resultSpan.html('<span style="color: red;">✗ ' + errorMessage + '</span>');
 					},

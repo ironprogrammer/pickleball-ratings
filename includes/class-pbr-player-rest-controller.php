@@ -60,8 +60,79 @@ class PBR_Player_REST_Controller extends WP_REST_Controller {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'test_connection' ),
 				'permission_callback' => array( $this, 'test_connection_permissions_check' ),
+				'args'                => array(
+					'include_raw_tokens' => $this->get_raw_tokens_arg(),
+				),
 			)
 		);
+
+		register_rest_route(
+			$this->namespace,
+			'/diagnostics',
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_diagnostics' ),
+				'permission_callback' => array( $this, 'test_connection_permissions_check' ),
+				'args'                => array(
+					'include_raw_tokens' => $this->get_raw_tokens_arg(),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/probe-refresh',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'probe_refresh' ),
+				'permission_callback' => array( $this, 'test_connection_permissions_check' ),
+			)
+		);
+	}
+
+	/**
+	 * Shared argument definition for the raw token opt-in.
+	 *
+	 * @return array Argument definition.
+	 */
+	private function get_raw_tokens_arg() {
+		return array(
+			'description' => __( 'Include raw token strings in the diagnostic report.', 'pickleball-ratings' ),
+			'type'        => 'boolean',
+			'default'     => false,
+		);
+	}
+
+	/**
+	 * Return the DUPR diagnostic report.
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 * @return WP_REST_Response Response object.
+	 */
+	public function get_diagnostics( $request ) {
+		$api = new PBR_DUPR_API();
+
+		return new WP_REST_Response(
+			$api->get_diagnostics( (bool) $request->get_param( 'include_raw_tokens' ) ),
+			200
+		);
+	}
+
+	/**
+	 * Probe the DUPR refresh endpoint with several request shapes.
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+	 */
+	public function probe_refresh( $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+		$api    = new PBR_DUPR_API();
+		$result = $api->probe_refresh_endpoint();
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		return new WP_REST_Response( $result, 200 );
 	}
 
 	/**
@@ -70,13 +141,30 @@ class PBR_Player_REST_Controller extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full details about the request.
 	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
 	 */
-	public function test_connection( $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
-		$api    = new PBR_DUPR_API();
-		$result = $api->test_connection();
+	public function test_connection( $request ) {
+		$api         = new PBR_DUPR_API();
+		$result      = $api->test_connection();
+		$include_raw = (bool) $request->get_param( 'include_raw_tokens' );
+
+		// Diagnostics are collected after the test so they reflect the outcome,
+		// including the response body of any refresh attempt it triggered.
+		$diagnostics = $api->get_diagnostics( $include_raw );
 
 		if ( is_wp_error( $result ) ) {
+			$data = $result->get_error_data();
+			if ( ! is_array( $data ) ) {
+				$data = array();
+			}
+			if ( ! isset( $data['status'] ) ) {
+				$data['status'] = 500;
+			}
+			$data['diagnostics'] = $diagnostics;
+			$result->add_data( $data, $result->get_error_code() );
+
 			return $result;
 		}
+
+		$result['diagnostics'] = $diagnostics;
 
 		return new WP_REST_Response( $result, 200 );
 	}

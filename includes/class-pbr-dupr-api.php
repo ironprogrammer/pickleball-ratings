@@ -68,6 +68,13 @@ class PBR_DUPR_API {
 	private $cache_ttl = 86400;
 
 	/**
+	 * Option name used to persist the most recent token refresh attempt.
+	 *
+	 * @var string
+	 */
+	const LAST_REFRESH_OPTION = 'pickleball_ratings_dupr_last_refresh_attempt';
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -100,10 +107,14 @@ class PBR_DUPR_API {
 		$cached_data = $this->get_cached_player_data( $dupr_id );
 
 		if ( false !== $cached_data ) {
-			// Calculate cache age using last_updated timestamp.
-			$last_updated_timestamp = strtotime( $cached_data['last_updated'] );
-			$cache_age              = time() - $last_updated_timestamp;
-			$is_fresh               = $cache_age < $this->cache_ttl;
+			// Calculate cache age using last_updated timestamp. A missing or
+			// unparseable timestamp is treated as indefinitely stale rather
+			// than unusable, so the entry can still serve as a fallback.
+			$last_updated_timestamp = empty( $cached_data['last_updated'] )
+				? false
+				: strtotime( $cached_data['last_updated'] );
+			$is_fresh               = false !== $last_updated_timestamp
+				&& ( time() - $last_updated_timestamp ) < $this->cache_ttl;
 
 			if ( $is_fresh ) {
 				// Cache is fresh, return it.
@@ -394,8 +405,10 @@ class PBR_DUPR_API {
 		$cache_key = 'pbr_dupr_player_' . $dupr_id;
 		$cached    = get_option( $cache_key, false );
 
-		// Defensive check: ensure cached data is valid.
-		if ( ! is_array( $cached ) || ! isset( $cached['last_updated'] ) ) {
+		// Defensive check: the entry must carry usable player data. A missing
+		// last_updated timestamp does not disqualify it - freshness is decided
+		// by the caller, and an undateable entry is simply always stale.
+		if ( ! self::is_usable_cache_entry( $cached ) ) {
 			if ( false !== $cached ) {
 				pbr_log( 'Cache: invalid cached data structure for DUPR ID ' . $dupr_id );
 			}
@@ -403,6 +416,26 @@ class PBR_DUPR_API {
 		}
 
 		return $cached;
+	}
+
+	/**
+	 * Determine whether a cached value carries usable player data.
+	 *
+	 * @param mixed $cached Candidate cache value.
+	 * @return bool True when the value can be rendered.
+	 */
+	private static function is_usable_cache_entry( $cached ) {
+		if ( ! is_array( $cached ) ) {
+			return false;
+		}
+
+		foreach ( array( 'name', 'doubles_rating', 'singles_rating' ) as $field ) {
+			if ( ! empty( $cached[ $field ] ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -482,11 +515,20 @@ class PBR_DUPR_API {
 	 * @return bool|WP_Error True if successful, WP_Error on failure.
 	 */
 	private function refresh_access_token() {
+		$url = $this->api_base_url . '/auth/v3/refresh';
+
+		$attempt = array(
+			'endpoint'          => $url,
+			'method'            => 'GET',
+			'request_headers'   => array( 'x-refresh-token' ),
+			'token_fingerprint' => self::fingerprint( $this->refresh_token ),
+		);
+
 		if ( empty( $this->refresh_token ) ) {
+			$attempt['outcome'] = 'no_refresh_token';
+			$this->record_refresh_attempt( $attempt );
 			return new WP_Error( 'no_refresh_token', 'No refresh token available' );
 		}
-
-		$url = $this->api_base_url . '/auth/v3/refresh';
 
 		$response = wp_remote_get(
 			$url,
@@ -499,22 +541,59 @@ class PBR_DUPR_API {
 		);
 
 		if ( is_wp_error( $response ) ) {
+			$attempt['outcome'] = 'transport_error';
+			$attempt['error']   = $response->get_error_message();
+			$this->record_refresh_attempt( $attempt );
 			return new WP_Error( 'refresh_error', 'Failed to refresh token: ' . $response->get_error_message() );
 		}
 
 		$status_code = wp_remote_retrieve_response_code( $response );
 		$body        = wp_remote_retrieve_body( $response );
 
+		$attempt['status']        = $status_code;
+		$attempt['response_body'] = self::redact( $body );
+
 		if ( 200 !== $status_code ) {
-			pbr_log( 'API: token refresh failed', array( 'status' => $status_code ) );
+			$attempt['outcome'] = 'http_error';
+			$this->record_refresh_attempt( $attempt );
+			pbr_log(
+				'API: token refresh failed',
+				array(
+					'status' => $status_code,
+					'body'   => $attempt['response_body'],
+				)
+			);
 			return new WP_Error( 'refresh_error', 'Token refresh failed with status ' . $status_code );
 		}
 
 		$data = json_decode( $body, true );
-		if ( ! $data || ! isset( $data['result'] ) || 'SUCCESS' !== $data['status'] ) {
-			pbr_log( 'API: invalid refresh response', array( 'data' => $data ) );
+		if ( ! is_array( $data ) || ! isset( $data['result'], $data['status'] ) || 'SUCCESS' !== $data['status'] ) {
+			$attempt['outcome']       = 'invalid_response';
+			$attempt['response_keys'] = is_array( $data ) ? array_keys( $data ) : null;
+			$this->record_refresh_attempt( $attempt );
+			pbr_log( 'API: invalid refresh response', array( 'data' => $attempt['response_body'] ) );
 			return new WP_Error( 'refresh_error', 'Invalid refresh response' );
 		}
+
+		// The result field is expected to be the new access token as a string.
+		// Guard against other shapes so an unexpected response cannot overwrite
+		// the stored token with an array or object.
+		if ( ! is_string( $data['result'] ) || '' === $data['result'] ) {
+			$attempt['outcome']     = 'unexpected_result_shape';
+			$attempt['result_type'] = gettype( $data['result'] );
+			if ( is_array( $data['result'] ) ) {
+				$attempt['result_keys'] = array_keys( $data['result'] );
+			}
+			$this->record_refresh_attempt( $attempt );
+			pbr_log( 'API: unexpected refresh result shape', array( 'type' => $attempt['result_type'] ) );
+			return new WP_Error( 'refresh_error', 'Refresh response did not contain an access token string' );
+		}
+
+		$attempt['outcome'] = 'success';
+		// Record whether DUPR returned a new refresh token, which would mean
+		// refresh tokens rotate and the stored one is now stale.
+		$attempt['response_contains_refresh_token'] = false !== stripos( $body, 'refreshToken' );
+		$this->record_refresh_attempt( $attempt );
 
 		// Update access token with the new token from the result field.
 		$this->auth_token = $data['result'];
@@ -827,6 +906,357 @@ class PBR_DUPR_API {
 				'name'    => $user_info['user_name'] ?? '',
 				'dupr_id' => $user_info['dupr_id'] ?? '',
 			),
+		);
+	}
+
+	/**
+	 * Persist details of the most recent token refresh attempt.
+	 *
+	 * Stored so that refresh failures occurring outside the admin screen (for
+	 * example during a front-end cache revalidation) remain visible in the
+	 * diagnostics panel.
+	 *
+	 * @param array $attempt Attempt details.
+	 */
+	private function record_refresh_attempt( $attempt ) {
+		$attempt['time'] = gmdate( 'c' );
+		update_option( self::LAST_REFRESH_OPTION, $attempt, false );
+	}
+
+	/**
+	 * Produce a short, non-reversible fingerprint of a secret.
+	 *
+	 * Allows comparing whether a token changed between attempts without
+	 * exposing its value.
+	 *
+	 * @param mixed $secret The secret to fingerprint.
+	 * @return string Fingerprint, or empty string when there is no secret.
+	 */
+	private static function fingerprint( $secret ) {
+		if ( ! is_string( $secret ) || '' === $secret ) {
+			return '';
+		}
+		return substr( hash( 'sha256', $secret ), 0, 12 );
+	}
+
+	/**
+	 * Remove JWT-shaped strings from arbitrary text and truncate it.
+	 *
+	 * @param string $text  Text to redact.
+	 * @param int    $limit Maximum length to retain.
+	 * @return string Redacted text.
+	 */
+	private static function redact( $text, $limit = 1000 ) {
+		$text = (string) $text;
+		$text = preg_replace(
+			'/eyJ[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+/',
+			'[REDACTED_JWT]',
+			$text
+		);
+
+		if ( strlen( $text ) > $limit ) {
+			$text = substr( $text, 0, $limit ) . '… [truncated]';
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Decode a single base64url-encoded JWT segment.
+	 *
+	 * @param string $segment The segment to decode.
+	 * @return array|null Decoded claims, or null if the segment is not valid JSON.
+	 */
+	private static function decode_jwt_segment( $segment ) {
+		$padded  = strtr( $segment, '-_', '+/' );
+		$padded .= str_repeat( '=', ( 4 - strlen( $padded ) % 4 ) % 4 );
+
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+		$decoded = base64_decode( $padded, true );
+		if ( false === $decoded ) {
+			return null;
+		}
+
+		$data = json_decode( $decoded, true );
+
+		return is_array( $data ) ? $data : null;
+	}
+
+	/**
+	 * Describe a stored token for diagnostic purposes.
+	 *
+	 * JWT header and payload claims are included because they are not secret -
+	 * they are base64-encoded, not encrypted, and cannot be used to
+	 * authenticate. The signed token string itself is only included when
+	 * explicitly requested.
+	 *
+	 * @param mixed $token       The stored token value.
+	 * @param bool  $include_raw Whether to include the raw token string.
+	 * @return array Token description.
+	 */
+	private function describe_token( $token, $include_raw = false ) {
+		$info = array(
+			'present' => ! empty( $token ),
+			'type'    => gettype( $token ),
+		);
+
+		if ( ! is_string( $token ) || '' === $token ) {
+			// Surface the actual stored value when it is not a usable string,
+			// since that itself is the defect worth seeing.
+			$info['stored_value'] = is_scalar( $token ) ? (string) $token : wp_json_encode( $token );
+			return $info;
+		}
+
+		$info['length']      = strlen( $token );
+		$info['fingerprint'] = self::fingerprint( $token );
+
+		$segments         = explode( '.', $token );
+		$info['segments'] = count( $segments );
+		$info['is_jwt']   = 3 === count( $segments );
+
+		if ( $info['is_jwt'] ) {
+			$info['jwt_header'] = self::decode_jwt_segment( $segments[0] );
+			$claims             = self::decode_jwt_segment( $segments[1] );
+			$info['jwt_claims'] = $claims;
+
+			if ( isset( $claims['iat'] ) ) {
+				$info['issued_at'] = gmdate( 'c', (int) $claims['iat'] );
+			}
+
+			if ( isset( $claims['exp'] ) ) {
+				$expires              = (int) $claims['exp'];
+				$now                  = time();
+				$info['expires_at']   = gmdate( 'c', $expires );
+				$info['expired']      = $expires <= $now;
+				$info['expiry_human'] = $expires > $now
+					? 'expires in ' . human_time_diff( $now, $expires )
+					: 'expired ' . human_time_diff( $expires, $now ) . ' ago';
+			} else {
+				$info['expires_at'] = null;
+				$info['note']       = 'JWT contains no exp claim';
+			}
+		}
+
+		if ( $include_raw ) {
+			$info['raw'] = $token;
+		}
+
+		return $info;
+	}
+
+	/**
+	 * Build a diagnostic report about the current DUPR authentication state.
+	 *
+	 * Intended for display to administrators on the plugin settings screen.
+	 * Token values are excluded unless raw tokens are explicitly requested.
+	 *
+	 * @param bool $include_raw_tokens Whether to include raw token strings.
+	 * @return array Diagnostic report.
+	 */
+	public function get_diagnostics( $include_raw_tokens = false ) {
+		$last_refresh = get_option( self::LAST_REFRESH_OPTION, null );
+
+		return array(
+			'generated_at'         => gmdate( 'c' ),
+			'raw_tokens_included'  => (bool) $include_raw_tokens,
+			'environment'          => array(
+				'plugin_version' => PICKLEBALL_RATINGS_VERSION,
+				'wp_version'     => get_bloginfo( 'version' ),
+				'php_version'    => PHP_VERSION,
+				'api_base_url'   => $this->api_base_url,
+				'cache_ttl'      => $this->cache_ttl,
+			),
+			'auth_state'           => array(
+				'reports_authenticated' => $this->is_authenticated(),
+				'has_user_name'         => ! empty( $this->user_name ),
+				'has_user_email'        => ! empty( $this->user_email ),
+				'has_user_dupr_id'      => ! empty( $this->user_dupr_id ),
+			),
+			'access_token'         => $this->describe_token( $this->auth_token, $include_raw_tokens ),
+			'refresh_token'        => $this->describe_token( $this->refresh_token, $include_raw_tokens ),
+			'last_refresh_attempt' => $last_refresh,
+			'cache'                => $this->get_cache_diagnostics(),
+		);
+	}
+
+	/**
+	 * Summarise a single cached player entry for the diagnostics report.
+	 *
+	 * @param string $option_name Option name.
+	 * @param mixed  $value       Stored value.
+	 * @return array Summary.
+	 */
+	private function describe_cache_entry( $option_name, $value ) {
+		$entry = array(
+			'option_name' => $option_name,
+			'dupr_id'     => ( is_array( $value ) && ! empty( $value['dupr_id'] ) ) ? $value['dupr_id'] : '',
+			'value_type'  => gettype( $value ),
+			'usable'      => self::is_usable_cache_entry( $value ),
+		);
+
+		if ( ! is_array( $value ) ) {
+			return $entry;
+		}
+
+		$entry['has_name']     = ! empty( $value['name'] );
+		$entry['last_updated'] = $value['last_updated'] ?? null;
+
+		if ( ! empty( $value['last_updated'] ) ) {
+			$timestamp = strtotime( $value['last_updated'] );
+			if ( false !== $timestamp ) {
+				$entry['age_human'] = human_time_diff( $timestamp, time() ) . ' old';
+				$entry['is_fresh']  = ( time() - $timestamp ) < $this->cache_ttl;
+			}
+		}
+
+		return $entry;
+	}
+
+	/**
+	 * Report on cached player data held in the database.
+	 *
+	 * Cached entries are what block rendering falls back to when the DUPR API is
+	 * unreachable, so their presence and age is the key thing to inspect.
+	 *
+	 * @return array Cache diagnostics.
+	 */
+	public function get_cache_diagnostics() {
+		global $wpdb;
+
+		$like = $wpdb->esc_like( 'pbr_dupr_player_' ) . '%';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$names = $wpdb->get_col(
+			$wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $like )
+		);
+
+		$entries = array();
+		$usable  = 0;
+
+		foreach ( (array) $names as $name ) {
+			$entry = $this->describe_cache_entry( $name, get_option( $name, false ) );
+			if ( $entry['usable'] ) {
+				++$usable;
+			}
+			$entries[] = $entry;
+		}
+
+		return array(
+			'cache_ttl'      => $this->cache_ttl,
+			'entry_count'    => count( $entries ),
+			'usable_entries' => $usable,
+			'entries'        => $entries,
+		);
+	}
+
+	/**
+	 * Probe the DUPR refresh endpoint with several request shapes.
+	 *
+	 * The plugin's refresh call has not been confirmed against the live API, so
+	 * this reports how DUPR responds to each candidate shape. It is read-only:
+	 * no token returned by any variant is stored.
+	 *
+	 * @return array|WP_Error Probe results, or WP_Error if there is nothing to probe with.
+	 */
+	public function probe_refresh_endpoint() {
+		if ( empty( $this->refresh_token ) ) {
+			return new WP_Error( 'no_refresh_token', 'No refresh token is stored, so the refresh endpoint cannot be probed.' );
+		}
+
+		$url = $this->api_base_url . '/auth/v3/refresh';
+
+		$variants = array(
+			'get_refresh_header'             => array(
+				'description' => 'GET with x-refresh-token header (current plugin behaviour)',
+				'method'      => 'GET',
+				'headers'     => array( 'x-refresh-token' => $this->refresh_token ),
+			),
+			'get_refresh_header_with_bearer' => array(
+				'description' => 'GET with x-refresh-token header plus Authorization bearer',
+				'method'      => 'GET',
+				'headers'     => array(
+					'x-refresh-token' => $this->refresh_token,
+					'Authorization'   => 'Bearer ' . $this->auth_token,
+				),
+			),
+			'post_refresh_header'            => array(
+				'description' => 'POST with x-refresh-token header, no body',
+				'method'      => 'POST',
+				'headers'     => array( 'x-refresh-token' => $this->refresh_token ),
+			),
+			'post_json_body'                 => array(
+				'description' => 'POST with JSON body {"refreshToken": "..."}',
+				'method'      => 'POST',
+				'headers'     => array( 'Content-Type' => 'application/json' ),
+				'body'        => wp_json_encode( array( 'refreshToken' => $this->refresh_token ) ),
+				'body_shape'  => 'json: {"refreshToken": "<token>"}',
+			),
+			'post_form_body'                 => array(
+				'description' => 'POST with form-encoded refreshToken',
+				'method'      => 'POST',
+				'headers'     => array( 'Content-Type' => 'application/x-www-form-urlencoded' ),
+				'body'        => 'refreshToken=' . rawurlencode( $this->refresh_token ),
+				'body_shape'  => 'form: refreshToken=<token>',
+			),
+			'get_bearer_refresh_token'       => array(
+				'description' => 'GET with the refresh token as the Authorization bearer',
+				'method'      => 'GET',
+				'headers'     => array( 'Authorization' => 'Bearer ' . $this->refresh_token ),
+			),
+		);
+
+		$results = array();
+
+		foreach ( $variants as $name => $variant ) {
+			$args = array(
+				'method'  => $variant['method'],
+				'headers' => $variant['headers'],
+				'timeout' => 30,
+			);
+
+			if ( isset( $variant['body'] ) ) {
+				$args['body'] = $variant['body'];
+			}
+
+			$response = wp_remote_request( $url, $args );
+
+			$result = array(
+				'description'     => $variant['description'],
+				'method'          => $variant['method'],
+				'request_headers' => array_keys( $variant['headers'] ),
+				'body_shape'      => $variant['body_shape'] ?? null,
+			);
+
+			if ( is_wp_error( $response ) ) {
+				$result['transport_error'] = $response->get_error_message();
+				$results[ $name ]          = $result;
+				continue;
+			}
+
+			$status = wp_remote_retrieve_response_code( $response );
+			$body   = wp_remote_retrieve_body( $response );
+			$parsed = json_decode( $body, true );
+
+			$result['status']           = $status;
+			$result['response_body']    = self::redact( $body, 600 );
+			$result['looks_successful'] = 200 === $status
+				&& is_array( $parsed )
+				&& isset( $parsed['status'], $parsed['result'] )
+				&& 'SUCCESS' === $parsed['status'];
+			$result['result_type']      = isset( $parsed['result'] ) ? gettype( $parsed['result'] ) : null;
+			$result['result_keys']      = ( isset( $parsed['result'] ) && is_array( $parsed['result'] ) )
+				? array_keys( $parsed['result'] )
+				: null;
+
+			$results[ $name ] = $result;
+		}
+
+		return array(
+			'probed_at'         => gmdate( 'c' ),
+			'endpoint'          => $url,
+			'token_fingerprint' => self::fingerprint( $this->refresh_token ),
+			'note'              => 'Read-only probe. No token returned by any variant was stored.',
+			'variants'          => $results,
 		);
 	}
 }
