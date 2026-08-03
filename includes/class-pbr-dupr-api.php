@@ -75,6 +75,23 @@ class PBR_DUPR_API {
 	const LAST_REFRESH_OPTION = 'pickleball_ratings_dupr_last_refresh_attempt';
 
 	/**
+	 * How long before the session expires to start warning administrators.
+	 *
+	 * DUPR refresh tokens last 90 days and cannot be extended, so recovering
+	 * requires a manual re-login. A week is enough notice to act on.
+	 *
+	 * @var int
+	 */
+	const EXPIRY_WARNING_WINDOW = 7 * DAY_IN_SECONDS;
+
+	/**
+	 * Message shown whenever the DUPR session can no longer be renewed.
+	 *
+	 * @var string
+	 */
+	const SESSION_EXPIRED_MESSAGE = 'Your DUPR session has expired. Reconnect to DUPR in the plugin settings to resume updates.';
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -125,8 +142,10 @@ class PBR_DUPR_API {
 			// Cache is stale, try to refresh from API.
 			pbr_log( 'Cache: stale data for DUPR ID ' . $dupr_id . ', attempting refresh' );
 
-			// Check if we have authentication before attempting refresh.
-			if ( ! empty( $this->auth_token ) ) {
+			// Check for a usable session before attempting refresh. An expired
+			// session cannot be renewed, so calling the API would only burn two
+			// requests per stale entry to arrive at the same stale fallback.
+			if ( ! empty( $this->auth_token ) && ! $this->is_session_expired() ) {
 				$player_data = $this->fetch_player_data( $dupr_id );
 
 				if ( ! is_wp_error( $player_data ) ) {
@@ -153,6 +172,10 @@ class PBR_DUPR_API {
 		// Check if we have authentication.
 		if ( empty( $this->auth_token ) ) {
 			return new WP_Error( 'no_auth', 'DUPR API authentication required. Please configure in plugin settings.' );
+		}
+
+		if ( $this->is_session_expired() ) {
+			return new WP_Error( 'session_expired', self::SESSION_EXPIRED_MESSAGE );
 		}
 
 		// Fetch data from API using the correct flow.
@@ -236,7 +259,7 @@ class PBR_DUPR_API {
 						return new WP_Error( 'api_error', 'Failed to retry search after token refresh: ' . $search_response->get_error_message() );
 					}
 				} else {
-					return new WP_Error( 'auth_error', 'Token expired and refresh failed: ' . $refresh_result->get_error_message() );
+					return new WP_Error( 'session_expired', self::SESSION_EXPIRED_MESSAGE );
 				}
 			} else {
 				return new WP_Error( 'api_error', 'Player search failed (HTTP ' . $search_status . ')' );
@@ -310,7 +333,7 @@ class PBR_DUPR_API {
 						return new WP_Error( 'api_error', 'Failed to retry player fetch after token refresh: ' . $response->get_error_message() );
 					}
 				} else {
-					return new WP_Error( 'auth_error', 'Token expired and refresh failed: ' . $refresh_result->get_error_message() );
+					return new WP_Error( 'session_expired', self::SESSION_EXPIRED_MESSAGE );
 				}
 			} else {
 				$error_message = 'DUPR API error (HTTP ' . $status_code . ')';
@@ -746,12 +769,82 @@ class PBR_DUPR_API {
 		$is_authenticated = $this->is_authenticated();
 		$user_info        = $is_authenticated ? $this->get_user_info() : false;
 
-		return array(
-			'authenticated' => $is_authenticated,
-			'user_info'     => $user_info,
-			'has_token'     => ! empty( $this->auth_token ),
-			'has_refresh'   => ! empty( $this->refresh_token ),
+		return array_merge(
+			array(
+				'authenticated' => $is_authenticated,
+				'user_info'     => $user_info,
+				'has_token'     => ! empty( $this->auth_token ),
+				'has_refresh'   => ! empty( $this->refresh_token ),
+			),
+			$this->get_session_status()
 		);
+	}
+
+	/**
+	 * Read the expiry timestamp out of a JWT.
+	 *
+	 * @param mixed $token Token to inspect.
+	 * @return int|null Unix timestamp, or null when the token carries no readable expiry.
+	 */
+	private static function get_token_expiry( $token ) {
+		if ( ! is_string( $token ) || '' === $token ) {
+			return null;
+		}
+
+		$segments = explode( '.', $token );
+		if ( 3 !== count( $segments ) ) {
+			return null;
+		}
+
+		$claims = self::decode_jwt_segment( $segments[1] );
+
+		return isset( $claims['exp'] ) ? (int) $claims['exp'] : null;
+	}
+
+	/**
+	 * Describe the lifetime of the current DUPR session.
+	 *
+	 * The session lasts as long as the refresh token: once that expires the
+	 * access token cannot be renewed and only a fresh login will recover it.
+	 * Expiry is read from the token locally, so this costs no API request.
+	 *
+	 * A token with no readable expiry is never reported as expired, so an
+	 * opaque or unexpected token format cannot lock a working site out.
+	 *
+	 * @return array Session status.
+	 */
+	public function get_session_status() {
+		$expires_at = self::get_token_expiry( $this->refresh_token );
+
+		if ( null === $expires_at ) {
+			return array(
+				'session_expires_at'    => null,
+				'session_expired'       => false,
+				'session_expiring_soon' => false,
+				'session_expiry_known'  => false,
+			);
+		}
+
+		$remaining = $expires_at - time();
+
+		return array(
+			'session_expires_at'    => gmdate( 'c', $expires_at ),
+			'session_expired'       => $remaining <= 0,
+			'session_expiring_soon' => $remaining > 0 && $remaining <= self::EXPIRY_WARNING_WINDOW,
+			'session_expiry_known'  => true,
+			'session_expires_in'    => $remaining > 0 ? human_time_diff( time(), $expires_at ) : null,
+		);
+	}
+
+	/**
+	 * Whether the DUPR session has expired and requires a fresh login.
+	 *
+	 * @return bool True when the refresh token is known to have expired.
+	 */
+	public function is_session_expired() {
+		$status = $this->get_session_status();
+
+		return $status['session_expired'];
 	}
 
 	/**
@@ -880,7 +973,7 @@ class PBR_DUPR_API {
 						return new WP_Error( 'api_error', 'Failed to retry validation after token refresh: ' . $response->get_error_message() );
 					}
 				} else {
-					return new WP_Error( 'auth_error', 'Token expired and refresh failed: ' . $refresh_result->get_error_message() );
+					return new WP_Error( 'session_expired', self::SESSION_EXPIRED_MESSAGE );
 				}
 			} else {
 				return new WP_Error( 'api_error', 'Token validation failed (HTTP ' . $status_code . ')' );
