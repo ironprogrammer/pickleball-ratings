@@ -14,11 +14,4 @@ class PBR_Plugin_Hooks_Test extends WP_UnitTestCase {
 			wp_list_pluck( $block->styles, 'name' )
 		);
 	}
-
-	public function test_settings_link_filter_adds_link() {
-		$links   = array();
-		$filtered = pickleball_ratings_add_settings_link( $links );
-		$this->assertNotEmpty( $filtered );
-		$this->assertStringContainsString( 'options-general.php?page=pickleball-ratings-settings', $filtered[0] );
-	}
 }

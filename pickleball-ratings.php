@@ -2,7 +2,7 @@
 /**
  * Plugin Name:     Pickleball Ratings
  * Plugin URI:      https://github.com/ironprogrammer/pickleball-ratings
- * Description:     Display pickleball player ratings using a customizable block. Uses the official DUPR API for data.
+ * Description:     Display pickleball player ratings using a customizable block.
  * Author:          Brian Alexander
  * Author URI:      https://brianalexander.com
  * License:         GPLv2 or later
@@ -130,105 +130,11 @@ function pbr_is_valid_dupr_id( $dupr_id ) {
 	return is_string( $dupr_id ) && 1 === preg_match( '/^[A-Z0-9]{6}$/', $dupr_id );
 }
 
-
 /**
- * Plugin debug logger.
- *
- * Logs messages when:
- * - PBR_DEBUG and WP_DEBUG are both true, or
- * - PBR_DEBUG_FORCE is true (overrides WP_DEBUG requirement)
- *
- * @param string       $message Log message.
- * @param array|string $context Optional context data.
+ * Register the plugin's blocks from their block.json metadata.
  */
-function pbr_log( $message, $context = array() ) {
-	$allow = ( defined( 'PBR_DEBUG_FORCE' ) && PBR_DEBUG_FORCE )
-		|| ( defined( 'PBR_DEBUG' ) && PBR_DEBUG && defined( 'WP_DEBUG' ) && WP_DEBUG );
-	if ( ! $allow ) {
-		return;
-	}
-
-	$prefix = '[Pickleball Ratings] ';
-	if ( ! empty( $context ) ) {
-		if ( is_array( $context ) || is_object( $context ) ) {
-			$message .= ' | context=' . wp_json_encode( $context );
-		} else {
-			$message .= ' | context=' . (string) $context;
-		}
-	}
-    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-	error_log( $prefix . $message );
+function pickleball_ratings_register_blocks() {
+	register_block_type( PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/player-ratings' );
+	register_block_type( PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/round-robin' );
 }
-
-// Include required files.
-require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-dupr-api.php';
-require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/class-pbr-player-rest-controller.php';
-require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'admin/class-pbr-admin-settings.php';
-
-/**
- * Initialize the plugin.
- */
-function pickleball_ratings_init() {
-	// Add theme support for gradients.
-	add_theme_support(
-		'editor-gradient-presets',
-		array(
-			array(
-				'name'     => __( 'DUPR Blue Gradient', 'pickleball-ratings' ),
-				'gradient' => 'linear-gradient(45deg, #001762 0%, #0f4299 50%, #187ae8 100%)',
-				'slug'     => 'dupr-blue-gradient',
-			),
-		)
-	);
-
-	// Register the Gutenberg block.
-	pickleball_ratings_register_block();
-}
-add_action( 'init', 'pickleball_ratings_init' );
-
-/**
- * Initialize admin functionality.
- */
-function pickleball_ratings_admin_init() {
-	if ( is_admin() ) {
-		new PBR_Admin_Settings();
-	}
-}
-add_action( 'init', 'pickleball_ratings_admin_init' );
-
-/**
- * Initialize the REST API.
- */
-function pickleball_ratings_rest_api_init() {
-	$controller = new PBR_Player_REST_Controller();
-	$controller->register_routes();
-}
-add_action( 'rest_api_init', 'pickleball_ratings_rest_api_init' );
-
-/**
- * Add settings link to plugin list.
- *
- * @param array $links Existing plugin action links.
- * @return array Modified links with settings link first.
- */
-function pickleball_ratings_add_settings_link( $links ) {
-	$settings_link = '<a href="' . admin_url( 'options-general.php?page=pickleball-ratings-settings' ) . '">' . __( 'Settings', 'pickleball-ratings' ) . '</a>';
-	array_unshift( $links, $settings_link );
-	return $links;
-}
-add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'pickleball_ratings_add_settings_link' );
-
-/**
- * Register the Gutenberg block.
- */
-function pickleball_ratings_register_block() {
-	// Register the player-ratings block using block.json metadata.
-	register_block_type(
-		PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/player-ratings'
-	);
-
-	// Register the round-robin block using block.json metadata.
-	register_block_type(
-		PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/round-robin'
-	);
-}
+add_action( 'init', 'pickleball_ratings_register_blocks' );
