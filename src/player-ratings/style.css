@@ -1,303 +1,281 @@
 /**
- * Pickleball Ratings Block Styles
+ * Pickleball Player Ratings block styles.
+ *
+ * Each style variation only sets the custom properties below; layout rules
+ * read the properties, so font family and sizing still come from the theme.
  */
 
-/* Main block wrapper and CSS vars - all styles scoped within this selector */
 .pbr-block {
-	--pbr-icon-size: 20px;
-	--pbr-icon-color: #187ae8;
-	--pbr-doubles-back-color: #1461c0;
-	--pbr-doubles-back-size: 15px;
-	--pbr-icon-stack-offset: -1rem;
+	--pbr-bg: linear-gradient(45deg, #001762 0%, #0f4299 50%, #1673db 100%);
+	--pbr-fg: #fff;
+	--pbr-border: transparent;
+	--pbr-accent: #8cc4ff;
+	--pbr-ring: #4ade80;
+	--pbr-ring-low: #f87171;
+	--pbr-avatar-border: #ddd;
 
 	position: relative;
-	border: 1px solid #ddd;
-	border-radius: 8px;
-	padding: 20px;
-	background: #fff;
+	box-sizing: border-box;
+	padding: 1.25em;
+	border: 1px solid var(--pbr-border);
+	border-radius: 12px;
 	font-size: var(--wp--preset--font-size--large, 1.125rem);
+	line-height: 1.3;
 }
 
-/* Icon utility classes - scoped to our block */
+.pbr-block.is-style-white {
+	--pbr-bg: #fff;
+	--pbr-fg: #1e1e1e;
+	--pbr-border: #dcdcde;
+	--pbr-accent: #187ae8;
+	--pbr-ring: #16a34a;
+	--pbr-ring-low: #dc2626;
+}
+
+.pbr-block.is-style-black {
+	--pbr-bg: #111214;
+	--pbr-fg: #f5f5f5;
+	--pbr-border: #2c2d30;
+	--pbr-accent: #5aa9ff;
+	--pbr-ring: #22c55e;
+	--pbr-ring-low: #ef4444;
+	--pbr-avatar-border: #5c5d61;
+}
+
+/* Color settings chosen in the editor override the variation. */
+.pbr-block:not(.has-background) {
+	background: var(--pbr-bg);
+}
+
+.pbr-block:not(.has-text-color) {
+	color: var(--pbr-fg);
+}
+
+/* Player name and optional profile image */
+.pbr-block .pbr-player {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.6em;
+	margin: 0 0 0.9em;
+	padding: 0 1.5rem;
+	font-size: 1.1em;
+	font-weight: 600;
+	text-align: center;
+}
+
+.pbr-block .pbr-avatar {
+	flex: none;
+	width: 2.5em;
+	height: 2.5em;
+	margin: 0;
+	border: 2px solid var(--pbr-avatar-border);
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.pbr-block .pbr-name {
+	overflow-wrap: normal;
+	word-break: normal;
+}
+
+/* Ratings */
+.pbr-block .pbr-ratings {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 1em 1.25em;
+}
+
+.pbr-block .pbr-rating {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.4em;
+}
+
+.pbr-block .pbr-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+	font-size: 0.8em;
+	font-weight: 500;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
 .pbr-block .pbr-icon {
-	color: var(--pbr-icon-color);
-	width: 1em;
-	height: 1em;
+	display: inline-flex;
+	width: 1.4em;
+	height: 1.4em;
+	color: var(--pbr-accent);
 }
 
-.pbr-block .pbr-icon-doubles {
+.pbr-block .pbr-icon svg {
+	width: 100%;
+	height: 100%;
+}
+
+.pbr-block .pbr-score {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4em;
+}
+
+.pbr-block .pbr-value {
+	font-size: 1.5em;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+	white-space: nowrap;
+	text-decoration: none;
+}
+
+.pbr-block abbr.pbr-value {
+	cursor: help;
+}
+
+/* Reliability ring */
+.pbr-block .pbr-reliability {
+	position: relative;
+	display: inline-grid;
+	flex: none;
+	place-items: center;
 	width: 1.6em;
 	height: 1.6em;
 }
 
-.pbr-block .pbr-icon-singles {
-	width: 1em;
-	height: 1em;
-	align-self: center;
-}
-
-.pbr-block .pbr-doubles-back {
-	color: var(--pbr-doubles-back-color);
-	font-size: var(--pbr-doubles-back-size);
-	position: relative;
-	z-index: 1;
-}
-
-.pbr-block .pbr-doubles-front {
-	color: var(--pbr-icon-color);
-	font-size: var(--pbr-icon-size);
-	position: relative;
-	z-index: 2;
-	margin-left: var(--pbr-icon-stack-offset);
-}
-
-/* Copy button - corner positioned */
-.pbr-block .copy-btn {
+.pbr-block .pbr-reliability svg {
 	position: absolute;
-	top: 0;
-	right: 0;
-	background: rgba(255, 255, 255, 0.9);
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	padding: 6px;
-	cursor: pointer;
-	opacity: 0;
-	transition: opacity 0.3s ease, background-color 0.2s ease;
-	z-index: 10;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	transform: rotate(-90deg);
+}
 
-	/* Reset button styles that might come from theme */
-	margin: 0;
+.pbr-block .pbr-ring-track,
+.pbr-block .pbr-ring-value {
+	fill: none;
+	stroke-width: 3.5;
+}
+
+.pbr-block .pbr-ring-track {
+	stroke: currentcolor;
+	stroke-opacity: 0.2;
+}
+
+.pbr-block .pbr-ring-value {
+	stroke: var(--pbr-ring);
+	stroke: color-mix(in oklch, var(--pbr-ring) calc(var(--pbr-score, 100) * 1%), var(--pbr-ring-low));
+	stroke-linecap: round;
+}
+
+.pbr-block .pbr-reliability-value {
+	position: relative;
+	font-size: 0.55em;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
 	line-height: 1;
-	text-decoration: none;
-	box-shadow: none;
-	font-family: inherit;
-	font-size: inherit;
+}
+
+/* Copy DUPR ID button */
+.pbr-block .pbr-copy {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-height: auto;
-	height: auto;
-	width: auto;
-	min-width: auto;
+	width: 2rem;
+	min-width: 0;
+	height: 2rem;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 6px;
+	background: transparent;
+	box-shadow: none;
+	color: inherit;
+	font: inherit;
+	line-height: 1;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.2s ease, background-color 0.2s ease;
 }
 
-.pbr-block .copy-btn:hover {
-	background: rgba(255, 255, 255, 1);
-	border-color: #999;
-}
-
-.pbr-block:hover .copy-btn {
+.pbr-block:hover .pbr-copy,
+.pbr-block .pbr-copy:focus-visible,
+.pbr-block .pbr-copy.is-copied {
 	opacity: 1;
 }
 
-.pbr-block .copy-btn .copy-icon,
-.pbr-block .copy-btn .check-icon {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 16px;
-	height: 16px;
+.pbr-block .pbr-copy:hover {
+	background: rgba(127, 127, 127, 0.2);
 }
 
-.pbr-block .copy-btn .copy-icon svg,
-.pbr-block .copy-btn .check-icon svg {
-	width: 16px;
-	height: 16px;
-	fill: currentcolor;
+.pbr-block .pbr-copy:focus-visible {
+	outline: 2px solid currentcolor;
+	outline-offset: 2px;
 }
 
-@keyframes copy-success {
+@media (hover: none) {
 
-	0% {
-		transform: scale(1);
-		color: currentcolor;
+	.pbr-block .pbr-copy {
+		opacity: 0.8;
 	}
+}
+
+.pbr-block .pbr-copy-icon,
+.pbr-block .pbr-check-icon {
+	display: inline-flex;
+	width: 1rem;
+	height: 1rem;
+}
+
+.pbr-block .pbr-copy svg {
+	width: 100%;
+	height: 100%;
+}
+
+.pbr-block .pbr-check-icon,
+.pbr-block .pbr-copy.is-copied .pbr-copy-icon {
+	display: none;
+}
+
+.pbr-block .pbr-copy.is-copied .pbr-check-icon {
+	display: inline-flex;
+	color: var(--pbr-ring);
+	animation: pbr-copied 0.6s ease-out;
+}
+
+@keyframes pbr-copied {
 
 	30% {
 		transform: scale(1.3);
-		color: #28a745;
-	}
-
-	100% {
-		transform: scale(1);
-		color: currentcolor;
 	}
 }
 
-.pbr-block .copy-btn .check-icon {
-	animation: copy-success 0.7s ease-out;
-}
+@media (prefers-reduced-motion: reduce) {
 
-/* Header section */
-.pbr-block .header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 15px;
-	padding-bottom: 10px;
-	border-bottom: 1px solid #eee;
-}
-
-.pbr-block .title {
-	margin: 0;
-	font-size: 1.2em;
-	font-weight: 600;
-}
-
-.pbr-block .copy-id-btn {
-	background: none;
-	border: none;
-	padding: 4px;
-	border-radius: 4px;
-	cursor: pointer;
-	color: inherit;
-	transition: background-color 0.2s ease;
-}
-
-.pbr-block .copy-id-btn:hover {
-	background-color: rgba(0, 0, 0, 0.1);
-}
-
-
-/* Player information section */
-.pbr-block .player-name {
-	font-size: 1.1em;
-	font-weight: 600;
-	margin-bottom: 10px;
-	text-align: center;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 10px;
-}
-
-.pbr-block .profile-pic {
-	width: 40px;
-	height: 40px;
-	border-radius: 50%;
-	object-fit: cover;
-	border: 2px solid #ddd;
-}
-
-.pbr-block .profile-pic-fallback {
-	width: 40px;
-	height: 40px;
-	border-radius: 50%;
-	background: #f5f5f5;
-	border: 2px solid #ddd;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 1.5em;
-	color: #666;
-}
-
-/* Ratings display section */
-.pbr-block .rating-content {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	gap: 20px;
-	justify-content: center;
-}
-
-.pbr-block .pbr-item {
-	display: flex;
-	flex-direction: column;
-	text-align: center;
-	align-items: center;
-	flex: 0 1 auto;
-	min-width: 80px;
-}
-
-.pbr-block .pbr-label {
-	font-weight: 500;
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	height: 1.6em;
-}
-
-.pbr-block .pbr-value {
-	margin-top: 4px;
-	font-weight: 600;
-	font-size: 1.2em;
-}
-
-/* Block states */
-.pbr-block .placeholder {
-	text-align: center;
-	padding: 20px;
-	color: #666;
-	font-style: italic;
-	background: #f9f9f9;
-	border: 2px dashed #ddd;
-	border-radius: 4px;
-}
-
-.pbr-block .error {
-	background: #fef7f1;
-	border: 1px solid #f0b849;
-	border-radius: 4px;
-	padding: 10px;
-	color: #d63638;
-}
-
-.pbr-block .loading {
-	text-align: center;
-	padding: 20px;
-	color: #666;
-	font-style: italic;
-}
-
-/* Footer section */
-.pbr-block .footer {
-	margin-top: 15px;
-	padding-top: 10px;
-	text-align: center;
-	font-size: 0.8em;
-}
-
-.pbr-block .powered-by {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 4px;
-}
-
-.pbr-block .logo {
-	height: 16px;
-	width: auto;
-	vertical-align: middle;
-	margin-left: 2px;
-}
-
-.pbr-block .note {
-	font-size: 0.8em;
-	color: #888;
-	font-style: italic;
-	text-align: center;
-	padding-top: 10px;
-	border-top: 1px solid #eee;
-}
-
-/* Responsive design */
-@media (max-width: 480px) {
-
-	.pbr-block {
-		padding: 15px;
+	.pbr-block .pbr-copy,
+	.pbr-block .pbr-copy.is-copied .pbr-check-icon {
+		transition: none;
+		animation: none;
 	}
+}
 
-	.pbr-block .header {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 8px;
-	}
-
-	.pbr-block .pbr-item {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 4px;
-	}
-
+.pbr-block .pbr-visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }

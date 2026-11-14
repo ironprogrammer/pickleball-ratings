@@ -26,9 +26,6 @@ define( 'PICKLEBALL_RATINGS_VERSION', '0.5.0' );
 define( 'PICKLEBALL_RATINGS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PICKLEBALL_RATINGS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Feature flags.
-define( 'PICKLEBALL_RATINGS_ENABLE_DUPR_BRANDING', false );
-
 /**
  * Get allowed SVG tags and attributes for sanitization.
  *
@@ -82,6 +79,55 @@ function pbr_get_allowed_svg_tags() {
 			'stroke' => true,
 		),
 	);
+}
+
+
+/**
+ * Normalize a rating to three decimals, or "NR" when the player is not rated.
+ *
+ * Mirrors normalizeRating() in the block's utils.js.
+ *
+ * @param mixed $value Raw rating value.
+ * @return string Normalized rating, or an empty string when invalid.
+ */
+function pbr_normalize_rating( $value ) {
+	$rating = strtoupper( trim( (string) $value ) );
+
+	if ( 'NR' === $rating ) {
+		return 'NR';
+	}
+
+	if ( '' === $rating || ! is_numeric( $rating ) || (float) $rating <= 0 ) {
+		return '';
+	}
+
+	return number_format( (float) $rating, 3, '.', '' );
+}
+
+/**
+ * Clamp a reliability score to a whole number from 0 to 100.
+ *
+ * Mirrors normalizeReliability() in the block's utils.js.
+ *
+ * @param mixed $value Raw reliability value.
+ * @return int|null Normalized score, or null when not provided.
+ */
+function pbr_normalize_reliability( $value ) {
+	if ( null === $value || '' === $value || ! is_numeric( $value ) ) {
+		return null;
+	}
+
+	return max( 0, min( 100, (int) round( (float) $value ) ) );
+}
+
+/**
+ * Check whether a DUPR ID uses the 6-character uppercase alphanumeric format.
+ *
+ * @param mixed $dupr_id DUPR ID to check.
+ * @return bool True when valid.
+ */
+function pbr_is_valid_dupr_id( $dupr_id ) {
+	return is_string( $dupr_id ) && 1 === preg_match( '/^[A-Z0-9]{6}$/', $dupr_id );
 }
 
 
@@ -184,17 +230,5 @@ function pickleball_ratings_register_block() {
 	// Register the round-robin block using block.json metadata.
 	register_block_type(
 		PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/round-robin'
-	);
-
-	// Localize script for AJAX.
-	wp_localize_script(
-		'pickleball-ratings-player-ratings-editor-script',
-		'pbrBlockEditor',
-		array(
-			'rest_url'           => esc_url_raw( rest_url( 'pickleball-ratings/v1' ) ),
-			'nonce'              => wp_create_nonce( 'wp_rest' ),
-			'pluginUrl'          => PICKLEBALL_RATINGS_PLUGIN_URL,
-			'enableDuprBranding' => PICKLEBALL_RATINGS_ENABLE_DUPR_BRANDING,
-		)
 	);
 }

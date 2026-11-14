@@ -1,23 +1,28 @@
-/* global navigator */
-// Frontend JavaScript for Pickleball Ratings Block
-window.pbrCopyToClipboard = function ( duprId, button ) {
-	const copyIcon = button.querySelector( '.copy-icon' );
-	const checkIcon = button.querySelector( '.check-icon' );
+/**
+ * Copy a player's DUPR ID when the block's copy button is clicked.
+ */
+document.addEventListener( 'click', ( event ) => {
+	const button = event.target.closest( '.pbr-copy[data-dupr-id]' );
+	if ( ! button ) {
+		return;
+	}
 
-	// Copy to clipboard
-	navigator.clipboard.writeText( duprId ).then( function () {
-		// Toggle icon visibility
-		if ( copyIcon && checkIcon ) {
-			copyIcon.style.display = 'none';
-			checkIcon.style.display = 'inline-flex';
-			button.title = 'Copied!';
+	const status = button.parentElement.querySelector( '.pbr-copy-status' );
 
-			// Reset after 2 seconds
-			setTimeout( function () {
-				copyIcon.style.display = 'inline-flex';
-				checkIcon.style.display = 'none';
-				button.title = 'Copy DUPR ID: ' + duprId;
+	window.navigator.clipboard
+		.writeText( button.dataset.duprId )
+		.then( () => {
+			button.classList.add( 'is-copied' );
+			if ( status ) {
+				status.textContent = button.dataset.copiedLabel;
+			}
+
+			window.setTimeout( () => {
+				button.classList.remove( 'is-copied' );
+				if ( status ) {
+					status.textContent = '';
+				}
 			}, 2000 );
-		}
-	} );
-};
+		} )
+		.catch( () => {} );
+} );

@@ -1,434 +1,349 @@
-/* global pbrBlockEditor */
-import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+import {
+	useBlockProps,
+	InspectorControls,
+	MediaUpload,
+	MediaUploadCheck,
+} from '@wordpress/block-editor';
+import {
+	BaseControl,
+	Button,
+	PanelBody,
+	Placeholder,
+	TextControl,
+} from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
+import { dateI18n, getSettings } from '@wordpress/date';
 import { ReactComponent as CopyIcon } from '../../images/copy-to-clipboard.svg';
 import { ReactComponent as CheckCircleIcon } from '../../images/check-circle.svg';
-import { ReactComponent as UserProfileIcon } from '../../images/user-profile.svg';
-import { ReactComponent as PickleballPaddlesCrossedIcon } from '../../images/pickleball-paddles-crossed.svg';
-import { ReactComponent as PickleballPaddleIcon } from '../../images/pickleball-paddle.svg';
+import { ReactComponent as PaddlesCrossedIcon } from '../../images/pickleball-paddles-crossed.svg';
+import { ReactComponent as PaddleIcon } from '../../images/pickleball-paddle.svg';
+import { ReactComponent as RatingsChartIcon } from '../../images/ratings-chart.svg';
+import { normalizeRating, normalizeReliability, isValidDuprId } from './utils';
 
-export default function Edit( { attributes, setAttributes } ) {
-	const {
-		duprId,
-		showProfilePic,
-		showPoweredBy,
-		useLightLogo,
-		backgroundColor,
-		textColor,
-		customBackgroundColor,
-		customTextColor,
-		gradient,
-		customGradient,
-		fontSize,
-	} = attributes;
-	const [ validationError, setValidationError ] = useState( '' );
-	const [ isLoading, setIsLoading ] = useState( false );
-	const [ playerData, setPlayerData ] = useState( null );
-	const [ apiError, setApiError ] = useState( '' );
-	const [ copiedStates, setCopiedStates ] = useState( {} );
+const RATING_TYPES = [
+	{
+		key: 'doubles',
+		label: __( 'Doubles', 'pickleball-ratings' ),
+		Icon: PaddlesCrossedIcon,
+	},
+	{
+		key: 'singles',
+		label: __( 'Singles', 'pickleball-ratings' ),
+		Icon: PaddleIcon,
+	},
+];
 
-	// Validate DUPR ID format
-	const validateDuprId = ( id ) => {
-		if ( ! id ) {
-			setValidationError( '' );
-			return true;
-		}
-
-		if ( ! /^[A-Z0-9]{6}$/.test( id ) ) {
-			setValidationError(
-				__(
-					'DUPR ID must be exactly 6 characters',
-					'pickleball-ratings'
-				)
-			);
-			return false;
-		}
-
-		setValidationError( '' );
-		return true;
-	};
-
-	// Handle DUPR ID change
-	const handleDuprIdChange = ( value ) => {
-		const upperValue = value.toUpperCase();
-		setAttributes( { duprId: upperValue } );
-		validateDuprId( upperValue );
-	};
-
-	// Fetch player data when DUPR ID changes
-	const fetchPlayerData = useCallback(
-		async ( id ) => {
-			if ( ! id || validationError ) {
-				setPlayerData( null );
-				setApiError( '' );
-				return;
-			}
-
-			setIsLoading( true );
-			setApiError( '' );
-
-			try {
-				const response = await fetch(
-					`${ pbrBlockEditor.rest_url }/player/${ id }`,
-					{
-						method: 'GET',
-						headers: {
-							'X-WP-Nonce': pbrBlockEditor.nonce,
-						},
-					}
-				);
-
-				const result = await response.json();
-
-				if ( response.ok ) {
-					setPlayerData( result );
-				} else {
-					setApiError(
-						result.message || 'An unknown error occurred.'
-					);
-					setPlayerData( null );
-				}
-			} catch ( error ) {
-				setApiError( 'Failed to fetch player data.' );
-				setPlayerData( null );
-			} finally {
-				setIsLoading( false );
-			}
-		},
-		[ validationError ]
+/**
+ * Circular reliability meter, matching the markup in render.php.
+ *
+ * @param {Object} props       Component props.
+ * @param {number} props.score Reliability score from 0 to 100.
+ */
+function Reliability( { score } ) {
+	const label = sprintf(
+		/* translators: %d: reliability score from 0 to 100. */
+		__( 'Reliability: %d of 100', 'pickleball-ratings' ),
+		score
 	);
 
-	// Validate on mount and when duprId changes
-	useEffect( () => {
-		validateDuprId( duprId );
-	}, [ duprId ] );
+	return (
+		<span
+			className="pbr-reliability"
+			role="img"
+			aria-label={ label }
+			title={ label }
+			style={ { '--pbr-score': score } }
+		>
+			<svg viewBox="0 0 36 36" aria-hidden="true" focusable="false">
+				<circle
+					className="pbr-ring-track"
+					cx="18"
+					cy="18"
+					r="15.9155"
+				/>
+				<circle
+					className="pbr-ring-value"
+					cx="18"
+					cy="18"
+					r="15.9155"
+					strokeDasharray={ `${ score } 100` }
+				/>
+			</svg>
+			<span className="pbr-reliability-value" aria-hidden="true">
+				{ score }
+			</span>
+		</span>
+	);
+}
 
-	// Fetch data when DUPR ID is valid
-	useEffect( () => {
-		if ( duprId && ! validationError ) {
-			fetchPlayerData( duprId );
-		}
-	}, [ duprId, validationError, fetchPlayerData ] );
+export default function Edit( { attributes, setAttributes } ) {
+	const { name, duprId, mediaId, updated } = attributes;
+
+	const avatarUrl = useSelect(
+		( select ) => {
+			const media = mediaId ? select( 'core' ).getMedia( mediaId ) : null;
+			return (
+				media?.media_details?.sizes?.thumbnail?.source_url ||
+				media?.source_url ||
+				''
+			);
+		},
+		[ mediaId ]
+	);
+
+	const ratings = RATING_TYPES.map( ( type ) => ( {
+		...type,
+		rating: normalizeRating( attributes[ `${ type.key }Rating` ] ),
+		reliability: normalizeReliability(
+			attributes[ `${ type.key }Reliability` ]
+		),
+	} ) ).filter( ( item ) => '' !== item.rating );
+
+	const hasRatings = ratings.length > 0;
+	const blockProps = useBlockProps( {
+		className: hasRatings ? 'pbr-block' : undefined,
+	} );
+
+	// Rating changes stamp the "updated" date, so the card shows when the
+	// numbers were last touched rather than when the post was last saved.
+	const setRatingAttributes = ( changes ) =>
+		setAttributes( { ...changes, updated: new Date().toISOString() } );
+
+	const duprIdError =
+		duprId && ! isValidDuprId( duprId )
+			? __(
+					'DUPR ID must be 6 letters or numbers.',
+					'pickleball-ratings'
+			  )
+			: '';
+
+	const copyLabel = sprintf(
+		/* translators: %s: DUPR ID. */
+		__( 'Copy DUPR ID %s', 'pickleball-ratings' ),
+		duprId
+	);
+
+	const inspector = (
+		<InspectorControls>
+			<PanelBody title={ __( 'Player', 'pickleball-ratings' ) }>
+				<TextControl
+					__nextHasNoMarginBottom
+					label={ __( 'Name', 'pickleball-ratings' ) }
+					value={ name }
+					onChange={ ( value ) => setAttributes( { name: value } ) }
+				/>
+				<TextControl
+					__nextHasNoMarginBottom
+					label={ __( 'DUPR ID', 'pickleball-ratings' ) }
+					value={ duprId }
+					maxLength={ 6 }
+					help={
+						duprIdError ||
+						__(
+							'Optional. Shows a button to copy the ID.',
+							'pickleball-ratings'
+						)
+					}
+					onChange={ ( value ) =>
+						setAttributes( { duprId: value.toUpperCase().trim() } )
+					}
+				/>
+				<BaseControl
+					__nextHasNoMarginBottom
+					label={ __( 'Profile image', 'pickleball-ratings' ) }
+					id="pbr-profile-image"
+				>
+					<div
+						style={ {
+							display: 'flex',
+							alignItems: 'center',
+							gap: '12px',
+						} }
+					>
+						<MediaUploadCheck>
+							<MediaUpload
+								allowedTypes={ [ 'image' ] }
+								value={ mediaId }
+								onSelect={ ( media ) =>
+									setAttributes( { mediaId: media.id } )
+								}
+								render={ ( { open } ) => (
+									<Button
+										variant="secondary"
+										onClick={ open }
+									>
+										{ mediaId
+											? __(
+													'Replace image',
+													'pickleball-ratings'
+											  )
+											: __(
+													'Select image',
+													'pickleball-ratings'
+											  ) }
+									</Button>
+								) }
+							/>
+						</MediaUploadCheck>
+						{ mediaId && (
+							<Button
+								variant="link"
+								isDestructive
+								onClick={ () =>
+									setAttributes( { mediaId: undefined } )
+								}
+							>
+								{ __( 'Remove image', 'pickleball-ratings' ) }
+							</Button>
+						) }
+					</div>
+				</BaseControl>
+			</PanelBody>
+			<PanelBody title={ __( 'Ratings', 'pickleball-ratings' ) }>
+				{ RATING_TYPES.map( ( { key, label } ) => (
+					<div key={ key } className="pbr-rating-controls">
+						<TextControl
+							__nextHasNoMarginBottom
+							label={ sprintf(
+								/* translators: %s: rating type, such as Doubles. */
+								__( '%s rating', 'pickleball-ratings' ),
+								label
+							) }
+							value={ attributes[ `${ key }Rating` ] }
+							help={ __(
+								'Leave empty to hide.',
+								'pickleball-ratings'
+							) }
+							onChange={ ( value ) =>
+								setRatingAttributes( {
+									[ `${ key }Rating` ]: value,
+								} )
+							}
+						/>
+						<TextControl
+							__nextHasNoMarginBottom
+							type="number"
+							min={ 0 }
+							max={ 100 }
+							label={ sprintf(
+								/* translators: %s: rating type, such as Doubles. */
+								__( '%s reliability', 'pickleball-ratings' ),
+								label
+							) }
+							value={ attributes[ `${ key }Reliability` ] ?? '' }
+							help={ __(
+								'Optional, 0 to 100. Leave empty to hide.',
+								'pickleball-ratings'
+							) }
+							onChange={ ( value ) =>
+								setRatingAttributes( {
+									[ `${ key }Reliability` ]:
+										normalizeReliability( value ) ??
+										undefined,
+								} )
+							}
+						/>
+					</div>
+				) ) }
+			</PanelBody>
+		</InspectorControls>
+	);
+
+	if ( ! hasRatings ) {
+		return (
+			<div { ...blockProps }>
+				{ inspector }
+				<Placeholder
+					icon={ <RatingsChartIcon /> }
+					label={ __(
+						'Pickleball Player Ratings',
+						'pickleball-ratings'
+					) }
+					instructions={ __(
+						'Add a doubles or singles rating in the block settings.',
+						'pickleball-ratings'
+					) }
+				/>
+			</div>
+		);
+	}
 
 	return (
-		<div
-			{ ...useBlockProps( {
-				className: `pbr-block pickleball-ratings-block${
-					backgroundColor
-						? ' has-background has-' +
-						  backgroundColor +
-						  '-background-color'
-						: ''
-				}${
-					gradient
-						? ' has-background has-' +
-						  gradient +
-						  '-gradient-background'
-						: ''
-				}${
-					textColor
-						? ' has-text-color has-' + textColor + '-color'
-						: ''
-				}${ fontSize ? ' has-' + fontSize + '-font-size' : '' }`,
-				style: {
-					...( customBackgroundColor && {
-						backgroundColor: customBackgroundColor,
-					} ),
-					...( customGradient && { background: customGradient } ),
-					...( customTextColor && { color: customTextColor } ),
-				},
-			} ) }
-		>
-			<InspectorControls>
-				<PanelBody
-					title={ __( 'Display Settings', 'pickleball-ratings' ) }
+		<div { ...blockProps }>
+			{ inspector }
+			{ isValidDuprId( duprId ) && (
+				<button
+					type="button"
+					className="pbr-copy"
+					aria-label={ copyLabel }
+					title={ copyLabel }
+					tabIndex={ -1 }
 				>
-					<TextControl
-						label={ __( 'Player DUPR ID', 'pickleball-ratings' ) }
-						value={ duprId }
-						onChange={ handleDuprIdChange }
-						placeholder="e.g., 8WZ4ML"
-						help={ __(
-							'Enter the 6-character DUPR ID for the player.',
-							'pickleball-ratings'
-						) }
-						__next40pxDefaultSize={ true }
-						__nextHasNoMarginBottom={ true }
-					/>
-					<ToggleControl
-						label={ __(
-							'Show Profile Picture',
-							'pickleball-ratings'
-						) }
-						checked={ showProfilePic }
-						onChange={ ( value ) =>
-							setAttributes( { showProfilePic: value } )
-						}
-						help={ __(
-							"Display the player's profile picture if available.",
-							'pickleball-ratings'
-						) }
-						__nextHasNoMarginBottom={ true }
-					/>
-
-					{ pbrBlockEditor?.enableDuprBranding && (
-						<ToggleControl
-							label={ __(
-								'Show Powered by DUPR',
-								'pickleball-ratings'
-							) }
-							checked={ showPoweredBy }
-							onChange={ ( value ) =>
-								setAttributes( { showPoweredBy: value } )
-							}
-							help={ __(
-								'Display a "Powered by DUPR®" footer at the bottom of the block.',
-								'pickleball-ratings'
-							) }
-							__nextHasNoMarginBottom={ true }
-						/>
+					<span className="pbr-copy-icon" aria-hidden="true">
+						<CopyIcon />
+					</span>
+					<span className="pbr-check-icon" aria-hidden="true">
+						<CheckCircleIcon />
+					</span>
+				</button>
+			) }
+			{ ( name || avatarUrl ) && (
+				<div className="pbr-player">
+					{ avatarUrl && (
+						<img className="pbr-avatar" src={ avatarUrl } alt="" />
 					) }
-					{ pbrBlockEditor?.enableDuprBranding && showPoweredBy && (
-						<ToggleControl
-							label={ __(
-								'Use Light Logo',
-								'pickleball-ratings'
-							) }
-							checked={ useLightLogo }
-							onChange={ ( value ) =>
-								setAttributes( { useLightLogo: value } )
-							}
-							help={ __(
-								'Use white logo for dark backgrounds. Unchecked uses blue logo for light backgrounds.',
-								'pickleball-ratings'
-							) }
-							__nextHasNoMarginBottom={ true }
-						/>
-					) }
-				</PanelBody>
-			</InspectorControls>
-
-			{ ( () => {
-				if ( ! duprId ) {
-					return (
-						<div className="placeholder">
-							<p>
-								{ __(
-									'Please enter a DUPR ID in the block settings to display player ratings.',
-									'pickleball-ratings'
-								) }
-							</p>
-						</div>
-					);
+					{ name && <span className="pbr-name">{ name }</span> }
+				</div>
+			) }
+			<div
+				className="pbr-ratings"
+				title={
+					updated
+						? sprintf(
+								/* translators: %s: date the ratings were last updated. */
+								__( 'Updated %s', 'pickleball-ratings' ),
+								dateI18n( getSettings().formats.date, updated )
+						  )
+						: undefined
 				}
-
-				if ( validationError ) {
-					return (
-						<div className="error">
-							<p>{ validationError }</p>
-						</div>
-					);
-				}
-
-				if ( isLoading ) {
-					return (
-						<div className="loading">
-							<p>
-								{ __(
-									'Loading player data…',
-									'pickleball-ratings'
-								) }
-							</p>
-						</div>
-					);
-				}
-
-				if ( apiError ) {
-					return (
-						<div className="error">
-							<p>{ apiError }</p>
-						</div>
-					);
-				}
-
-				if ( playerData ) {
-					// Create title attribute for last updated info
-					const titleAttribute = playerData.last_updated
-						? `Last updated: ${ playerData.last_updated }`
-						: '';
-
-					return (
-						<div className="block-wrapper">
-							{ duprId && (
-								<button
-									className="copy-btn"
-									onClick={ async () => {
-										try {
-											// Copy to clipboard
-											// eslint-disable-next-line no-undef
-											await navigator.clipboard.writeText(
-												duprId
-											);
-
-											// Update copied state
-											setCopiedStates( ( prev ) => ( {
-												...prev,
-												[ duprId ]: true,
-											} ) );
-
-											// Reset after 2 seconds
-											setTimeout( () => {
-												setCopiedStates( ( prev ) => ( {
-													...prev,
-													[ duprId ]: false,
-												} ) );
-											}, 2000 );
-										} catch ( error ) {
-											// eslint-disable-next-line no-console
-											console.error(
-												'Failed to copy to clipboard:',
-												error
-											);
-										}
-									} }
-									title={
-										copiedStates[ duprId ]
-											? 'Copied!'
-											: `Copy DUPR ID: ${ duprId }`
-									}
-								>
-									{ copiedStates[ duprId ] ? (
-										<span className="check-icon">
-											<CheckCircleIcon
-												width="16"
-												height="16"
-											/>
-										</span>
-									) : (
-										<span className="copy-icon">
-											<CopyIcon width="16" height="16" />
-										</span>
-									) }
-								</button>
-							) }
-							{ playerData.name && (
-								<div
-									className="player-name"
-									title={ titleAttribute }
-								>
-									{ showProfilePic && (
-										<>
-											{ playerData.profile_image ? (
-												<img
-													src={
-														playerData.profile_image
-													}
-													alt={ playerData.name }
-													className="profile-pic"
-												/>
-											) : (
-												<div className="profile-pic-fallback">
-													<UserProfileIcon
-														width="30"
-														height="30"
-														style={ {
-															color: '#666',
-														} }
-													/>
-												</div>
-											) }
-										</>
-									) }
-									{ playerData.name }
-								</div>
-							) }
-							<div className="rating-content">
-								<div className="pbr-item">
-									<span className="pbr-label">
-										<PickleballPaddlesCrossedIcon className="pbr-icon pbr-icon-doubles" />
-										Doubles
-									</span>
-									<span
+			>
+				{ ratings.map(
+					( { key, label, Icon, rating, reliability } ) => (
+						<div
+							key={ key }
+							className={ `pbr-rating pbr-${ key }` }
+						>
+							<span className="pbr-label">
+								<span className="pbr-icon" aria-hidden="true">
+									<Icon />
+								</span>
+								{ label }
+							</span>
+							<span className="pbr-score">
+								{ 'NR' === rating ? (
+									<abbr
 										className="pbr-value"
-										title={ ( () => {
-											if (
-												playerData.doubles_rating ===
-												'NR'
-											) {
-												return 'Not Rated';
-											}
-											if (
-												playerData.doubles_reliability
-											) {
-												return `Doubles: ${ playerData.doubles_rating } (Reliability: ${ playerData.doubles_reliability }%)`;
-											}
-											return `Doubles: ${ playerData.doubles_rating }`;
-										} )() }
+										title={ __(
+											'Not rated',
+											'pickleball-ratings'
+										) }
 									>
-										{ playerData.doubles_rating }
+										NR
+									</abbr>
+								) : (
+									<span className="pbr-value">
+										{ rating }
 									</span>
-								</div>
-								<div className="pbr-item">
-									<span className="pbr-label">
-										<PickleballPaddleIcon className="pbr-icon pbr-icon-singles" />
-										Singles
-									</span>
-									<span
-										className="pbr-value"
-										title={ ( () => {
-											if (
-												playerData.singles_rating ===
-												'NR'
-											) {
-												return 'Not Rated';
-											}
-											if (
-												playerData.singles_reliability
-											) {
-												return `Singles: ${ playerData.singles_rating } (Reliability: ${ playerData.singles_reliability }%)`;
-											}
-											return `Singles: ${ playerData.singles_rating }`;
-										} )() }
-									>
-										{ playerData.singles_rating }
-									</span>
-								</div>
-							</div>
-							{ pbrBlockEditor?.enableDuprBranding &&
-								showPoweredBy && (
-									<div className="footer">
-										<span className="powered-by">
-											Powered by{ ' ' }
-											<img
-												src={
-													pbrBlockEditor.pluginUrl +
-													( useLightLogo
-														? 'images/dupr-logo-white.png'
-														: 'images/dupr-logo-blue.png' )
-												}
-												alt="DUPR"
-												className="logo"
-											/>
-										</span>
-									</div>
 								) }
+								{ null !== reliability && (
+									<Reliability score={ reliability } />
+								) }
+							</span>
 						</div>
-					);
-				}
-
-				return (
-					<div className="placeholder">
-						<p>
-							{ __(
-								'Enter a valid DUPR ID to load player data.',
-								'pickleball-ratings'
-							) }
-						</p>
-					</div>
-				);
-			} )() }
+					)
+				) }
+			</div>
 		</div>
 	);
 }
