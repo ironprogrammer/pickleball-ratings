@@ -1,6 +1,6 @@
 # Pickleball Ratings
 
-This plugin provides a customizable block to display player DUPR (Dynamic Universal Pickleball Rating) ratings information. It uses the official DUPR API and requires a DUPR account to authenticate API requests.
+This plugin adds a block that shows a pickleball player's doubles and singles ratings, with optional reliability scores, a profile image, and a DUPR ID visitors can copy. You enter the ratings in the block settings. The plugin also includes a Round Robin block for generating and tracking doubles schedules.
 
 ![Sample screenshot of four blocks](assets/screenshot-1.png)
 
@@ -10,13 +10,13 @@ In addition to the plugin itself, the `docs/` directory includes the requirement
 
 Until the plugin shows up in the WordPress.org plugins directory, just head over to the [Releases page](https://github.com/ironprogrammer/pickleball-ratings/releases), and for the latest release, expand the "Assets" section and download the **pickleball-ratings.zip** file. Upload and install to WordPress like you would any other plugin.
 
-## How to Use
+## How to use
 
-After installing and activating the plugin:
-1. Head to *Settings > Pickleball Ratings* and enter your DUPR login email and password, then click **Connect to DUPR**.
-2. On any post, page, or site template/section, add the "Pickleball Player Ratings" block.
-3. Enter a player's DUPR ID, and the plugin will pull in their latest data.
-4. Style the block as you wish -- check out the background gradient style that's included for an authentic DUPR look.
+1. On any post, page, or site template, add the "Pickleball Player Ratings" block.
+2. In the block settings, enter the player's name and a doubles rating, a singles rating, or both. Reliability scores, a DUPR ID, and a profile image are optional.
+3. Pick the Gradient, White, or Black style, or set your own colors.
+
+Editing a rating updates the "Updated" date shown on the card. Upgrading from 0.5.0 or earlier copies each block's last cached DUPR data into the block and deletes the stored DUPR connection.
 
 ## Feature Requests ⭐️ and Bug Reports 🪳
 
