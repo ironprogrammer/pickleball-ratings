@@ -52,7 +52,7 @@ class PBR_Render_Test extends WP_UnitTestCase {
 	 * @param string $expected Normalized rating.
 	 */
 	public function test_normalize_rating( $input, $expected ) {
-		$this->assertSame( $expected, pbr_normalize_rating( $input ) );
+		$this->assertSame( $expected, pickleball_ratings_normalize_rating( $input ) );
 	}
 
 	public function data_normalize_rating() {

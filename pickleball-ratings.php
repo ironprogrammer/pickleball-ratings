@@ -10,7 +10,6 @@
  * Text Domain:     pickleball-ratings
  * Version:         1.0.0
  * Requires at least: 6.3
- * Tested up to: 7.1
  * Requires PHP: 7.4
  *
  * @package         Pickleball_Ratings
@@ -35,7 +34,7 @@ require_once PICKLEBALL_RATINGS_PLUGIN_DIR . 'includes/upgrade.php';
  *
  * @return array Allowed SVG tags and attributes.
  */
-function pbr_get_allowed_svg_tags() {
+function pickleball_ratings_allowed_svg_tags() {
 	return array(
 		'svg'    => array(
 			'xmlns'       => true,
@@ -91,7 +90,7 @@ function pbr_get_allowed_svg_tags() {
  * @param mixed $value Raw rating value.
  * @return string Normalized rating, or an empty string when invalid.
  */
-function pbr_normalize_rating( $value ) {
+function pickleball_ratings_normalize_rating( $value ) {
 	$rating = strtoupper( trim( (string) $value ) );
 
 	if ( 'NR' === $rating ) {
@@ -113,7 +112,7 @@ function pbr_normalize_rating( $value ) {
  * @param mixed $value Raw reliability value.
  * @return int|null Normalized score, or null when not provided.
  */
-function pbr_normalize_reliability( $value ) {
+function pickleball_ratings_normalize_reliability( $value ) {
 	if ( null === $value || '' === $value || ! is_numeric( $value ) ) {
 		return null;
 	}
@@ -127,7 +126,7 @@ function pbr_normalize_reliability( $value ) {
  * @param mixed $dupr_id DUPR ID to check.
  * @return bool True when valid.
  */
-function pbr_is_valid_dupr_id( $dupr_id ) {
+function pickleball_ratings_is_valid_dupr_id( $dupr_id ) {
 	return is_string( $dupr_id ) && 1 === preg_match( '/^[A-Z0-9]{6}$/', $dupr_id );
 }
 

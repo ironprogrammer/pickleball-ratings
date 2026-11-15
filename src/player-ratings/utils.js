@@ -1,8 +1,8 @@
 /**
  * Normalize a rating to three decimals, or "NR" when the player is not rated.
  *
- * Mirrors pbr_normalize_rating() in PHP so the editor preview matches the
- * frontend.
+ * Mirrors pickleball_ratings_normalize_rating() in PHP so the editor
+ * preview matches the frontend.
  *
  * @param {string} value Raw rating input.
  * @return {string} Normalized rating, or an empty string when invalid.
@@ -27,7 +27,7 @@ export function normalizeRating( value ) {
 /**
  * Clamp a reliability score to a whole number from 0 to 100.
  *
- * Mirrors pbr_normalize_reliability() in PHP.
+ * Mirrors pickleball_ratings_normalize_reliability() in PHP.
  *
  * @param {number|string|undefined} value Raw reliability input.
  * @return {number|null} Normalized score, or null when not provided.

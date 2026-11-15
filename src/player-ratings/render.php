@@ -11,19 +11,27 @@
  * @var WP_Block $block      Block instance.
  */
 
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// Render templates run inside the block's render callback, so these variables are function-scoped.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 $pbr_ratings = array_filter(
 	array(
 		'doubles' => array(
 			'label'       => __( 'Doubles', 'pickleball-ratings' ),
 			'icon'        => 'pickleball-paddles-crossed',
-			'rating'      => pbr_normalize_rating( $attributes['doublesRating'] ?? '' ),
-			'reliability' => pbr_normalize_reliability( $attributes['doublesReliability'] ?? null ),
+			'rating'      => pickleball_ratings_normalize_rating( $attributes['doublesRating'] ?? '' ),
+			'reliability' => pickleball_ratings_normalize_reliability( $attributes['doublesReliability'] ?? null ),
 		),
 		'singles' => array(
 			'label'       => __( 'Singles', 'pickleball-ratings' ),
 			'icon'        => 'pickleball-paddle',
-			'rating'      => pbr_normalize_rating( $attributes['singlesRating'] ?? '' ),
-			'reliability' => pbr_normalize_reliability( $attributes['singlesReliability'] ?? null ),
+			'rating'      => pickleball_ratings_normalize_rating( $attributes['singlesRating'] ?? '' ),
+			'reliability' => pickleball_ratings_normalize_reliability( $attributes['singlesReliability'] ?? null ),
 		),
 	),
 	static function ( $item ) {
@@ -36,7 +44,7 @@ if ( empty( $pbr_ratings ) ) {
 }
 
 $pbr_svg     = require PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/svg-assets.php';
-$pbr_allowed = pbr_get_allowed_svg_tags();
+$pbr_allowed = pickleball_ratings_allowed_svg_tags();
 $pbr_name    = $attributes['name'] ?? '';
 $pbr_dupr_id = $attributes['duprId'] ?? '';
 $pbr_avatar  = empty( $attributes['mediaId'] )
@@ -57,7 +65,7 @@ $pbr_updated_label = $pbr_updated ? sprintf( __( 'Updated %s', 'pickleball-ratin
 $pbr_copy_label = sprintf( __( 'Copy DUPR ID %s', 'pickleball-ratings' ), $pbr_dupr_id );
 ?>
 <div <?php echo get_block_wrapper_attributes( array( 'class' => 'pbr-block' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by core. ?>>
-	<?php if ( pbr_is_valid_dupr_id( $pbr_dupr_id ) ) : ?>
+	<?php if ( pickleball_ratings_is_valid_dupr_id( $pbr_dupr_id ) ) : ?>
 		<button
 			type="button"
 			class="pbr-copy"

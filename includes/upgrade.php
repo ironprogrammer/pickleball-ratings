@@ -143,10 +143,10 @@ function pickleball_ratings_migrate_block_attributes( array $attrs, $post_id, ar
 	$name   = sanitize_text_field( $cached['name'] ?? '' );
 	$fields = array(
 		'name'               => $name,
-		'doublesRating'      => pbr_normalize_rating( $cached['doubles_rating'] ?? '' ),
-		'doublesReliability' => pbr_normalize_reliability( $cached['doubles_reliability'] ?? null ),
-		'singlesRating'      => pbr_normalize_rating( $cached['singles_rating'] ?? '' ),
-		'singlesReliability' => pbr_normalize_reliability( $cached['singles_reliability'] ?? null ),
+		'doublesRating'      => pickleball_ratings_normalize_rating( $cached['doubles_rating'] ?? '' ),
+		'doublesReliability' => pickleball_ratings_normalize_reliability( $cached['doubles_reliability'] ?? null ),
+		'singlesRating'      => pickleball_ratings_normalize_rating( $cached['singles_rating'] ?? '' ),
+		'singlesReliability' => pickleball_ratings_normalize_reliability( $cached['singles_reliability'] ?? null ),
 		'updated'            => pickleball_ratings_legacy_date( $cached['last_updated'] ?? '' ),
 	);
 
