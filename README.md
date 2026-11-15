@@ -4,7 +4,7 @@ This plugin adds a block that shows a pickleball player's doubles and singles ra
 
 ![Sample screenshot of four blocks](assets/screenshot-1.png)
 
-In addition to the plugin itself, the `docs/` directory includes the requirements and agent implementation instructions that were used to assist the development of the plugin. See the `.cursor/rules` directory for additional Cursor-specific rules. This plugin was designed and built with the assistance of Claude, Cursor, and cursor-agent.
+The `docs/` directory holds the requirements used to build the Round Robin block, and `.cursor/rules` has Cursor-specific rules. This plugin was designed and built with the assistance of Claude, Cursor, and cursor-agent.
 
 ## Installation
 
