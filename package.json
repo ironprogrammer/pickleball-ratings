@@ -1,6 +1,6 @@
 {
 	"name": "pickleball-ratings",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Display pickleball player ratings using a customizable block.",
 	"main": "build/index.js",
 	"scripts": {
