@@ -5,7 +5,7 @@ Tags: pickleball, ratings, sports, blocks
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,9 @@ Players can find their 6-character ID on their DUPR profile.
 Version 1.0.0 removed them. When you update, each existing block keeps the ratings and profile image the plugin had cached for it, and the stored DUPR login tokens are deleted.
 
 == Changelog ==
+
+= 1.0.1 =
+* Fix: The ratings card now inherits the theme's text size instead of using its Large preset, so doubles and singles stay side by side in narrower columns. Font size can still be set in the block's Typography settings.
 
 = 1.0.0 =
 * Breaking: Removed the DUPR API connection and settings page. Ratings are now entered in the block settings.

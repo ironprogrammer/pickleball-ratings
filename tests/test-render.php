@@ -135,9 +135,11 @@ class PBR_Render_Test extends WP_UnitTestCase {
 			array(
 				'doublesRating'   => '4.125',
 				'backgroundColor' => 'primary',
+				'fontSize'        => 'small',
 			)
 		);
 
 		$this->assertStringContainsString( 'has-primary-background-color', $html );
+		$this->assertStringContainsString( 'has-small-font-size', $html );
 	}
 }
