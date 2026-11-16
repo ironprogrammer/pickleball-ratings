@@ -13,6 +13,14 @@
  * @var WP_Block $block Block instance.
  */
 
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// Render templates run inside the block's render callback, so these variables are function-scoped.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 $players = isset( $attributes['players'] ) ? (int) $attributes['players'] : 8;
 $courts  = isset( $attributes['courts'] ) ? (int) $attributes['courts'] : 2;
 

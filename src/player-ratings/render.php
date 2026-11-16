@@ -2,160 +2,128 @@
 /**
  * Render template for the player ratings block.
  *
- * @package Pickleball_Ratings
- */
-
-/**
- * Variables available to the renderer.
+ * Markup is mirrored in edit.js so the editor preview matches the frontend.
  *
- * @var array $attributes Block attributes.
- * @var string $content Block default content.
- * @var WP_Block $block Block instance.
+ * @package Pickleball_Ratings
+ *
+ * @var array    $attributes Block attributes.
+ * @var string   $content    Block default content.
+ * @var WP_Block $block      Block instance.
  */
 
-$dupr_id          = isset( $attributes['duprId'] ) ? sanitize_text_field( $attributes['duprId'] ) : '';
-$show_profile_pic = isset( $attributes['showProfilePic'] ) ? (bool) $attributes['showProfilePic'] : true;
-$show_powered_by  = isset( $attributes['showPoweredBy'] ) ? (bool) $attributes['showPoweredBy'] : false;
-
-// Load SVG assets once for the entire function.
-$svg_assets = require PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/svg-assets.php';
-
-// Override powered by setting if DUPR branding feature is disabled.
-if ( ! PICKLEBALL_RATINGS_ENABLE_DUPR_BRANDING ) {
-	$show_powered_by = false;
-}
-$use_light_logo = isset( $attributes['useLightLogo'] ) ? (bool) $attributes['useLightLogo'] : false;
-
-// Basic validation.
-if ( empty( $dupr_id ) ) {
-	return; // Hide block on frontend when no DUPR ID provided.
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
-// Validate 6-character alphanumeric format.
-if ( ! preg_match( '/^[A-Z0-9]{6}$/', $dupr_id ) ) {
-	return; // Hide block on frontend when DUPR ID format is invalid.
-}
+// Render templates run inside the block's render callback, so these variables are function-scoped.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 
-// Get player data from DUPR API.
-$api         = new PBR_DUPR_API();
-$player_data = $api->get_player_data( $dupr_id );
-
-// Handle API errors.
-if ( is_wp_error( $player_data ) ) {
-	$error_message = $player_data->get_error_message();
-
-	// If it's an authentication error, show a different message.
-	if ( 'no_auth' === $player_data->get_error_code() ) {
-		$error_message = 'DUPR API not configured. Please contact the site administrator.';
+$pbr_ratings = array_filter(
+	array(
+		'doubles' => array(
+			'label'       => __( 'Doubles', 'pickleball-ratings' ),
+			'icon'        => 'pickleball-paddles-crossed',
+			'rating'      => pickleball_ratings_normalize_rating( $attributes['doublesRating'] ?? '' ),
+			'reliability' => pickleball_ratings_normalize_reliability( $attributes['doublesReliability'] ?? null ),
+		),
+		'singles' => array(
+			'label'       => __( 'Singles', 'pickleball-ratings' ),
+			'icon'        => 'pickleball-paddle',
+			'rating'      => pickleball_ratings_normalize_rating( $attributes['singlesRating'] ?? '' ),
+			'reliability' => pickleball_ratings_normalize_reliability( $attributes['singlesReliability'] ?? null ),
+		),
+	),
+	static function ( $item ) {
+		return '' !== $item['rating'];
 	}
+);
 
-	return; // Hide block on frontend when API errors occur.
+if ( empty( $pbr_ratings ) ) {
+	return;
 }
 
+$pbr_svg     = require PICKLEBALL_RATINGS_PLUGIN_DIR . 'build/svg-assets.php';
+$pbr_allowed = pickleball_ratings_allowed_svg_tags();
+$pbr_name    = $attributes['name'] ?? '';
+$pbr_dupr_id = $attributes['duprId'] ?? '';
+$pbr_avatar  = empty( $attributes['mediaId'] )
+	? ''
+	: wp_get_attachment_image(
+		(int) $attributes['mediaId'],
+		'thumbnail',
+		false,
+		array(
+			'class' => 'pbr-avatar',
+			'alt'   => '',
+		)
+	);
+$pbr_updated = empty( $attributes['updated'] ) ? false : strtotime( $attributes['updated'] );
+/* translators: %s: date the ratings were last updated. */
+$pbr_updated_label = $pbr_updated ? sprintf( __( 'Updated %s', 'pickleball-ratings' ), wp_date( get_option( 'date_format' ), $pbr_updated ) ) : '';
+/* translators: %s: DUPR ID. */
+$pbr_copy_label = sprintf( __( 'Copy DUPR ID %s', 'pickleball-ratings' ), $pbr_dupr_id );
 ?>
+<div <?php echo get_block_wrapper_attributes( array( 'class' => 'pbr-block' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by core. ?>>
+	<?php if ( pickleball_ratings_is_valid_dupr_id( $pbr_dupr_id ) ) : ?>
+		<button
+			type="button"
+			class="pbr-copy"
+			data-dupr-id="<?php echo esc_attr( $pbr_dupr_id ); ?>"
+			data-copied-label="<?php esc_attr_e( 'DUPR ID copied', 'pickleball-ratings' ); ?>"
+			data-failed-label="<?php esc_attr_e( 'Could not copy the DUPR ID', 'pickleball-ratings' ); ?>"
+			aria-label="<?php echo esc_attr( $pbr_copy_label ); ?>"
+			title="<?php echo esc_attr( $pbr_copy_label ); ?>"
+		>
+			<span class="pbr-copy-icon" aria-hidden="true"><?php echo wp_kses( $pbr_svg['copy-to-clipboard'], $pbr_allowed ); ?></span>
+			<span class="pbr-check-icon" aria-hidden="true"><?php echo wp_kses( $pbr_svg['check-circle'], $pbr_allowed ); ?></span>
+		</button>
+		<span class="pbr-copy-status pbr-visually-hidden" aria-live="polite"></span>
+	<?php endif; ?>
 
-<div 
-<?php
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns escaped attributes
-	echo get_block_wrapper_attributes( array( 'class' => 'pbr-block pickleball-ratings-block' ) );
-?>
-	>
-	<div class="block-wrapper">
-		<?php if ( ! empty( $dupr_id ) ) : ?>
-			<button class="copy-btn" onclick="window.pbrCopyToClipboard('<?php echo esc_js( $dupr_id ); ?>', this)" title="Copy DUPR ID: <?php echo esc_attr( $dupr_id ); ?>">
-				<span class="copy-icon"><?php echo wp_kses( $svg_assets['copy-to-clipboard'], pbr_get_allowed_svg_tags() ); ?></span>
-				<span class="check-icon" style="display: none;"><?php echo wp_kses( $svg_assets['check-circle'], pbr_get_allowed_svg_tags() ); ?></span>
-			</button>
-		<?php endif; ?>
-
-		<?php if ( ! empty( $player_data['name'] ) ) : ?>
-			<div class="player-name"
-			<?php
-			if ( ! empty( $player_data['last_updated'] ) ) :
-				?>
-				title="<?php echo esc_attr( 'Last updated: ' . $player_data['last_updated'] ); ?>"<?php endif; ?>>
-				<?php if ( $show_profile_pic ) : ?>
-					<?php if ( ! empty( $player_data['profile_image'] ) ) : ?>
-						<img src="<?php echo esc_url( $player_data['profile_image'] ); ?>" alt="<?php echo esc_attr( $player_data['name'] ); ?>" class="profile-pic" />
-					<?php else : ?>
-						<?php
-						// Use WordPress HTML Tag Processor to modify SVG attributes.
-						$user_svg  = $svg_assets['user-profile'];
-						$processor = new WP_HTML_Tag_Processor( $svg_assets['user-profile'] );
-						if ( $processor->next_tag( 'svg' ) ) {
-							$processor->set_attribute( 'width', '30' );
-							$processor->set_attribute( 'height', '30' );
-							$processor->set_attribute( 'style', 'color: #666;' );
-							$user_svg = $processor->get_updated_html();
-						}
-						?>
-						<div class="profile-pic-fallback"><?php echo wp_kses( $user_svg, pbr_get_allowed_svg_tags() ); ?></div>
-					<?php endif; ?>
-				<?php endif; ?>
-				<?php echo esc_html( $player_data['name'] ); ?>
-			</div>
-		<?php endif; ?>
-
-		<div class="rating-content">
-			<div class="pbr-item">
-				<span class="pbr-label">
-					<span class="pbr-icon pbr-icon-doubles"><?php echo wp_kses( $svg_assets['pickleball-paddles-crossed'], pbr_get_allowed_svg_tags() ); ?></span>
-					Doubles
-				</span>
-				<span class="pbr-value"
-				<?php
-				if ( 'NR' === $player_data['doubles_rating'] ) :
-					?>
-					title="<?php esc_attr_e( 'Not Rated', 'pickleball-ratings' ); ?>"
-					<?php
-				elseif ( isset( $player_data['doubles_reliability'] ) && $player_data['doubles_reliability'] > 0 ) :
-					?>
-					title="<?php echo esc_attr( 'Doubles: ' . $player_data['doubles_rating'] . ' (Reliability: ' . $player_data['doubles_reliability'] . '%)' ); ?>"
-					<?php
-				else :
-					?>
-					title="<?php echo esc_attr( 'Doubles: ' . $player_data['doubles_rating'] ); ?>"
-					<?php
-				endif;
-				?>
-				><?php echo esc_html( $player_data['doubles_rating'] ); ?></span>
-			</div>
-			<div class="pbr-item">
-				<span class="pbr-label">
-					<span class="pbr-icon pbr-icon-singles"><?php echo wp_kses( $svg_assets['pickleball-paddle'], pbr_get_allowed_svg_tags() ); ?></span>
-					Singles
-				</span>
-				<span class="pbr-value"
-				<?php
-				if ( 'NR' === $player_data['singles_rating'] ) :
-					?>
-					title="<?php esc_attr_e( 'Not Rated', 'pickleball-ratings' ); ?>"
-					<?php
-				elseif ( isset( $player_data['singles_reliability'] ) && $player_data['singles_reliability'] > 0 ) :
-					?>
-					title="<?php echo esc_attr( 'Singles: ' . $player_data['singles_rating'] . ' (Reliability: ' . $player_data['singles_reliability'] . '%)' ); ?>"
-					<?php
-				else :
-					?>
-					title="<?php echo esc_attr( 'Singles: ' . $player_data['singles_rating'] ); ?>"
-					<?php
-				endif;
-				?>
-				><?php echo esc_html( $player_data['singles_rating'] ); ?></span>
-			</div>
+	<?php if ( $pbr_name || $pbr_avatar ) : ?>
+		<div class="pbr-player">
+			<?php echo $pbr_avatar; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by wp_get_attachment_image(). ?>
+			<?php if ( $pbr_name ) : ?>
+				<span class="pbr-name"><?php echo esc_html( $pbr_name ); ?></span>
+			<?php endif; ?>
 		</div>
+	<?php endif; ?>
 
-		<?php if ( $show_powered_by ) : ?>
-			<?php
-			$logo_file = $use_light_logo ? 'dupr-logo-white.png' : 'dupr-logo-blue.png';
-			$logo_url  = PICKLEBALL_RATINGS_PLUGIN_URL . 'images/' . $logo_file;
-			?>
-			<div class="footer">
-				<span class="powered-by">
-					Powered by 
-					<img src="<?php echo esc_url( $logo_url ); ?>" alt="DUPR" class="logo" />
+	<div class="pbr-ratings"<?php echo $pbr_updated_label ? ' title="' . esc_attr( $pbr_updated_label ) . '"' : ''; ?>>
+		<?php foreach ( $pbr_ratings as $pbr_key => $pbr_item ) : ?>
+			<div class="pbr-rating pbr-<?php echo esc_attr( $pbr_key ); ?>">
+				<span class="pbr-label">
+					<span class="pbr-icon" aria-hidden="true"><?php echo wp_kses( $pbr_svg[ $pbr_item['icon'] ], $pbr_allowed ); ?></span>
+					<?php echo esc_html( $pbr_item['label'] ); ?>
+				</span>
+				<span class="pbr-score">
+					<?php if ( 'NR' === $pbr_item['rating'] ) : ?>
+						<abbr class="pbr-value" title="<?php esc_attr_e( 'Not rated', 'pickleball-ratings' ); ?>">NR</abbr>
+					<?php else : ?>
+						<span class="pbr-value"><?php echo esc_html( $pbr_item['rating'] ); ?></span>
+					<?php endif; ?>
+					<?php
+					if ( null !== $pbr_item['reliability'] ) :
+						/* translators: %d: reliability score from 0 to 100. */
+						$pbr_reliability_label = sprintf( __( 'Reliability: %d of 100', 'pickleball-ratings' ), $pbr_item['reliability'] );
+						?>
+						<span class="pbr-reliability" role="img" aria-label="<?php echo esc_attr( $pbr_reliability_label ); ?>" title="<?php echo esc_attr( $pbr_reliability_label ); ?>" style="--pbr-score: <?php echo (int) $pbr_item['reliability']; ?>">
+							<svg viewBox="0 0 36 36" aria-hidden="true" focusable="false">
+								<circle class="pbr-ring-track" cx="18" cy="18" r="15.9155"></circle>
+								<circle class="pbr-ring-value" cx="18" cy="18" r="15.9155" stroke-dasharray="<?php echo (int) $pbr_item['reliability']; ?> 100"></circle>
+							</svg>
+							<span class="pbr-reliability-value" aria-hidden="true"><?php echo (int) $pbr_item['reliability']; ?></span>
+						</span>
+					<?php endif; ?>
 				</span>
 			</div>
-		<?php endif; ?>
+		<?php endforeach; ?>
 	</div>
+
+	<?php if ( $pbr_updated ) : ?>
+		<p class="pbr-visually-hidden">
+			<time datetime="<?php echo esc_attr( gmdate( 'c', $pbr_updated ) ); ?>"><?php echo esc_html( $pbr_updated_label ); ?></time>
+		</p>
+	<?php endif; ?>
 </div>

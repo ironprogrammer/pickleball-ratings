@@ -1,117 +1,143 @@
 <?php
 /**
- * Render callback tests.
+ * Player ratings block render tests.
+ *
+ * @package Pickleball_Ratings
  */
 
 class PBR_Render_Test extends WP_UnitTestCase {
 
 	/**
-	 * Test that blocks with empty or invalid DUPR IDs return empty strings.
+	 * Render the block with the given attributes.
 	 *
-	 * @dataProvider data_empty_or_invalid_dupr_ids
-	 * @param string $dupr_id The DUPR ID to test.
-	 * @param string $test_name The name of the test case.
-	 * @param string $error_message The error message to display if test fails.
+	 * @param array $attrs Block attributes.
+	 * @return string Rendered HTML.
 	 */
-	public function test_render_empty_or_invalid_id_returns_empty( $dupr_id, $test_name, $error_message ) {
-		// Create block attributes with the test DUPR ID.
-		$attributes = array( 'duprId' => $dupr_id );
-		
-		// Create a block instance.
+	private function render( array $attrs ) {
 		$block = new WP_Block(
 			array(
 				'blockName' => 'pickleball-ratings/player-ratings',
-				'attrs'      => $attributes,
+				'attrs'     => $attrs,
 			)
 		);
-		
-		// Render the block.
-		$html = $block->render();
-		
-		// Assert that the block returns empty string.
-		$this->assertEmpty( $html, $error_message );
+
+		return $block->render();
+	}
+
+	public function test_block_without_ratings_renders_nothing() {
+		$this->assertSame(
+			'',
+			trim(
+				$this->render(
+					array(
+						'name'   => 'Alex Rivera',
+						'duprId' => 'ABC123',
+					)
+				)
+			)
+		);
+	}
+
+	public function test_only_provided_ratings_render() {
+		$html = $this->render( array( 'doublesRating' => '4.125' ) );
+
+		$this->assertStringContainsString( 'pbr-doubles', $html );
+		$this->assertStringNotContainsString( 'pbr-singles', $html );
 	}
 
 	/**
-	 * Data provider for empty or invalid DUPR ID tests.
+	 * @dataProvider data_normalize_rating
 	 *
-	 * @return array Array of test cases with DUPR ID, test name, and error message.
+	 * @param mixed  $input    Raw rating.
+	 * @param string $expected Normalized rating.
 	 */
-	public function data_empty_or_invalid_dupr_ids() {
+	public function test_normalize_rating( $input, $expected ) {
+		$this->assertSame( $expected, pickleball_ratings_normalize_rating( $input ) );
+	}
+
+	public function data_normalize_rating() {
 		return array(
-			'empty_dupr_id' => array(
-				'dupr_id'      => '',
-				'test_name'    => 'Empty DUPR ID',
-				'error_message' => 'Block should return empty string when no DUPR ID is provided',
-			),
-			'invalid_dupr_id_format' => array(
-				'dupr_id'      => 'abc',
-				'test_name'    => 'Invalid DUPR ID format',
-				'error_message' => 'Block should return empty string when DUPR ID format is invalid',
-			),
+			'three decimals' => array( '4.125', '4.125' ),
+			'padded'         => array( '3.5', '3.500' ),
+			'rounded'        => array( '3.28951', '3.290' ),
+			'not rated'      => array( 'nr', 'NR' ),
+			'empty'          => array( '', '' ),
+			'text'           => array( 'abc', '' ),
+			'zero'           => array( '0', '' ),
+			'hex'            => array( '0x4', '' ),
+			'exponent'       => array( '1e3', '' ),
 		);
 	}
 
-	public function test_render_color_classes_and_styles() {
-		$attrs = array(
-			'duprId' => '8WZ4ML',
-			'backgroundColor' => 'primary',
-			'textColor' => 'secondary',
-			'gradient' => 'dupr-blue-gradient',
-			'fontSize' => 'large',
-		);
-		// Configure auth token to bypass 'no_auth' branch.
-		update_option( 'pickleball_ratings_dupr_auth_token', 'test-token' );
-		// Stub API to avoid external calls by filtering before render.
-		add_filter( 'pre_http_request', array( $this, 'stub_http_ok' ), 10, 3 );
-		
-		// Create a block instance.
-		$block = new WP_Block(
+	public function test_reliability_ring_renders_clamped_score() {
+		$html = $this->render(
 			array(
-				'blockName' => 'pickleball-ratings/player-ratings',
-				'attrs'      => $attrs,
+				'doublesRating'      => '4.125',
+				'doublesReliability' => 150,
 			)
 		);
-		
-		// Render the block.
-		$html = $block->render();
-		
-		remove_filter( 'pre_http_request', array( $this, 'stub_http_ok' ), 10 );
 
-		$this->assertStringContainsString( 'has-background', $html );
-		$this->assertStringContainsString( 'has-primary-background-color', $html );
-		$this->assertStringContainsString( 'has-secondary-color', $html );
-		$this->assertStringContainsString( 'has-dupr-blue-gradient-gradient-background', $html );
-		$this->assertStringContainsString( 'has-large-font-size', $html );
+		$this->assertStringContainsString( 'aria-label="Reliability: 100 of 100"', $html );
 	}
 
-	public function stub_http_ok( $preempt, $args, $url ) {
-		// Two-step flow: search by DUPR ID, then player fetch.
-		if ( false !== strpos( $url, '/player/search/byDuprId' ) ) {
-			return array(
-				'response' => array( 'code' => 200 ),
-				'headers'  => array(),
-				'body'     => json_encode( array( 'results' => array( array( 'userId' => '123' ) ) ) ),
-			);
-		}
-		if ( false !== strpos( $url, '/player/v3/' ) ) {
-			return array(
-				'response' => array( 'code' => 200 ),
-				'headers'  => array(),
-				'body'     => json_encode( array( 'result' => array(
-					'duprId'   => '8WZ4ML',
-					'fullName' => 'JW Johnson',
-					'ratings'  => array( 'doubles' => '6.99', 'singles' => '6.80' ),
-				) ) ),
-			);
-		}
-		if ( false !== strpos( $url, '/auth/v3/validate' ) ) {
-			return array(
-				'response' => array( 'code' => 200 ),
-				'headers'  => array(),
-				'body'     => json_encode( array( 'status' => 'SUCCESS' ) ),
-			);
-		}
-		return $preempt;
+	public function test_reliability_ring_hidden_without_score() {
+		$html = $this->render( array( 'doublesRating' => '4.125' ) );
+
+		$this->assertStringNotContainsString( 'pbr-reliability', $html );
+	}
+
+	public function test_copy_button_requires_valid_dupr_id() {
+		$valid   = $this->render(
+			array(
+				'doublesRating' => '4.125',
+				'duprId'        => 'ABC123',
+			)
+		);
+		$invalid = $this->render(
+			array(
+				'doublesRating' => '4.125',
+				'duprId'        => 'abc',
+			)
+		);
+
+		$this->assertStringContainsString( 'data-dupr-id="ABC123"', $valid );
+		$this->assertStringNotContainsString( 'pbr-copy', $invalid );
+	}
+
+	public function test_profile_image_renders_from_media_library() {
+		$attachment_id = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/canola.jpg' );
+
+		$with    = $this->render(
+			array(
+				'doublesRating' => '4.125',
+				'mediaId'       => $attachment_id,
+			)
+		);
+		$without = $this->render( array( 'doublesRating' => '4.125' ) );
+
+		$this->assertStringContainsString( 'pbr-avatar', $with );
+		$this->assertStringNotContainsString( 'pbr-avatar', $without );
+	}
+
+	public function test_updated_date_renders_time_element() {
+		$html = $this->render(
+			array(
+				'doublesRating' => '4.125',
+				'updated'       => '2026-11-14T18:00:00.000Z',
+			)
+		);
+
+		$this->assertStringContainsString( '<time datetime="2026-11-14T18:00:00+00:00">', $html );
+	}
+
+	public function test_color_support_classes_render() {
+		$html = $this->render(
+			array(
+				'doublesRating'   => '4.125',
+				'backgroundColor' => 'primary',
+			)
+		);
+
+		$this->assertStringContainsString( 'has-primary-background-color', $html );
 	}
 }

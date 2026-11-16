@@ -2,59 +2,65 @@
 Contributors: ironprogrammer
 Donate link: https://github.com/ironprogrammer/pickleball-ratings
 Tags: pickleball, ratings, sports, blocks
-Requires at least: 6.1
-Tested up to: 7.0.4
+Requires at least: 6.3
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.5.0
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Display pickleball player ratings using a customizable block. Uses the official DUPR API.
+Show a pickleball player's doubles and singles ratings in a customizable block.
 
 == Description ==
 
-Pickleball Ratings provides a customizable block to display player DUPR (Dynamic Universal Pickleball Rating) ratings information. It uses the official DUPR API and requires a DUPR account to authenticate API requests. Perfect for pickleball clubs, tournament sites, and player profile pages.
+Pickleball Ratings adds a block that shows a player's doubles and singles ratings, with optional reliability scores, a profile image, and a DUPR ID visitors can copy. You enter the ratings in the block settings, and the card shows when they were last changed.
+
+The plugin also includes a Round Robin block for generating and tracking doubles schedules.
 
 ## Features
 
-* **Customizable Block**: Add player ratings to any post or page using the block editor.
-* **Responsive Design**: Works across any device size.
-* **DUPR API Integration**: Connects to the official DUPR API for the latest data.
-* **Caching**: Configurable caching of ratings data to improve performance.
+* Show a doubles rating, a singles rating, or both.
+* Add a reliability score from 0 to 100 to each rating, shown as a circular meter.
+* Choose the Gradient, White, or Black style, or use the editor's color and font size settings.
+* Add a profile image from the media library.
+* Add a DUPR ID to show a copy button.
 
-## How to Use
+## How to use
 
-1. Add the "Pickleball Player Ratings" block to any post, page, or template/section using the block or site editor.
-2. Enter a player's 6-character DUPR ID in the block settings.
-3. The block will retrieve and display the player's ratings info.
-4. Save and publish!
-
-## Contribute
-
-Have feature feedback or a bug you'd like to fix? [See `CONTRIBUTE.md` in GitHub for more information.](https://github.com/ironprogrammer/pickleball-ratings)
+1. Add the "Pickleball Player Ratings" block to a post, page, or template.
+2. In the block settings, enter the player's name and at least one rating.
+3. Pick a style in the block's Styles panel.
 
 == Installation ==
 
 1. Download the plugin.
 2. In WP admin, go to *Plugins > Add Plugin* and click the **Upload Plugin** button.
-3. Once uploaded, activate the plugin and go to *Settings > Pickleball Ratings*.
-4. Enter your DUPR login email and password, then click **Connect to DUPR**. The settings page should refect your connection status.
+3. Upload the ZIP file and activate the plugin.
 
 == Frequently Asked Questions ==
 
-= How do I connect to the DUPR API? =
+= Where do the ratings come from? =
 
-Go to *Settings > Pickleball Ratings* in WP admin. Enter your DUPR login email and password to connect. The plugin will store your authentication token, but not your password.
+You enter them. The plugin doesn't connect to any rating service, so edit the block when a player's rating changes. The "Updated" date on the card changes whenever you edit a rating or reliability score.
 
-= How do I find my DUPR ID? =
+= How do I find a player's DUPR ID? =
 
-If you've connected to the API, then you'll see this on the plugin's settings page. Otherwise, you can find it by logging in to your DUPR account at [dupr.com](https://dupr.com). Look for the 6-character ID on your performance dashboard.
+Players can find their 6-character ID on their DUPR profile.
 
-= How do I find another player's DUPR ID? =
+= What happened to the DUPR connection settings? =
 
-On the DUPR site, navigate to the Players page and search for a player by name. Their DUPR ID should be visible in the search results as well as on their profile page.
+Version 1.0.0 removed them. When you update, each existing block keeps the ratings and profile image the plugin had cached for it, and the stored DUPR login tokens are deleted.
 
 == Changelog ==
+
+= 1.0.0 =
+* Breaking: Removed the DUPR API connection and settings page. Ratings are now entered in the block settings.
+* Feature: Gradient, White, and Black block styles.
+* Feature: Reliability meter for each rating.
+* Feature: Profile image from the media library.
+* Feature: "Updated" date that changes automatically when ratings are edited.
+* Enhancement: The copy button works with a keyboard and announces when the ID is copied.
+* Upgrade: Existing blocks keep their last cached ratings and profile images, and stored DUPR credentials are deleted.
 
 = 0.4.0 =
 * Enhancement: Replaced Dashicons with new pickleball icon SVGs for better looks, performance, and scalability.
