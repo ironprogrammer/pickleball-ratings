@@ -4,8 +4,6 @@ This plugin adds a block that shows a pickleball player's doubles and singles ra
 
 ![Sample screenshot of four blocks](assets/screenshot-1.png)
 
-The `docs/` directory holds the requirements used to build the Round Robin block, and `.cursor/rules` has Cursor-specific rules. This plugin was designed and built with the assistance of Claude, Cursor, and cursor-agent.
-
 ## Installation
 
 Until the plugin shows up in the WordPress.org plugins directory, just head over to the [Releases page](https://github.com/ironprogrammer/pickleball-ratings/releases), and for the latest release, expand the "Assets" section and download the **pickleball-ratings.zip** file. Upload and install to WordPress like you would any other plugin.
@@ -15,8 +13,6 @@ Until the plugin shows up in the WordPress.org plugins directory, just head over
 1. On any post, page, or site template, add the "Pickleball Player Ratings" block.
 2. In the block settings, enter the player's name and a doubles rating, a singles rating, or both. Reliability scores, a DUPR ID, and a profile image are optional.
 3. Pick the Gradient, White, or Black style. Colors and font size can be adjusted in the block's Styles settings.
-
-Each reliability score shows as a ring that goes from red at 0 to green at 100. Hovering over the ratings shows when they were last edited.
 
 ## Feature Requests ⭐️ and Bug Reports 🪳
 
