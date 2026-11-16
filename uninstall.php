@@ -14,3 +14,4 @@ require_once __DIR__ . '/includes/upgrade.php';
 pickleball_ratings_delete_legacy_options();
 delete_option( 'pickleball_ratings_version' );
 delete_option( 'pickleball_ratings_upgrading' );
+delete_option( 'pickleball_ratings_migrated_posts' );

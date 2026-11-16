@@ -97,7 +97,7 @@ function pickleball_ratings_normalize_rating( $value ) {
 		return 'NR';
 	}
 
-	if ( '' === $rating || ! is_numeric( $rating ) || (float) $rating <= 0 ) {
+	if ( ! preg_match( '/^(?:\d+(?:\.\d*)?|\.\d+)$/', $rating ) || (float) $rating <= 0 ) {
 		return '';
 	}
 

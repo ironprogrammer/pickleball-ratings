@@ -64,6 +64,8 @@ class PBR_Render_Test extends WP_UnitTestCase {
 			'empty'          => array( '', '' ),
 			'text'           => array( 'abc', '' ),
 			'zero'           => array( '0', '' ),
+			'hex'            => array( '0x4', '' ),
+			'exponent'       => array( '1e3', '' ),
 		);
 	}
 

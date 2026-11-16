@@ -17,7 +17,7 @@ export function normalizeRating( value ) {
 	}
 
 	const number = Number( rating );
-	if ( '' === rating || Number.isNaN( number ) || number <= 0 ) {
+	if ( ! /^(?:\d+(?:\.\d*)?|\.\d+)$/.test( rating ) || number <= 0 ) {
 		return '';
 	}
 

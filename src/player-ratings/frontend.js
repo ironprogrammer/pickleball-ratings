@@ -8,21 +8,25 @@ document.addEventListener( 'click', ( event ) => {
 	}
 
 	const status = button.parentElement.querySelector( '.pbr-copy-status' );
+	const announce = ( message ) => {
+		if ( status ) {
+			status.textContent = message;
+		}
+	};
 
-	window.navigator.clipboard
-		.writeText( button.dataset.duprId )
+	// Wrapping the call also catches browsers without the Clipboard API.
+	Promise.resolve()
+		.then( () =>
+			window.navigator.clipboard.writeText( button.dataset.duprId )
+		)
 		.then( () => {
 			button.classList.add( 'is-copied' );
-			if ( status ) {
-				status.textContent = button.dataset.copiedLabel;
-			}
+			announce( button.dataset.copiedLabel );
 
 			window.setTimeout( () => {
 				button.classList.remove( 'is-copied' );
-				if ( status ) {
-					status.textContent = '';
-				}
+				announce( '' );
 			}, 2000 );
 		} )
-		.catch( () => {} );
+		.catch( () => announce( button.dataset.failedLabel ) );
 } );

@@ -29,7 +29,11 @@ function pickleball_ratings_maybe_upgrade() {
 	}
 
 	if ( version_compare( $installed, '1.0.0', '<' ) ) {
-		pickleball_ratings_migrate_legacy_blocks();
+		// Leave the cached data and the lock in place when a post couldn't be
+		// updated, so the migration retries once the lock goes stale.
+		if ( ! pickleball_ratings_migrate_legacy_blocks() ) {
+			return;
+		}
 		pickleball_ratings_delete_legacy_options();
 	}
 
@@ -44,6 +48,8 @@ add_action( 'init', 'pickleball_ratings_maybe_upgrade', 20 );
  * Earlier versions stored only a DUPR ID in the block and fetched everything
  * else from the API, caching the last response in `pbr_dupr_player_{id}`
  * options. Those cached values become the block's own attributes.
+ *
+ * @return bool True when every post that needed changes was updated.
  */
 function pickleball_ratings_migrate_legacy_blocks() {
 	global $wpdb;
@@ -56,9 +62,17 @@ function pickleball_ratings_migrate_legacy_blocks() {
 		)
 	);
 
-	$images = array();
+	$images   = array();
+	$complete = true;
+
+	// Posts finished by an earlier, partly failed run are skipped on retry.
+	$migrated = get_option( 'pickleball_ratings_migrated_posts', array() );
 
 	foreach ( $posts as $post ) {
+		if ( in_array( (int) $post->ID, $migrated, true ) ) {
+			continue;
+		}
+
 		$changed = false;
 		$blocks  = pickleball_ratings_migrate_blocks( parse_blocks( $post->post_content ), (int) $post->ID, $images, $changed );
 
@@ -67,15 +81,33 @@ function pickleball_ratings_migrate_legacy_blocks() {
 		}
 
 		// Updating the row directly keeps post_modified intact and skips
-		// revisions and save hooks, since no user edited the post.
+		// revisions and save hooks, since no user edited the post. Matching
+		// the scanned content skips posts saved while images downloaded.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Cache is cleared below.
-		$wpdb->update(
+		$updated = $wpdb->update(
 			$wpdb->posts,
 			array( 'post_content' => serialize_blocks( $blocks ) ),
-			array( 'ID' => $post->ID )
+			array(
+				'ID'           => $post->ID,
+				'post_content' => $post->post_content,
+			)
 		);
 		clean_post_cache( (int) $post->ID );
+
+		if ( $updated ) {
+			$migrated[] = (int) $post->ID;
+		} else {
+			$complete = false;
+		}
 	}
+
+	if ( $complete ) {
+		delete_option( 'pickleball_ratings_migrated_posts' );
+	} else {
+		update_option( 'pickleball_ratings_migrated_posts', $migrated, false );
+	}
+
+	return $complete;
 }
 
 /**

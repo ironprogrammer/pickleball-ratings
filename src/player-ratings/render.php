@@ -71,6 +71,7 @@ $pbr_copy_label = sprintf( __( 'Copy DUPR ID %s', 'pickleball-ratings' ), $pbr_d
 			class="pbr-copy"
 			data-dupr-id="<?php echo esc_attr( $pbr_dupr_id ); ?>"
 			data-copied-label="<?php esc_attr_e( 'DUPR ID copied', 'pickleball-ratings' ); ?>"
+			data-failed-label="<?php esc_attr_e( 'Could not copy the DUPR ID', 'pickleball-ratings' ); ?>"
 			aria-label="<?php echo esc_attr( $pbr_copy_label ); ?>"
 			title="<?php echo esc_attr( $pbr_copy_label ); ?>"
 		>

@@ -152,6 +152,49 @@ class PBR_Upgrade_Test extends WP_UnitTestCase {
 		$this->assertArrayNotHasKey( 'mediaId', $gradient );
 	}
 
+	public function test_failed_post_update_keeps_cache_for_retry() {
+		add_filter( 'pre_http_request', array( $this, 'serve_test_image' ), 10, 2 );
+		add_filter( 'query', array( $this, 'break_post_updates' ) );
+		$this->create_legacy_post();
+		delete_option( 'pickleball_ratings_version' );
+
+		pickleball_ratings_maybe_upgrade();
+		remove_filter( 'query', array( $this, 'break_post_updates' ) );
+
+		$this->assertIsArray( get_option( 'pbr_dupr_player_PW24RQ' ) );
+		$this->assertFalse( get_option( 'pickleball_ratings_version' ) );
+	}
+
+	public function test_post_saved_during_migration_is_not_overwritten() {
+		$post_id = $this->create_legacy_post();
+		$edited  = '<!-- wp:paragraph --><p>Edited mid-migration</p><!-- /wp:paragraph -->';
+		add_filter(
+			'pre_http_request',
+			static function () use ( $post_id, $edited ) {
+				global $wpdb;
+				$wpdb->update( $wpdb->posts, array( 'post_content' => $edited ), array( 'ID' => $post_id ) );
+				return new WP_Error( 'http_request_failed', 'Offline' );
+			}
+		);
+
+		$this->assertFalse( pickleball_ratings_migrate_legacy_blocks() );
+
+		clean_post_cache( $post_id );
+		$this->assertSame( $edited, get_post_field( 'post_content', $post_id ) );
+	}
+
+	/**
+	 * Make UPDATE queries against the posts table fail.
+	 *
+	 * @param string $query SQL query.
+	 * @return string Original query, or one that errors for post updates.
+	 */
+	public function break_post_updates( $query ) {
+		global $wpdb;
+
+		return 0 === strpos( $query, "UPDATE `{$wpdb->posts}`" ) ? 'UPDATE pbr_missing_table SET x = 1' : $query;
+	}
+
 	public function test_upgrade_deletes_legacy_options_and_records_version() {
 		update_option( 'pickleball_ratings_dupr_auth_token', 'secret' );
 		delete_option( 'pickleball_ratings_version' );
