@@ -5,7 +5,7 @@ Tags: pickleball, ratings, sports, blocks
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,14 +13,14 @@ Show a pickleball player's doubles and singles ratings in a customizable block.
 
 == Description ==
 
-Pickleball Ratings adds a block that shows a player's doubles and singles ratings, with optional reliability scores, a profile image, and a DUPR ID visitors can copy. You enter the ratings in the block settings, and the card shows when they were last changed.
+Pickleball Ratings adds a block that shows a player's doubles and singles ratings, with optional reliability scores, a profile image, and a DUPR ID visitors can copy. You enter the ratings in the block settings, and hovering over them shows when they were last changed.
 
 The plugin also includes a Round Robin block for generating and tracking doubles schedules.
 
 ## Features
 
 * Show a doubles rating, a singles rating, or both.
-* Add a reliability score from 0 to 100 to each rating, shown as a circular meter.
+* Add a reliability score from 0 to 100 to each rating, shown as a ring that goes from red to green.
 * Choose the Gradient, White, or Black style, or use the editor's color and font size settings.
 * Add a profile image from the media library.
 * Add a DUPR ID to show a copy button.
@@ -41,17 +41,16 @@ The plugin also includes a Round Robin block for generating and tracking doubles
 
 = Where do the ratings come from? =
 
-You enter them. The plugin doesn't connect to any rating service, so edit the block when a player's rating changes. The "Updated" date on the card changes whenever you edit a rating or reliability score.
+You enter them. The plugin doesn't connect to any rating service, so edit the block when a player's rating changes. The "Updated" date, shown when hovering over the ratings, changes whenever you edit a rating or reliability score.
 
 = How do I find a player's DUPR ID? =
 
 Players can find their 6-character ID on their DUPR profile.
 
-= What happened to the DUPR connection settings? =
-
-Version 1.0.0 removed them. When you update, each existing block keeps the ratings and profile image the plugin had cached for it, and the stored DUPR login tokens are deleted.
-
 == Changelog ==
+
+= 1.0.1 =
+* Fix: The ratings card uses the surrounding text size, and the block's Typography settings can change it.
 
 = 1.0.0 =
 * Breaking: Removed the DUPR API connection and settings page. Ratings are now entered in the block settings.

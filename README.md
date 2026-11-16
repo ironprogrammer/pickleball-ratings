@@ -14,9 +14,9 @@ Until the plugin shows up in the WordPress.org plugins directory, just head over
 
 1. On any post, page, or site template, add the "Pickleball Player Ratings" block.
 2. In the block settings, enter the player's name and a doubles rating, a singles rating, or both. Reliability scores, a DUPR ID, and a profile image are optional.
-3. Pick the Gradient, White, or Black style, or set your own colors.
+3. Pick the Gradient, White, or Black style. Colors and font size can be adjusted in the block's Styles settings.
 
-Editing a rating updates the "Updated" date shown on the card. Upgrading from 0.5.0 or earlier copies each block's last cached DUPR data into the block and deletes the stored DUPR connection.
+Each reliability score shows as a ring that goes from red at 0 to green at 100. Hovering over the ratings shows when they were last edited.
 
 ## Feature Requests ⭐️ and Bug Reports 🪳
 
